@@ -1,1 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>展覽導覽頁 - 第一頁 Loading & Logo 動態</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #111111; /* 暗色背景能讓橘金色光芒更突出 */
+      font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: #E28C43;
+    }
 
+    /* 全視窗容器 */
+    .page-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Canvas 畫布 */
+    #logoCanvas {
+      width: 380px;
+      height: 380px;
+    }
+
+    /* 文字與按鈕區域 */
+    .content-box {
+      margin-top: 20px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .content-box.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .title {
+      font-size: 1.2rem;
+      letter-spacing: 0.3em;
+      margin-bottom: 25px;
+      color: #f0f0f0;
+    }
+
+    /* 向下箭頭按鈕 */
+    .scroll-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      padding: 10px;
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-btn svg {
+      width: 28px;
+      height: 28px;
+      stroke: #E28C43;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(8px); }
+      60% { transform: translateY(4px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+    <!-- Logo Canvas -->
+    <canvas id="logoCanvas" width="800" height="800"></canvas>
+
+    <!-- 登場後的文字與提示箭頭 -->
+    <div class="content-box" id="interactiveContent">
+      <div class="title">回憶─ 從這裡開始</div>
+      <button class="scroll-btn" id="nextPageBtn" aria-label="向下滾動">
+        <svg viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('logoCanvas');
+    const ctx = canvas.getContext('2d');
+    const contentBox = document.getElementById('interactiveContent');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+
+    // 顏色設定（比對您提供的 Logo 色值）
+    const PRIMARY_COLOR = '#E28C43';
+
+    // 畫布中心與基本參數
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const rayCount = 60; // 放射線條數量
+
+    // 動態狀態控制
+    let progress = 0; // 進度動態 (0 ~ 1)
+    let time = 0;     // 時間軸（用於波浪計算）
+
+    // 生成每個放射線條的基礎資料
+    const rays = [];
+    for (let i = 0; i < rayCount; i++) {
+      const angle = (i / rayCount) * Math.PI * 2;
+      // 交錯長短與粗細，呈現原 Logo 的層次感
+      const isLong = i % 2 === 0;
+      const baseLength = isLong ? 220 : 160;
+      const thickness = isLong ? (i % 4 === 0 ? 12 : 8) : 6;
+      
+      rays.push({
+        angle: angle,
+        baseLength: baseLength,
+        thickness: thickness,
+        speedOffset: Math.random() * Math.PI * 2 // 個別相位差，增加流動自然感
+      });
+    }
+
+    // 繪製函數
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. 繪製中心圓點與外環（隨進度展現伸展）
+      const currentInnerRadius = 35 * Math.min(progress * 1.5, 1);
+      const currentRingRadius = 75 * Math.min(progress * 1.2, 1);
+
+      // 中心實心圓
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, currentInnerRadius, 0, Math.PI * 2);
+      ctx.fillStyle = PRIMARY_COLOR;
+      ctx.fill();
+
+      // 中間圓環
+      if (progress > 0.2) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, currentRingRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = PRIMARY_COLOR;
+        ctx.lineWidth = 14;
+        ctx.stroke();
+      }
+
+      // 2. 繪製放射狀「光波動 / 水流感」線條
+      const startRadius = 105; // 線條起點距離中心的距離
+
+      rays.forEach((ray, index) => {
+        // 計算登場進度（放射線條延遲登場）
+        const rayProgress = Math.max(0, Math.min(1, (progress - 0.3) * 1.5));
+        if (rayProgress <= 0) return;
+
+        // 【水流波動感】正弦波算法：使角度與長度微微隨時間起伏
+        const waveOffset = Math.sin(time * 2 + ray.speedOffset) * 8;
+        const angleWave = Math.cos(time * 1.5 + index) * 0.02; // 微小角度擺動
+        
+        const currentAngle = ray.angle + angleWave;
+        const currentLength = (ray.baseLength + waveOffset) * rayProgress;
+
+        const x1 = centerX + Math.cos(currentAngle) * startRadius;
+        const y1 = centerY + Math.sin(currentAngle) * startRadius;
+        const x2 = centerX + Math.cos(currentAngle) * (startRadius + currentLength);
+        const y2 = centerY + Math.sin(currentAngle) * (startRadius + currentLength);
+
+        // 畫出帶圓角的線條（呈現波浪與光芒感）
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = PRIMARY_COLOR;
+        ctx.lineWidth = ray.thickness;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      });
+
+      // 更新時間與動畫進度
+      time += 0.025;
+      
+      if (progress < 1) {
+        progress += 0.008; // 載入動畫速度
+        requestAnimationFrame(draw);
+      } else {
+        // 載入完成，顯示文字與按鈕
+        contentBox.classList.add('show');
+        requestAnimationFrame(draw); // 持續循環維持常態呼吸波動
+      }
+    }
+
+    // 啟動動畫
+    draw();
+
+    // 按鈕點擊事件：滾動進入第二頁
+    nextPageBtn.addEventListener('click', () => {
+      // 這裡撰寫滾動到第 2 頁的邏輯（例如 window.scrollTo 或 平滑滾動套件）
+      alert('往下滾動進入第 2 頁：Logo 視覺海報動態');
+    });
+  </script>
+</body>
+</html>
