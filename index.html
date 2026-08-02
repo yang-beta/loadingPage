@@ -17,7 +17,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #121212; /* 純粹深色背景 */
+      background-color: #121212;
       font-family: "PingFang TC", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
       color: #FFFFFF;
     }
@@ -33,7 +33,39 @@
     }
 
     /* -------------------------------------------------------------
-       1. Logo 區域：放大 2 倍 (由 228px 放大至 456px) 
+       1. 載入階段 (Loading Overlay & 水波 Canvas)
+       ------------------------------------------------------------- */
+    #loadingCanvas {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40vh; /* 佔據畫面下三分之一 */
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .loading-text-box {
+      position: absolute;
+      z-index: 10;
+      font-size: 1.2rem;
+      letter-spacing: 0.5em;
+      color: #E28C43;
+      font-weight: 300;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .char {
+      opacity: 0;
+      display: inline-block;
+      transform: translateY(10px);
+      will-change: opacity, transform;
+    }
+
+    /* -------------------------------------------------------------
+       2. Logo 區域 (580px 大小)
        ------------------------------------------------------------- */
     .logo-container {
       width: 580px;
@@ -42,7 +74,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* 初始狀態：完全隱藏 (圓心 0%)、高度模糊、微幅收縮 */
       clip-path: circle(0% at 50% 50%);
       transform: scale(0.7);
       filter: blur(20px);
@@ -53,7 +84,6 @@
     .logo-container svg {
       width: 100%;
       height: 100%;
-      /* 亮金 <-> 橘金 光芒呼吸感 */
       animation: goldGlowPulse 4.0s ease-in-out infinite alternate;
     }
 
@@ -63,10 +93,10 @@
     }
 
     /* -------------------------------------------------------------
-       2. 下方文字區域 (純白文字)
+       3. 下方文字區域 (修復露字)
        ------------------------------------------------------------- */
     .interactive-area {
-      margin-top: 40px;
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -74,10 +104,11 @@
     }
 
     .text-wrapper {
-      overflow: hidden;
+      overflow: hidden; /* 剪裁遮罩 */
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     .title-wrapper {
@@ -91,7 +122,8 @@
 
     .text-line {
       color: #FFFFFF;
-      transform: translateY(150%);
+      /* 預設下移 200% 並隱藏，徹底避免頂部微露 */
+      transform: translateY(200%);
       opacity: 0;
       line-height: 1;
       will-change: transform, opacity;
@@ -110,7 +142,7 @@
       opacity: 0.9;
     }
 
-    /* 下方指示箭頭 */
+    /* 指示箭頭 */
     .scroll-arrow-btn {
       margin-top: 36px;
       background: none;
@@ -131,9 +163,6 @@
       filter: drop-shadow(0px 0px 6px rgba(255, 255, 255, 0.5));
     }
 
-    /* -------------------------------------------------------------
-       3. 顏色光芒波動 Keyframes
-       ------------------------------------------------------------- */
     @keyframes goldGlowPulse {
       0% {
         filter: drop-shadow(0 0 8px rgba(242, 152, 80, 0.4));
@@ -150,7 +179,20 @@
 <body>
 
   <div class="hero-page">
-    <!-- 100% 原始 SVG Logo Container (456px 放大版) -->
+    <!-- 水波地平線 Canvas (畫面下 1/3) -->
+    <canvas id="loadingCanvas"></canvas>
+
+    <!-- 逐字出現：載入中．．． -->
+    <div class="loading-text-box" id="loadingText">
+      <span class="char">載</span>
+      <span class="char">入</span>
+      <span class="char">中</span>
+      <span class="char">．</span>
+      <span class="char">．</span>
+      <span class="char">．</span>
+    </div>
+
+    <!-- 580px SVG Logo -->
     <div class="logo-container" id="logoBox">
       <svg id="_圖層_1" data-name="圖層_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 841.89 595.28">
         <defs>
@@ -270,34 +312,112 @@
   </div>
 
   <script>
-    const tl = gsap.timeline();
+    // -------------------------------------------------------------
+    // 🌊 1. 畫面下 1/3 水波地形 Canvas 動態繪製
+    // -------------------------------------------------------------
+    const lCanvas = document.getElementById('loadingCanvas');
+    const lCtx = lCanvas.getContext('2d');
 
-    // 🎯 1. Logo 緩慢優雅地由圓心擴散並解模糊（將時間精確拉長為 3.5 秒）
-    tl.to("#logoBox", {
-      clipPath: "circle(70% at 50% 50%)", // 緩緩展開圓形遮罩
-      scale: 1,                           // 微微放大至原大 (456px)
-      filter: "blur(0px)",                // 逐漸清晰
-      opacity: 1,                         // 透明度同步漸顯
-      duration: 3.5,                      // 耗時 3.5 秒
-      ease: "power1.inOut"
+    function resizeLoadingCanvas() {
+      lCanvas.width = window.innerWidth;
+      lCanvas.height = window.innerHeight * 0.4; // 高度占下 40%
+    }
+    resizeLoadingCanvas();
+    window.addEventListener('resize', resizeLoadingCanvas);
+
+    let step = 0;
+    let isWaveActive = true;
+
+    function drawWaveLandscape() {
+      if (!isWaveActive) return;
+      lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
+
+      const lineCount = 28; // 水波地平線層數
+      const width = lCanvas.width;
+      const height = lCanvas.height;
+
+      for (let i = 0; i < lineCount; i++) {
+        lCtx.beginPath();
+        lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / lineCount) * 0.25})`;
+        lCtx.lineWidth = 1.2;
+
+        const baseY = height * 0.2 + (i * 8); // 由上至下排列
+
+        for (let x = 0; x <= width; x += 15) {
+          // 使用正弦雙重疊加模擬地形波浪
+          const angle = (x * 0.004) + (step * 0.02) + (i * 0.08);
+          const y = baseY + Math.sin(angle) * 18 + Math.cos(x * 0.002 + step * 0.01) * 10;
+          
+          if (x === 0) lCtx.moveTo(x, y);
+          else lCtx.lineTo(x, y);
+        }
+        lCtx.stroke();
+      }
+
+      step += 1;
+      requestAnimationFrame(drawWaveLandscape);
+    }
+    drawWaveLandscape();
+
+    // -------------------------------------------------------------
+    // 🎬 2. GSAP 主時間軸控制
+    // -------------------------------------------------------------
+    const mainTl = gsap.timeline();
+
+    // 🎯 【關鍵修正】強制設定初始隱藏位置，絕漏字
+    gsap.set("#line1, #line2", { y: "200%", opacity: 0 });
+
+    // Step 1: 「載 入 中 ． ． ．」 逐字登場（歷時 5.0 秒）
+    mainTl.to(".loading-text-box .char", {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      stagger: 0.7, // 逐字登場節奏
+      ease: "power2.out"
     })
-    // 🎯 2. 完成登場後，停頓 5.0 秒專注展示 Logo 呼吸與波動
+    // 停頓補滿至 5 秒載入完成
+    .to({}, { duration: 0.8 })
+
+    // Step 2: 載入完成，將載入文字與水波線條優雅淡出
+    .to("#loadingText, #loadingCanvas", {
+      opacity: 0,
+      duration: 1.2,
+      ease: "power2.inOut",
+      onComplete: () => {
+        isWaveActive = false; // 停止背景 Canvas 繪製以節省資源
+      }
+    })
+
+    // Step 3: Logo 由圓心緩慢擴散與解模糊 (3.5 秒)
+    .to("#logoBox", {
+      clipPath: "circle(70% at 50% 50%)",
+      scale: 1,
+      filter: "blur(0px)",
+      opacity: 1,
+      duration: 3.5,
+      ease: "power1.inOut"
+    }, "-=0.5")
+
+    // Step 4: Logo 獨立展示 5.0 秒
     .to({}, { duration: 5.0 })
-    // 🎯 3. “回憶” 耗時 2.0 秒由底處向上浮現
+
+    // Step 5: “回憶” 由底往上浮現 (2.0 秒)
     .to("#line1", {
       y: "0%",
       opacity: 1,
       duration: 2.0,
       ease: "power2.out"
     })
-    // 🎯 4. “從這裡開始” 耗時 1.0 秒向上浮現
+
+    // Step 6: “從這裡開始” 由底往上浮現 (1.0 秒)
     .to("#line2", {
       y: "0%",
       opacity: 1,
       duration: 1.0,
       ease: "power2.out"
     }, "+=0.2")
-    // 🎯 5. 下方箭頭顯示與跳動
+
+    // Step 7: 白色跳動箭頭登場
     .to("#nextPageBtn", {
       opacity: 1,
       duration: 0.8,
@@ -313,7 +433,7 @@
     });
 
     document.getElementById('nextPageBtn').addEventListener('click', () => {
-      console.log('準備進入第 2 頁');
+      console.log('進入第 2 頁');
     });
   </script>
 </body>
