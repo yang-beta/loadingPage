@@ -33,16 +33,17 @@
     }
 
     /* -------------------------------------------------------------
-       1. 載入階段 (Loading Overlay & 水波 Canvas)
+       1. 載入階段 (水波 Canvas 保持全時背景)
        ------------------------------------------------------------- */
     #loadingCanvas {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 40vh; /* 佔據畫面下三分之一 */
-      z-index: 5;
+      height: 40vh; /* 佔據畫面下 40% */
+      z-index: 1;  /* 置於背景，不遮擋 Logo 與文字 */
       pointer-events: none;
+      transition: opacity 1.2s ease; /* 點擊按鈕淡出效果 */
     }
 
     .loading-text-box {
@@ -65,12 +66,13 @@
     }
 
     /* -------------------------------------------------------------
-       2. Logo 區域 (580px 大小)
+       2. Logo 區域 (間距修復重點)
        ------------------------------------------------------------- */
     .logo-container {
       width: 580px;
       height: 580px;
       position: relative;
+      z-index: 2;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -78,6 +80,8 @@
       transform: scale(0.7);
       filter: blur(20px);
       opacity: 0;
+      /* 🎯 關鍵修改 1：使用負 margin-bottom 將 Logo 底部的空白壓低，讓文字往上靠攏 */
+      margin-bottom: -80px;
       will-change: clip-path, transform, filter, opacity;
     }
 
@@ -93,10 +97,13 @@
     }
 
     /* -------------------------------------------------------------
-       3. 下方文字區域 (修復露字)
+       3. 下方文字與按鈕區域
        ------------------------------------------------------------- */
     .interactive-area {
-      margin-top: 20px;
+      position: relative;
+      z-index: 2;
+      /* 🎯 關鍵修改 2：縮小頂部邊距 */
+      margin-top: 0px; 
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -104,7 +111,7 @@
     }
 
     .text-wrapper {
-      overflow: hidden; /* 剪裁遮罩 */
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -122,7 +129,6 @@
 
     .text-line {
       color: #FFFFFF;
-      /* 預設下移 200% 並隱藏，徹底避免頂部微露 */
       transform: translateY(200%);
       opacity: 0;
       line-height: 1;
@@ -144,7 +150,7 @@
 
     /* 指示箭頭 */
     .scroll-arrow-btn {
-      margin-top: 36px;
+      margin-top: 28px;
       background: none;
       border: none;
       cursor: pointer;
@@ -179,7 +185,7 @@
 <body>
 
   <div class="hero-page">
-    <!-- 水波地平線 Canvas (畫面下 1/3) -->
+    <!-- 水波地平線 Canvas -->
     <canvas id="loadingCanvas"></canvas>
 
     <!-- 逐字出現：載入中．．． -->
@@ -219,7 +225,7 @@
             <polygon class="st0" points="397.91 400.52 394.91 399.91 413.19 322.91 416.17 323.62 397.91 400.52"/>
             <polygon class="st0" points="413.91 402.79 410.85 402.67 417.16 323.74 420.21 323.99 413.91 402.79"/>
             <polygon class="st0" points="427.02 402.87 421.21 323.97 424.26 323.75 430.07 402.59 428.55 402.78 427.02 402.87"/>
-            <polygon class="st0" points="443.03 400.64 425.25 323.58 428.23 322.9 446.01 399.94 444.53 400.36 443.03 400.64"/>
+            <polygon class="st0" points="443.03 400.64 425.25 323.58 428.23 322.9 446.01 399.94 444.53 400.36 444.53 400.64"/>
             <polygon class="st0" points="458.52 396.06 429.17 322.59 432.01 321.45 461.35 394.88 459.96 395.54 458.52 396.06"/>
             <polygon class="st0" points="473.16 389.21 432.91 321.01 435.54 319.45 475.73 387.55 473.16 389.21"/>
             <polygon class="st0" points="486.54 380.13 436.35 318.88 438.71 316.94 488.83 378.1 486.54 380.13"/>
@@ -313,14 +319,14 @@
 
   <script>
     // -------------------------------------------------------------
-    // 🌊 1. 畫面下 1/3 水波地形 Canvas 動態繪製
+    // 🌊 1. 水波地形 Canvas 繪製 (全時持續渲染)
     // -------------------------------------------------------------
     const lCanvas = document.getElementById('loadingCanvas');
     const lCtx = lCanvas.getContext('2d');
 
     function resizeLoadingCanvas() {
       lCanvas.width = window.innerWidth;
-      lCanvas.height = window.innerHeight * 0.4; // 高度占下 40%
+      lCanvas.height = window.innerHeight * 0.4;
     }
     resizeLoadingCanvas();
     window.addEventListener('resize', resizeLoadingCanvas);
@@ -332,7 +338,7 @@
       if (!isWaveActive) return;
       lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
 
-      const lineCount = 28; // 水波地平線層數
+      const lineCount = 28;
       const width = lCanvas.width;
       const height = lCanvas.height;
 
@@ -341,10 +347,9 @@
         lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / lineCount) * 0.25})`;
         lCtx.lineWidth = 1.2;
 
-        const baseY = height * 0.2 + (i * 8); // 由上至下排列
+        const baseY = height * 0.2 + (i * 8);
 
         for (let x = 0; x <= width; x += 15) {
-          // 使用正弦雙重疊加模擬地形波浪
           const angle = (x * 0.004) + (step * 0.02) + (i * 0.08);
           const y = baseY + Math.sin(angle) * 18 + Math.cos(x * 0.002 + step * 0.01) * 10;
           
@@ -360,35 +365,31 @@
     drawWaveLandscape();
 
     // -------------------------------------------------------------
-    // 🎬 2. GSAP 主時間軸控制
+    // 🎬 2. GSAP 時間軸控制
     // -------------------------------------------------------------
     const mainTl = gsap.timeline();
 
-    // 🎯 【關鍵修正】強制設定初始隱藏位置，絕漏字
+    // 🎯 預設將文字鎖定在遠處
     gsap.set("#line1, #line2", { y: "200%", opacity: 0 });
 
-    // Step 1: 「載 入 中 ． ． ．」 逐字登場（歷時 5.0 秒）
+    // Step 1: 「載 入 中 ． ． ．」 逐字登場 (5.0 秒)
     mainTl.to(".loading-text-box .char", {
       opacity: 1,
       y: 0,
       duration: 0.6,
-      stagger: 0.7, // 逐字登場節奏
+      stagger: 0.7,
       ease: "power2.out"
     })
-    // 停頓補滿至 5 秒載入完成
     .to({}, { duration: 0.8 })
 
-    // Step 2: 載入完成，將載入文字與水波線條優雅淡出
-    .to("#loadingText, #loadingCanvas", {
+    // Step 2: 載入文字淡出（水波 Canvas 保留，不在此處淡出）
+    .to("#loadingText", {
       opacity: 0,
-      duration: 1.2,
-      ease: "power2.inOut",
-      onComplete: () => {
-        isWaveActive = false; // 停止背景 Canvas 繪製以節省資源
-      }
+      duration: 1.0,
+      ease: "power2.inOut"
     })
 
-    // Step 3: Logo 由圓心緩慢擴散與解模糊 (3.5 秒)
+    // Step 3: Logo 由圓心緩慢擴散登場 (3.5 秒)
     .to("#logoBox", {
       clipPath: "circle(70% at 50% 50%)",
       scale: 1,
@@ -432,7 +433,18 @@
       }
     });
 
+    // -------------------------------------------------------------
+    // 🎯 3. 按下 Ｖ 按鈕時，水波紋才淡出並停止
+    // -------------------------------------------------------------
     document.getElementById('nextPageBtn').addEventListener('click', () => {
+      // 水波 Canvas 淡出
+      lCanvas.style.opacity = '0';
+      
+      // 1.2 秒後徹底停止繪製以釋放資源
+      setTimeout(() => {
+        isWaveActive = false;
+      }, 1200);
+
       console.log('進入第 2 頁');
     });
   </script>
