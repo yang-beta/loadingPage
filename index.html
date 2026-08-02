@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>展覽導覽頁 - 第一頁</title>
-  <!-- 引入 GSAP (與第三頁相同的動態引擎) -->
+  <!-- 引入 GSAP 動態庫 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
     * {
@@ -17,12 +17,12 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #111111;
+      background-color: #121212; /* 純粹深色背景，無光塵 */
       font-family: "PingFang TC", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
       color: #FFFFFF;
     }
 
-    .page-container {
+    .hero-page {
       position: relative;
       width: 100vw;
       height: 100vh;
@@ -32,26 +32,45 @@
       align-items: center;
     }
 
-    /* Canvas 全螢幕繪製區域 */
-    #heroCanvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
+    /* -------------------------------------------------------------
+       1. Logo 區域：縮減 40% (寬度由 380px 縮小至 228px) 
+       ------------------------------------------------------------- */
+    .logo-container {
+      width: 228px;
+      height: 228px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* 圓形剪裁遮罩：初始由圓心 0% 擴散 */
+      clip-path: circle(0% at 50% 50%);
+      transform: scale(0.8);
+      filter: blur(10px);
+      will-change: clip-path, transform, filter;
     }
 
-    /* 文字與按鈕 Overlay */
-    .content-overlay {
-      position: relative;
-      z-index: 2;
-      margin-top: 360px; /* 控制文字與 Logo 的上下距離 */
+    .logo-container svg {
+      width: 100%;
+      height: 100%;
+      /* 亮金 <-> 橘金 光芒呼吸感 */
+      animation: goldGlowPulse 3.5s ease-in-out infinite alternate;
+    }
+
+    /* SVG 預設顏色設為橘金 Base */
+    .st0 {
+      fill: #f29850;
+      transition: fill 0.5s ease;
+    }
+
+    /* -------------------------------------------------------------
+       2. 下方文字區域：全部改為白色
+       ------------------------------------------------------------- */
+    .interactive-area {
+      margin-top: 35px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      pointer-events: none; /* 避免擋到 Canvas 事件 */
     }
 
     .text-wrapper {
@@ -62,64 +81,177 @@
     }
 
     .title-wrapper {
-      height: 44px;
+      height: 40px;
     }
 
     .subtitle-wrapper {
-      height: 36px;
-      margin-top: 10px;
+      height: 32px;
+      margin-top: 8px;
     }
 
-    /* 文字基礎設定 (由 GSAP 控制 translateY & opacity) */
     .text-line {
+      color: #FFFFFF; /* 全部改為白色 */
       transform: translateY(100%);
       opacity: 0;
       will-change: transform, opacity;
     }
 
     .title-part1 {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       letter-spacing: 0.4em;
-      color: #F7D070; /* 亮金色 */
       font-weight: 300;
     }
 
     .title-part2 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       letter-spacing: 0.3em;
-      color: #E28C43; /* 橘金色 */
-      font-weight: 400;
+      font-weight: 300;
+      opacity: 0.9;
     }
 
-    /* 箭頭按鈕 */
+    /* 下方指示箭頭 */
     .scroll-arrow-btn {
-      margin-top: 30px;
+      margin-top: 32px;
       background: none;
       border: none;
       cursor: pointer;
       outline: none;
       opacity: 0;
-      pointer-events: auto;
     }
 
     .arrow-icon {
-      width: 36px;
-      height: 36px;
-      stroke: #F7D070;
-      stroke-width: 2.5;
+      width: 32px;
+      height: 32px;
+      stroke: #FFFFFF; /* 箭頭也設為白色更清晰一致 */
+      stroke-width: 2;
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
-      filter: drop-shadow(0px 0px 8px rgba(247, 208, 112, 0.6));
+      filter: drop-shadow(0px 0px 6px rgba(255, 255, 255, 0.5));
+    }
+
+    /* -------------------------------------------------------------
+       3. 顏色光芒波動 Keyframes
+       ------------------------------------------------------------- */
+    @keyframes goldGlowPulse {
+      0% {
+        filter: drop-shadow(0 0 6px rgba(242, 152, 80, 0.4));
+      }
+      50% {
+        filter: drop-shadow(0 0 18px rgba(247, 208, 112, 0.8));
+      }
+      100% {
+        filter: drop-shadow(0 0 10px rgba(242, 152, 80, 0.5));
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="page-container">
-    <canvas id="heroCanvas"></canvas>
+  <div class="hero-page">
+    <!-- 100% 原始 SVG Logo Container -->
+    <div class="logo-container" id="logoBox">
+      <svg id="_圖層_1" data-name="圖層_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 841.89 595.28">
+        <defs>
+          <style>
+            .st0 { fill: #f29850; }
+          </style>
+        </defs>
+        <circle class="st0" cx="420.88" cy="297.44" r="14.4"/>
+        <g>
+          <g>
+            <rect class="st0" x="366.79" y="217.79" width="3.06" height="78.87" transform="translate(-59.96 392.87) rotate(-52.5)"/>
+            <rect class="st0" x="361.25" y="226.27" width="3.06" height="78.87" transform="translate(-44.56 456.19) rotate(-61.28)"/>
+            <rect class="st0" x="357.08" y="235.49" width="3.06" height="78.88" transform="translate(-22.12 518.31) rotate(-70.06)"/>
+            <rect class="st0" x="354.38" y="245.24" width="3.06" height="78.89" transform="translate(7.74 578.78) rotate(-78.84)"/>
+            <rect class="st0" x="353.19" y="255.3" width="3.06" height="78.89" transform="translate(45.53 636.94) rotate(-87.62)"/>
+            <rect class="st0" x="315.63" y="303.33" width="78.92" height="3.06" transform="translate(-31.72 41.41) rotate(-6.39)"/>
+            <rect class="st0" x="317.52" y="313.27" width="78.94" height="3.06" transform="translate(-69.96 104.44) rotate(-15.18)"/>
+            <rect class="st0" x="320.91" y="322.81" width="78.95" height="3.06" transform="translate(-100.6 174.12) rotate(-23.94)"/>
+            <rect class="st0" x="325.72" y="331.71" width="78.98" height="3.06" transform="translate(-122.23 250.61) rotate(-32.76)"/>
+            <rect class="st0" x="331.83" y="339.77" width="79" height="3.06" transform="translate(-132.94 332.21) rotate(-41.55)"/>
+            <rect class="st0" x="339.09" y="346.8" width="79.03" height="3.06" transform="translate(-131.23 417.2) rotate(-50.31)"/>
+            <polygon class="st0" points="367.88 388.84 366.56 388.07 365.3 387.2 405.86 319.46 408.48 321.03 367.88 388.84"/>
+            <polygon class="st0" points="382.45 395.84 379.62 394.67 409.39 321.47 412.22 322.62 382.45 395.84"/>
+            <polygon class="st0" points="397.91 400.52 394.91 399.91 413.19 322.91 416.17 323.62 397.91 400.52"/>
+            <polygon class="st0" points="413.91 402.79 410.85 402.67 417.16 323.74 420.21 323.99 413.91 402.79"/>
+            <polygon class="st0" points="427.02 402.87 421.21 323.97 424.26 323.75 430.07 402.59 428.55 402.78 427.02 402.87"/>
+            <polygon class="st0" points="443.03 400.64 425.25 323.58 428.23 322.9 446.01 399.94 444.53 400.36 443.03 400.64"/>
+            <polygon class="st0" points="458.52 396.06 429.17 322.59 432.01 321.45 461.35 394.88 459.96 395.54 458.52 396.06"/>
+            <polygon class="st0" points="473.16 389.21 432.91 321.01 435.54 319.45 475.73 387.55 473.16 389.21"/>
+            <polygon class="st0" points="486.54 380.13 436.35 318.88 438.71 316.94 488.83 378.1 486.54 380.13"/>
+            <polygon class="st0" points="498.39 369.13 439.43 316.25 441.47 313.97 500.34 366.77 498.39 369.13"/>
+            <polygon class="st0" points="508.4 356.43 442.07 313.18 443.75 310.62 509.99 353.81 509.24 355.15 508.4 356.43"/>
+            <polygon class="st0" points="516.34 342.35 444.23 309.76 445.48 306.97 517.55 339.54 517 340.97 516.34 342.35"/>
+            <polygon class="st0" points="522.08 327.24 445.83 306.04 446.65 303.09 522.83 324.28 522.51 325.78 522.08 327.24"/>
+            <polygon class="st0" points="525.49 311.44 446.85 302.12 447.21 299.08 525.74 308.4 525.49 311.44"/>
+            <polygon class="st0" points="447.27 298.08 447.16 295.03 526.18 292.25 526.43 295.29 447.27 298.08"/>
+            <polygon class="st0" points="447.06 294.03 446.49 291.03 524.15 276.22 524.82 279.2 447.06 294.03"/>
+            <polygon class="st0" points="446.24 290.06 445.22 287.18 519.71 260.68 520.27 262.1 520.74 263.56 446.24 290.06"/>
+            <polygon class="st0" points="448.84 286.25 443.39 283.56 512.95 246.01 514.51 248.64 444.84 286.25"/>
+            <polygon class="st0" points="442.86 282.69 441.01 280.26 504.02 232.54 505.89 234.96 442.86 282.69"/>
+            <polygon class="st0" points="440.35 279.49 438.16 277.36 493.14 220.59 494.19 221.61 495.45 222.59 495.34 222.72 440.35 279.49"/>
+            <rect class="st0" x="419.47" y="242.03" width="79.03" height="3.06" transform="translate(-5.11 477.25) rotate(-54.68)"/>
+            <rect class="st0" x="410.8" y="236.83" width="79" height="3.06" transform="translate(36.05 534.98) rotate(-63.5)"/>
+            <rect class="st0" x="401.45" y="233" width="78.98" height="3.06" transform="translate(83.23 583.06) rotate(-72.26)"/>
+            <rect class="st0" x="391.62" y="230.65" width="78.96" height="3.06" transform="translate(134.41 621.71) rotate(-81.01)"/>
+            <rect class="st0" x="381.53" y="229.84" width="78.94" height="3.06" transform="translate(188.4 651.69) rotate(-89.83)"/>
+            <rect class="st0" x="409.38" y="192.65" width="3.06" height="78.92" transform="translate(-30.09 64.07) rotate(-8.6)"/>
+            <rect class="st0" x="399.51" y="194.92" width="3.06" height="78.9" transform="translate(-51.7 130.52) rotate(-17.38)"/>
+            <rect class="st0" x="390.1" y="198.68" width="3.06" height="78.89" transform="translate(-64.87 197.08) rotate(-26.16)"/>
+            <polygon class="st0" points="404.25 276.47 384.26 247.88 384.27 247.87 359.07 211.81 361.58 210.06 387.93 247.78 387.93 247.78 406.75 274.71 404.25 276.47"/>
+            <rect class="st0" x="373.55" y="210.25" width="3.06" height="78.87" transform="translate(-68.56 328.46) rotate(-43.72)"/>
+          </g>
+          <g>
+            <path class="st0" d="M329.25,244.97l-2.57,4.77,21.71,11.72c1.1-1.46,2.21-2.92,3.33-4.36l-22.47-12.12Z"/>
+            <path class="st0" d="M344.03,267.29l-21.72-7.72-1.82,5.11,20.19,7.18c1.1-1.51,2.22-3.04,3.35-4.56Z"/>
+            <path class="st0" d="M336.18,278.59l-18.51-3.53-1.01,5.32,17.29,3.29c.83-2.13,1.62-3.85,2.23-5.08Z"/>
+            <path class="st0" d="M331.39,291.64l-15.93-.56-.19,5.42,14.94.53c.33-1.9.73-3.7,1.17-5.39Z"/>
+            <path class="st0" d="M329.22,305.64l-13.5,1.6.64,5.38,12.82-1.52c-.06-1.87-.05-3.69.04-5.46Z"/>
+            <path class="st0" d="M331.05,323.2c-.19-.55-.48-1.07-.6-1.64-.11-.55-.22-1.09-.32-1.63l-11.69,3.25,1.46,5.22,11.81-3.29c-.3-.82-.51-1.47-.66-1.92Z"/>
+            <path class="st0" d="M335.13,333.3l-11.57,5.23,2.23,4.94,11.78-5.33c-.92-1.7-1.73-3.33-2.45-4.84Z"/>
+            <path class="st0" d="M342.04,345.67l-11.07,7.23,2.96,4.54,11.2-7.3c-1.1-1.5-2.13-2.99-3.09-4.46Z"/>
+            <path class="st0" d="M350.59,356.91l-10.11,9.07,3.62,4.03,10.21-9.16c-1.31-1.29-2.54-2.6-3.72-3.94Z"/>
+            <path class="st0" d="M360.76,366.61l-8.88,10.83,4.19,3.43,9.04-11.03c-1.51-1.04-2.96-2.11-4.35-3.23Z"/>
+            <path class="st0" d="M372.42,374.28l-7.53,12.76,4.67,2.76,7.76-13.16c-1.69-.73-3.32-1.52-4.9-2.36Z"/>
+            <path class="st0" d="M385.21,379.53l-5.99,15.01,5.04,2.01,6.25-15.64c-1.82-.4-3.58-.86-5.29-1.38Z"/>
+            <path class="st0" d="M398.56,382.23l-4.04,17.53,5.28,1.22,4.23-18.33c-1.87-.08-3.69-.22-5.47-.42Z"/>
+            <path class="st0" d="M411.91,382.64l-1.47,19.95,5.4.4,1.52-20.77c-1.86.19-3.67.33-5.46.42Z"/>
+            <path class="st0" d="M424.87,381.17l1.74,21.78,5.41-.43-1.79-22.43c-1.82.41-3.6.77-5.35,1.08Z"/>
+            <path class="st0" d="M437.28,378.28l5.36,22.56,5.27-1.25-5.43-22.9c-1.76.58-3.49,1.11-5.19,1.59Z"/>
+            <path class="st0" d="M449.21,374.31l8.95,22,5.02-2.04-8.93-21.96c-1.7.71-3.38,1.38-5.04,2.01Z"/>
+            <path class="st0" d="M460.8,369.4l12.01,20.06,4.65-2.79-11.87-19.82c-1.56.91-3.16,1.76-4.79,2.55Z"/>
+            <path class="st0" d="M486.24,380.46l4.17-3.46-14.46-17.42c-1.38,1.16-2.8,2.27-4.27,3.33l14.57,17.55Z"/>
+            <path class="st0" d="M498.14,369.51l3.59-4.06-16.78-14.86c-1.16,1.38-2.38,2.72-3.64,4.01l16.84,14.9Z"/>
+            <path class="st0" d="M508.23,356.87l2.93-4.55-18.89-12.15c-.9,1.56-1.87,3.09-2.88,4.59l18.84,12.11Z"/>
+            <path class="st0" d="M428.84,262.97l5.04-33.34c-.8-.35-1.63-.69-2.49-1.01-.87-.34-1.77-.66-2.69-.97l-5.21,34.53-.12-35.98c-.86-.19-1.73-.35-2.62-.49-.92-.14-1.86-.26-2.81-.35l.12,36.85-5.83-36.95c-.87.05-1.74.15-2.62.27-.92.13-1.83.3-2.74.51l5.83,37-11.28-35.24c-.8.34-1.6.73-2.39,1.16-.82.44-1.65.93-2.46,1.46l10.97,34.29-15.41-30.85c-.67.61-1.33,1.25-1.99,1.94-.67.7-1.33,1.44-1.98,2.23l14.52,29.09-17.64-24.9c-.52.78-1.04,1.6-1.54,2.44-.51.84-1.01,1.72-1.5,2.64l16.27,22.98-18.29-18.88c-.39.86-.78,1.74-1.16,2.65h0c-.37.91-.74,1.85-1.1,2.81l16.65,17.19-17.94-13.58c-.2.61-.4,1.23-.6,1.86,0,0-.11.28-.29.84-.2.61-.51,1.53-.89,2.75l16.47,12.46-17.39-9.38c-.24.83-.49,1.72-.75,2.67-.23.84-.47,1.75-.71,2.69l16.24,8.76-16.92-6.01c-.21.86-.42,1.74-.63,2.67-.19.86-.39,1.74-.59,2.65l16.35,5.81-16.9-3.22c-.18.87-.36,1.77-.53,2.69-.16.86-.33,1.74-.49,2.63l16.92,3.23-17.37-.61c-.15.9-.29,1.81-.44,2.74-.13.87-.25,1.76-.38,2.65l17.97.63-18.35,2.18c-.12.93-.23,1.87-.34,2.83-.1.89-.2,1.79-.29,2.7l19.64-2.33-19.94,5.55c-.08.97-.16,1.96-.23,2.95-.07.92-.13,1.85-.18,2.78l21.79-6.06-21.96,9.93c-.04,1.03-.07,2.07-.09,3.11-.02.97-.03,1.93-.04,2.9l24.35-11.01-24.25,15.82c.07.76.2,1.81.47,3.05.17.82.39,1.72.7,2.67l26.04-16.98-24.05,21.57c.45.81.97,1.6,1.56,2.38.51.68,1.08,1.34,1.7,1.98l24.4-21.89-20.46,24.98c.79.47,1.65.91,2.57,1.3.82.34,1.69.65,2.61.92l19.48-23.77-14.58,24.7c1.01.1,2.06.16,3.17.17.98.01,2.01-.01,3.07-.07l13.01-22.06-8.61,21.58c1.05-.16,2.14-.35,3.26-.59,1-.21,2.03-.45,3.09-.71l7.3-18.27-4.01,17.37c1.02-.3,2.05-.63,3.12-.98.95-.32,1.92-.66,2.91-1.02l3.27-14.14-.97,13.28c.95-.37,1.91-.76,2.9-1.18.88-.37,1.78-.75,2.7-1.16l.77-10.54.79,9.83c.82-.37,1.65-.75,2.49-1.16,0,0,.07-.03.21-.08.38-.14,1.26-.47,2.56-.98l-.65-8.05,1.8,7.59c.77-.31,1.65-.66,2.62-1.05.76-.31,1.59-.66,2.46-1.02l-1.61-6.79,2.59,6.38c.82-.34,1.67-.71,2.55-1.1.78-.34,1.59-.7,2.42-1.07l-2.54-6.25,3.49,5.83c.82-.37,1.66-.76,2.52-1.15.79-.37,1.6-.75,2.42-1.14l-3.77-6.29,4.81,5.79c.84-.4,1.69-.81,2.54-1.24.81-.4,1.63-.82,2.45-1.24l-5.65-6.81,6.94,6.15c.86-.45,1.72-.9,2.58-1.37.84-.45,1.67-.91,2.5-1.38l-8.42-7.46,10.11,6.49c.88-.5,1.76-1.02,2.62-1.53.86-.52,1.71-1.05,2.55-1.58l-12.35-7.94,14.59,6.49c.89-.59,1.76-1.19,2.6-1.8.86-.61,1.7-1.23,2.51-1.86l-17.5-7.78,20.29,5.51c.83-.71,1.62-1.42,2.36-2.14.77-.75,1.49-1.5,2.15-2.25l-23.37-6.34,26.01,2.92c.09-.13.17-.26.25-.38,0,0,.55-.73,1.22-2.14.34-.71.71-1.6,1.06-2.65l-27.94-3.14,28.99-1.2c.14-.84.24-1.73.3-2.67.06-.88.09-1.8.06-2.77l-29.58,1.23,29.18-5.76c-.13-.84-.3-1.71-.49-2.6-.2-.88-.42-1.77-.7-2.69l-29.04,5.74,27.55-10c-.32-.79-.66-1.6-1.05-2.41-.38-.83-.79-1.67-1.24-2.52l-27.09,9.82,24.92-13.65c-.44-.73-.92-1.47-1.42-2.22-.5-.76-1.03-1.54-1.59-2.31l-24.52,13.43,21.94-16.84c-.53-.67-1.08-1.34-1.65-2.03-.59-.7-1.2-1.41-1.84-2.12l-21.76,16.7,18.91-19.78c-.59-.62-1.2-1.24-1.82-1.87-.65-.65-1.33-1.31-2.01-1.97l-19,19.88,15.91-22.78c-.64-.57-1.29-1.16-1.96-1.74-.69-.61-1.41-1.23-2.14-1.85l-16.25,23.26,12.82-26.09c-.68-.55-1.38-1.1-2.09-1.66-.74-.58-1.5-1.17-2.28-1.76l-13.31,27.1,9.36-29.91c-.65-.42-1.41-.89-2.29-1.4-.75-.44-1.59-.91-2.51-1.4l-9.73,31.08ZM432.69,273.7c.25.13.51.26.76.4.95.51,1.86,1.08,2.72,1.69,1.12.78,2.16,1.65,3.13,2.58.98.95,1.88,1.97,2.69,3.04.82,1.08,1.55,2.22,2.19,3.41.65,1.18,1.2,2.43,1.65,3.69.45,1.27.81,2.58,1.07,3.9.26,1.32.41,2.67.46,4.02.06,1.34.01,2.69-.15,4.04-.15,1.33-.4,2.66-.77,3.97-.36,1.29-.8,2.55-1.36,3.8-.28.61-.57,1.22-.9,1.82s-.67,1.18-1.02,1.74c-.74,1.16-1.55,2.22-2.43,3.23-.9,1.02-1.87,1.96-2.9,2.82-1.05.87-2.15,1.65-3.3,2.35-1.16.7-2.37,1.3-3.61,1.82-1.25.51-2.54.93-3.85,1.25-1.31.32-2.65.54-4,.65-1.34.12-2.7.13-4.05.04-1.34-.09-2.69-.29-4.02-.58-1.31-.3-2.61-.69-3.88-1.2-.99-.39-1.95-.83-2.91-1.35-.26-.14-.5-.28-.75-.42-1.19-.7-2.31-1.46-3.35-2.31-1.07-.86-2.06-1.8-2.96-2.8-.92-1.01-1.75-2.09-2.5-3.22-.76-1.14-1.41-2.33-1.98-3.57-.56-1.24-1.03-2.52-1.41-3.83s-.64-2.65-.81-4c-.16-1.35-.23-2.72-.18-4.09.04-1.36.18-2.71.44-4.06.25-1.33.6-2.65,1.07-3.94.45-1.27,1-2.51,1.66-3.74s1.4-2.37,2.21-3.44c.83-1.1,1.74-2.13,2.71-3.06.98-.95,2.04-1.82,3.15-2.6,1.12-.79,2.3-1.49,3.51-2.09,1.23-.6,2.49-1.11,3.79-1.52s2.63-.72,3.97-.93c1.34-.21,2.7-.31,4.07-.31,1.35,0,2.71.11,4.06.32,1.33.2,2.65.52,3.97.94,1.28.4,2.53.92,3.77,1.53Z"/>
+            <path class="st0" d="M495.6,333.66l20.67,9.18,2.19-4.95-20.82-9.26c-.61,1.71-1.29,3.38-2.04,5.03Z"/>
+            <path class="st0" d="M499.77,321.7l22.3,6.05,1.42-5.23-22.59-6.13c-.31,1.8-.68,3.56-1.13,5.31Z"/>
+            <path class="st0" d="M501.86,309.3l23.65,2.65.6-5.39-23.87-2.68c-.08,1.84-.2,3.64-.38,5.41Z"/>
+            <path class="st0" d="M502.28,296.82l24.21-1.01-.23-5.42-24.31,1.01c.16,1.83.27,3.64.32,5.41Z"/>
+            <path class="st0" d="M501.07,284.43l23.92-4.72-1.05-5.32-23.9,4.72c.4,1.79.75,3.57,1.03,5.32Z"/>
+            <path class="st0" d="M498.26,272.3l22.8-8.27-1.85-5.09-22.65,8.22c.63,1.72,1.19,3.44,1.69,5.15Z"/>
+            <path class="st0" d="M493.92,260.56l20.86-11.43-2.61-4.76-20.58,11.27c.83,1.64,1.61,3.28,2.32,4.91Z"/>
+            <path class="st0" d="M488.14,249.3l18.16-13.93-3.3-4.3-17.72,13.6c1.01,1.55,1.96,3.1,2.87,4.63Z"/>
+            <path class="st0" d="M481.01,238.53l14.8-15.48-3.92-3.75-14.22,14.88c1.17,1.45,2.28,2.89,3.34,4.34Z"/>
+            <path class="st0" d="M472.59,228.2l10.98-15.71-4.44-3.11-10.31,14.76c1.31,1.34,2.57,2.7,3.78,4.06Z"/>
+            <path class="st0" d="M462.66,218.05c.06.05.12.11.17.16l7.02-14.3-4.87-2.39-6.41,13.05c1.41,1.08,2.77,2.25,4.08,3.48Z"/>
+            <path class="st0" d="M451.19,209.72l3.81-12.18-5.17-1.62-3.57,11.41c1.68.71,3.32,1.51,4.93,2.39Z"/>
+            <path class="st0" d="M437.69,204.45l1.65-10.95-5.36-.81-1.62,10.71c1.79.26,3.57.62,5.33,1.06Z"/>
+            <path class="st0" d="M423.29,202.8l-.04-10.9-5.42.02.04,11.24c1.8-.2,3.61-.32,5.42-.36Z"/>
+            <path class="st0" d="M404.36,206.5c1.54-.59,3.1-1.12,4.67-1.57l-1.92-12.15-5.35.85,2.07,13.09c.18-.07.36-.15.54-.22Z"/>
+            <path class="st0" d="M396.02,210.92l-4.74-14.81-5.16,1.65,5.27,16.47c1.57-1.2,3.11-2.31,4.63-3.3Z"/>
+            <path class="st0" d="M385.01,219.57l-8.86-17.75-4.85,2.42,9.58,19.19c1.38-1.35,2.76-2.64,4.12-3.86Z"/>
+            <path class="st0" d="M375.56,228.8l-13.49-19.04-4.42,3.13,14.14,19.96c1.26-1.38,2.52-2.74,3.77-4.05Z"/>
+            <path class="st0" d="M349.37,219.77l-3.89,3.77,18.12,18.71c1.18-1.4,2.35-2.78,3.53-4.14l-17.76-18.34Z"/>
+            <path class="st0" d="M338.34,231.6l-3.27,4.32,20.84,15.78c1.13-1.42,2.26-2.84,3.39-4.24l-20.96-15.87Z"/>
+          </g>
+        </g>
+      </svg>
+    </div>
 
-    <div class="content-overlay">
+    <!-- 文字與按鈕區域 (純白文字) -->
+    <div class="interactive-area">
       <div class="text-wrapper title-wrapper">
         <div class="text-line title-part1" id="line1">回憶</div>
       </div>
@@ -128,7 +260,7 @@
         <div class="text-line title-part2" id="line2">從這裡開始</div>
       </div>
 
-      <button class="scroll-arrow-btn" id="nextPageBtn" aria-label="向下滾動">
+      <button class="scroll-arrow-btn" id="nextPageBtn" aria-label="向下滾動到第二頁">
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
@@ -137,186 +269,52 @@
   </div>
 
   <script>
-    const canvas = document.getElementById('heroCanvas');
-    const ctx = canvas.getContext('2d');
+    // GSAP 動態時間軸 (Master Timeline)
+    const tl = gsap.timeline();
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // -------------------------------------------------------------
-    // ⚙️ 1. 背景飄移金塵微粒 (繼承第三頁邏輯)
-    // -------------------------------------------------------------
-    const DUST_COUNT = 60;
-    let floatingDustParticles = [];
-
-    class FloatingDust {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2.2 + 0.8;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.baseAlpha = Math.random() * 0.5 + 0.2;
-        this.alpha = this.baseAlpha;
-        this.pulseSpeed = Math.random() * 0.02 + 0.005;
+    // 1. Logo 從圓心向外擴散登場 (費時 2.0 秒)
+    tl.to("#logoBox", {
+      clipPath: "circle(70% at 50% 50%)", // 剪裁由 0% 擴散至 70% 完整露圖
+      scale: 1,                           // 微幅放大回原大小
+      filter: "blur(0px)",                // 模糊消除
+      duration: 2.0,
+      ease: "power2.out"
+    })
+    // 2. 精確停頓 5.0 秒，專注欣賞 Logo 光芒波動
+    .to({}, { duration: 5.0 })
+    // 3. “回憶” 文字由底處往上浮現 (耗時 2.0 秒)
+    .to("#line1", {
+      y: "0%",
+      opacity: 1,
+      duration: 2.0,
+      ease: "power2.out"
+    })
+    // 4. “從這裡開始” 文字浮現 (耗時 1.0 秒)
+    .to("#line2", {
+      y: "0%",
+      opacity: 1,
+      duration: 1.0,
+      ease: "power2.out"
+    }, "+=0.2")
+    // 5. 白色箭頭按鈕登場與持續跳動
+    .to("#nextPageBtn", {
+      opacity: 1,
+      duration: 0.8,
+      onComplete: () => {
+        gsap.to("#nextPageBtn", {
+          y: 8,
+          duration: 1.0,
+          repeat: -1,
+          yoyo: true,
+          ease: "power1.inOut"
+        });
       }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-        this.alpha = this.baseAlpha + Math.sin(Date.now() * this.pulseSpeed) * 0.2;
-      }
-      draw() {
-        ctx.save();
-        ctx.fillStyle = `rgba(247, 208, 112, ${Math.max(0, this.alpha)})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }
+    });
 
-    for (let i = 0; i < DUST_COUNT; i++) {
-      floatingDustParticles.push(new FloatingDust());
-    }
-
-    // -------------------------------------------------------------
-    // 🎨 2. Logo 線條動態繪製與顏色波動 (亮金 <-> 橘金)
-    // -------------------------------------------------------------
-    // 顏色過渡插值函數 (RGB Color Interpolation)
-    function interpolateColor(color1, color2, factor) {
-      const r = Math.round(color1.r + factor * (color2.r - color1.r));
-      const g = Math.round(color1.g + factor * (color2.g - color1.g));
-      const b = Math.round(color1.b + factor * (color2.b - color1.b));
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-
-    const COLOR_BRIGHT_GOLD = { r: 247, g: 208, b: 112 }; // #F7D070 (亮金)
-    const COLOR_ORANGE_GOLD = { r: 226, g: 140, b: 67 };  // #E28C43 (橘金)
-
-    // 從你的 SVG 轉換過來的 60 條精確放射線條參數 [角度(rad), 長度(px), 寬度(px)]
-    const rayCount = 60;
-    const logoRays = [];
-    for (let i = 0; i < rayCount; i++) {
-      const angle = (i / rayCount) * Math.PI * 2;
-      const isLong = i % 2 === 0;
-      logoRays.push({
-        angle: angle,
-        baseLength: isLong ? 100 : 70,
-        width: isLong ? (i % 4 === 0 ? 5.5 : 3.8) : 2.8,
-        speedOffset: i * 0.25 // 個別線條的跳動相位差
-      });
-    }
-
-    let globalTime = 0;
-
-    function drawLogo() {
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2 - 40; // 稍偏上方置中
-
-      // 1. 計算顏色與光芒波動 (正弦波 0 ~ 1)
-      const colorFactor = (Math.sin(globalTime * 1.5) + 1) / 2;
-      const currentColor = interpolateColor(COLOR_ORANGE_GOLD, COLOR_BRIGHT_GOLD, colorFactor);
-      const glowBlur = 8 + colorFactor * 16; // 光暈發光強度起伏
-
-      ctx.save();
-      ctx.shadowColor = 'rgba(247, 208, 112, 0.6)';
-      ctx.shadowBlur = glowBlur;
-      ctx.fillStyle = currentColor;
-      ctx.strokeStyle = currentColor;
-
-      // 2. 繪製中心圓與環
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 14, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 3. 繪製外圍跳動延伸的放射線條
-      const innerRadius = 45; // 圓環起點
-
-      logoRays.forEach((ray) => {
-        // 向外延伸與拉回的伸縮動態計算
-        const stretch = Math.sin(globalTime * 3 + ray.speedOffset) * 12; // 伸縮幅度 ±12px
-        const currentLength = ray.baseLength + stretch;
-
-        const x1 = centerX + Math.cos(ray.angle) * innerRadius;
-        const y1 = centerY + Math.sin(ray.angle) * innerRadius;
-        const x2 = centerX + Math.cos(ray.angle) * (innerRadius + currentLength);
-        const y2 = centerY + Math.sin(ray.angle) * (innerRadius + currentLength);
-
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.lineWidth = ray.width;
-        ctx.lineCap = 'round';
-        ctx.stroke();
-      });
-
-      ctx.restore();
-    }
-
-    // -------------------------------------------------------------
-    // 📝 3. GSAP 時間軸控制：5 秒延遲登場 Sequence
-    // -------------------------------------------------------------
-    function initTextAnimationSequence() {
-      const tl = gsap.timeline();
-
-      // 🎯 Logo 出現後，精確等待 5.0 秒才啟動文字動畫
-      tl.to("#line1", {
-        y: "0%",
-        opacity: 1,
-        duration: 2.0, // “回憶” 耗時 2 秒完成
-        ease: "power2.out",
-        delay: 5.0
-      })
-      .to("#line2", {
-        y: "0%",
-        opacity: 1,
-        duration: 1.0, // “從這裡開始” 耗時 1 秒完成
-        ease: "power2.out"
-      }, "+=0.2") // 稍微間隔 0.2 秒
-      .to("#nextPageBtn", {
-        opacity: 1,
-        duration: 0.8,
-        onComplete: () => {
-          // 箭頭跳動效果 (使用 GSAP yoyo 重複)
-          gsap.to("#nextPageBtn", {
-            y: 8,
-            duration: 1.0,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-          });
-        }
-      });
-    }
-
-    // -------------------------------------------------------------
-    // 🔄 4. 主渲染 Loop
-    // -------------------------------------------------------------
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // 繪製微粒背景[cite: 1]
-      floatingDustParticles.forEach(dust => {
-        dust.update();
-        dust.draw();
-      });
-
-      // 繪製 Logo 律動[cite: 1]
-      drawLogo();
-
-      globalTime += 0.03;
-      requestAnimationFrame(animate);
-    }
-
-    // 啟動主程式
-    animate();
-    initTextAnimationSequence();
+    // 箭頭點擊預留
+    document.getElementById('nextPageBtn').addEventListener('click', () => {
+      console.log('準備進入第 2 頁：Logo 視覺海報動態');
+    });
   </script>
 </body>
 </html>
