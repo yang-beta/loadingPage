@@ -17,7 +17,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #121212; /* 純粹深色背景，無光塵 */
+      background-color: #121212; /* 純粹深色背景 */
       font-family: "PingFang TC", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
       color: #FFFFFF;
     }
@@ -33,40 +33,40 @@
     }
 
     /* -------------------------------------------------------------
-       1. Logo 區域：縮減 40% (寬度由 380px 縮小至 228px) 
+       1. Logo 區域：放大 2 倍 (由 228px 放大至 456px) 
        ------------------------------------------------------------- */
     .logo-container {
-      width: 228px;
-      height: 228px;
+      width: 456px;
+      height: 456px;
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      /* 圓形剪裁遮罩：初始由圓心 0% 擴散 */
+      /* 初始狀態：完全隱藏 (圓心 0%)、高度模糊、微幅收縮 */
       clip-path: circle(0% at 50% 50%);
-      transform: scale(0.8);
-      filter: blur(10px);
-      will-change: clip-path, transform, filter;
+      transform: scale(0.7);
+      filter: blur(20px);
+      opacity: 0;
+      will-change: clip-path, transform, filter, opacity;
     }
 
     .logo-container svg {
       width: 100%;
       height: 100%;
       /* 亮金 <-> 橘金 光芒呼吸感 */
-      animation: goldGlowPulse 3.5s ease-in-out infinite alternate;
+      animation: goldGlowPulse 4.0s ease-in-out infinite alternate;
     }
 
-    /* SVG 預設顏色設為橘金 Base */
     .st0 {
       fill: #f29850;
       transition: fill 0.5s ease;
     }
 
     /* -------------------------------------------------------------
-       2. 下方文字區域：全部改為白色
+       2. 下方文字區域 (純白文字)
        ------------------------------------------------------------- */
     .interactive-area {
-      margin-top: 35px;
+      margin-top: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -81,29 +81,29 @@
     }
 
     .title-wrapper {
-      height: 40px;
+      height: 44px;
     }
 
     .subtitle-wrapper {
-      height: 32px;
+      height: 36px;
       margin-top: 8px;
     }
 
     .text-line {
-      color: #FFFFFF; /* 全部改為白色 */
+      color: #FFFFFF;
       transform: translateY(100%);
       opacity: 0;
       will-change: transform, opacity;
     }
 
     .title-part1 {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       letter-spacing: 0.4em;
       font-weight: 300;
     }
 
     .title-part2 {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       letter-spacing: 0.3em;
       font-weight: 300;
       opacity: 0.9;
@@ -111,7 +111,7 @@
 
     /* 下方指示箭頭 */
     .scroll-arrow-btn {
-      margin-top: 32px;
+      margin-top: 36px;
       background: none;
       border: none;
       cursor: pointer;
@@ -120,9 +120,9 @@
     }
 
     .arrow-icon {
-      width: 32px;
-      height: 32px;
-      stroke: #FFFFFF; /* 箭頭也設為白色更清晰一致 */
+      width: 36px;
+      height: 36px;
+      stroke: #FFFFFF;
       stroke-width: 2;
       fill: none;
       stroke-linecap: round;
@@ -135,13 +135,13 @@
        ------------------------------------------------------------- */
     @keyframes goldGlowPulse {
       0% {
-        filter: drop-shadow(0 0 6px rgba(242, 152, 80, 0.4));
+        filter: drop-shadow(0 0 8px rgba(242, 152, 80, 0.4));
       }
       50% {
-        filter: drop-shadow(0 0 18px rgba(247, 208, 112, 0.8));
+        filter: drop-shadow(0 0 24px rgba(247, 208, 112, 0.85));
       }
       100% {
-        filter: drop-shadow(0 0 10px rgba(242, 152, 80, 0.5));
+        filter: drop-shadow(0 0 12px rgba(242, 152, 80, 0.5));
       }
     }
   </style>
@@ -149,7 +149,7 @@
 <body>
 
   <div class="hero-page">
-    <!-- 100% 原始 SVG Logo Container -->
+    <!-- 100% 原始 SVG Logo Container (456px 放大版) -->
     <div class="logo-container" id="logoBox">
       <svg id="_圖層_1" data-name="圖層_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 841.89 595.28">
         <defs>
@@ -250,7 +250,7 @@
       </svg>
     </div>
 
-    <!-- 文字與按鈕區域 (純白文字) -->
+    <!-- 文字與按鈕區域 -->
     <div class="interactive-area">
       <div class="text-wrapper title-wrapper">
         <div class="text-line title-part1" id="line1">回憶</div>
@@ -260,7 +260,7 @@
         <div class="text-line title-part2" id="line2">從這裡開始</div>
       </div>
 
-      <button class="scroll-arrow-btn" id="nextPageBtn" aria-label="向下滾動到第二頁">
+      <button class="scroll-arrow-btn" id="nextPageBtn" aria-label="向下滾動">
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
@@ -269,34 +269,34 @@
   </div>
 
   <script>
-    // GSAP 動態時間軸 (Master Timeline)
     const tl = gsap.timeline();
 
-    // 1. Logo 從圓心向外擴散登場 (費時 2.0 秒)
+    // 🎯 1. Logo 緩慢優雅地由圓心擴散並解模糊（將時間精確拉長為 3.5 秒）
     tl.to("#logoBox", {
-      clipPath: "circle(70% at 50% 50%)", // 剪裁由 0% 擴散至 70% 完整露圖
-      scale: 1,                           // 微幅放大回原大小
-      filter: "blur(0px)",                // 模糊消除
-      duration: 2.0,
-      ease: "power2.out"
+      clipPath: "circle(70% at 50% 50%)", // 緩緩展開圓形遮罩
+      scale: 1,                           // 微微放大至原大 (456px)
+      filter: "blur(0px)",                // 逐漸清晰
+      opacity: 1,                         // 透明度同步漸顯
+      duration: 3.5,                      // 耗時 3.5 秒
+      ease: "power1.inOut"
     })
-    // 2. 精確停頓 5.0 秒，專注欣賞 Logo 光芒波動
+    // 🎯 2. 完成登場後，停頓 5.0 秒專注展示 Logo 呼吸與波動
     .to({}, { duration: 5.0 })
-    // 3. “回憶” 文字由底處往上浮現 (耗時 2.0 秒)
+    // 🎯 3. “回憶” 耗時 2.0 秒由底處向上浮現
     .to("#line1", {
       y: "0%",
       opacity: 1,
       duration: 2.0,
       ease: "power2.out"
     })
-    // 4. “從這裡開始” 文字浮現 (耗時 1.0 秒)
+    // 🎯 4. “從這裡開始” 耗時 1.0 秒向上浮現
     .to("#line2", {
       y: "0%",
       opacity: 1,
       duration: 1.0,
       ease: "power2.out"
     }, "+=0.2")
-    // 5. 白色箭頭按鈕登場與持續跳動
+    // 🎯 5. 下方箭頭顯示與跳動
     .to("#nextPageBtn", {
       opacity: 1,
       duration: 0.8,
@@ -311,9 +311,8 @@
       }
     });
 
-    // 箭頭點擊預留
     document.getElementById('nextPageBtn').addEventListener('click', () => {
-      console.log('準備進入第 2 頁：Logo 視覺海報動態');
+      console.log('準備進入第 2 頁');
     });
   </script>
 </body>
