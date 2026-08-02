@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>展覽導覽頁 - 第一頁</title>
+  <!-- 引入 GSAP 動態庫 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
     * {
@@ -50,7 +51,6 @@
       z-index: 10;
       font-size: 1.2rem;
       letter-spacing: 0.5em;
-      /* 🎯 關鍵修改 1：將「載入中．．．」改為純白色 */
       color: #FFFFFF;
       font-weight: 300;
       display: flex;
@@ -66,7 +66,7 @@
     }
 
     /* -------------------------------------------------------------
-       2. Logo 區域
+       2. Logo 區域 (往上拉提，將空間留給下方文字)
        ------------------------------------------------------------- */
     .logo-container {
       width: 580px;
@@ -80,7 +80,9 @@
       transform: scale(0.7);
       filter: blur(20px);
       opacity: 0;
-      margin-bottom: -80px;
+      /* 🎯 關鍵微調：拉大負邊距，將 Logo 與文字整體向上提升 */
+      margin-bottom: -110px;
+      margin-top: -40px;
       will-change: clip-path, transform, filter, opacity;
     }
 
@@ -96,11 +98,11 @@
     }
 
     /* -------------------------------------------------------------
-       3. 下方文字與按鈕區域
+       3. 下方文字與按鈕區域 (文字整體上移至波紋上方)
        ------------------------------------------------------------- */
     .interactive-area {
       position: relative;
-      z-index: 2;
+      z-index: 3; /* 高於 Canvas 水波紋 */
       margin-top: 0px;
       display: flex;
       flex-direction: column;
@@ -120,9 +122,15 @@
       height: 48px;
     }
 
-    .subtitle-wrapper {
-      height: 40px;
-      margin-top: 10px;
+    /* 🎯 拆分為兩行獨立高度 */
+    .subtitle-wrapper-1 {
+      height: 36px;
+      margin-top: 12px;
+    }
+
+    .subtitle-wrapper-2 {
+      height: 36px;
+      margin-top: 6px;
     }
 
     .text-line {
@@ -147,7 +155,7 @@
     }
 
     .scroll-arrow-btn {
-      margin-top: 28px;
+      margin-top: 24px;
       background: none;
       border: none;
       cursor: pointer;
@@ -298,14 +306,22 @@
 
     <!-- 文字與按鈕區域 -->
     <div class="interactive-area">
+      <!-- 1. 第一行：回億 -->
       <div class="text-wrapper title-wrapper">
-        <div class="text-line title-part1" id="line1">回憶</div>
+        <div class="text-line title-part1" id="line1">回億</div>
       </div>
       
-      <div class="text-wrapper subtitle-wrapper">
-        <div class="text-line title-part2" id="line2">從這裡開始</div>
+      <!-- 2. 第二行：從這裡 (獨立呈現) -->
+      <div class="text-wrapper subtitle-wrapper-1">
+        <div class="text-line title-part2" id="line2">從這裡</div>
       </div>
 
+      <!-- 3. 第三行：開始 (獨立呈現) -->
+      <div class="text-wrapper subtitle-wrapper-2">
+        <div class="text-line title-part2" id="line3">開始</div>
+      </div>
+
+      <!-- 下拉按鈕 -->
       <button class="scroll-arrow-btn" id="nextPageBtn" aria-label="向下滾動">
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -316,7 +332,7 @@
 
   <script>
     // -------------------------------------------------------------
-    // 🌊 1. 水波 Canvas (加入自然隨機交錯與雙波疊加)
+    // 🌊 1. 水波 Canvas (自然隨機交錯與雙波疊加)
     // -------------------------------------------------------------
     const lCanvas = document.getElementById('loadingCanvas');
     const lCtx = lCanvas.getContext('2d');
@@ -329,24 +345,22 @@
     window.addEventListener('resize', resizeLoadingCanvas);
 
     let step = 0;
-    let isWaveActive = true;     // 是否被點擊按鈕銷毀
-    let isCanvasVisible = true;  // 是否在螢幕視線範圍內 (IntersectionObserver 控制)
+    let isWaveActive = true;
+    let isCanvasVisible = true;
 
-    // 🎯 為每一條波浪線預先產生專屬的「隨機相位差」與「波長變化」
     const lineCount = 28;
     const waveParams = [];
     for (let i = 0; i < lineCount; i++) {
       waveParams.push({
-        phaseOffset: Math.random() * Math.PI * 2, // 隨機初始相位
-        speed: 0.015 + Math.random() * 0.01,       // 微幅隨機速度
-        frequency1: 0.003 + Math.random() * 0.002, // 隨機波長 1
-        frequency2: 0.007 + Math.random() * 0.003, // 隨機波長 2
-        amplitude: 12 + Math.random() * 8          // 隨機振幅高度
+        phaseOffset: Math.random() * Math.PI * 2,
+        speed: 0.015 + Math.random() * 0.01,
+        frequency1: 0.003 + Math.random() * 0.002,
+        frequency2: 0.007 + Math.random() * 0.003,
+        amplitude: 12 + Math.random() * 8
       });
     }
 
     function drawWaveLandscape() {
-      // 🎯 效能雙重關鍵：若被手動關閉 OR 滾出螢幕，瞬間終止繪製！
       if (!isWaveActive || !isCanvasVisible) return;
 
       lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
@@ -363,7 +377,6 @@
         const baseY = height * 0.2 + (i * 8);
 
         for (let x = 0; x <= width; x += 12) {
-          // 🎯 關鍵修改 2：雙重正弦波相加 (Double Sine Wave) 營造極度自然的流動感
           const wave1 = Math.sin((x * p.frequency1) + (step * p.speed) + p.phaseOffset);
           const wave2 = Math.cos((x * p.frequency2) - (step * p.speed * 0.8) + p.phaseOffset);
           
@@ -381,17 +394,17 @@
     drawWaveLandscape();
 
     // -------------------------------------------------------------
-    // 👁️ 2. IntersectionObserver 視線監控實現
+    // 👁️ 2. IntersectionObserver 視線監控
     // -------------------------------------------------------------
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           if (!isCanvasVisible && isWaveActive) {
             isCanvasVisible = true;
-            drawWaveLandscape(); // 重回視線，恢復渲染
+            drawWaveLandscape();
           }
         } else {
-          isCanvasVisible = false; // 離開視線，凍結 Loop！
+          isCanvasVisible = false;
         }
       });
     }, { threshold: 0.05 });
@@ -399,11 +412,12 @@
     observer.observe(document.getElementById('heroSection'));
 
     // -------------------------------------------------------------
-    // 🎬 3. GSAP 時間軸控制
+    // 🎬 3. GSAP 時間軸控制 (獨立動態控制)
     // -------------------------------------------------------------
     const mainTl = gsap.timeline();
 
-    gsap.set("#line1, #line2", { y: "200%", opacity: 0 });
+    // 強制隱藏初始文字
+    gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
 
     // Step 1: 白色「載 入 中 ． ． ．」 逐字登場
     mainTl.to(".loading-text-box .char", {
@@ -435,7 +449,7 @@
     // Step 4: Logo 獨立展示 5.0 秒
     .to({}, { duration: 5.0 })
 
-    // Step 5: “回憶” 由底往上浮現 (2.0 秒)
+    // Step 5: “回億” 由底往上浮現 (2.0 秒)
     .to("#line1", {
       y: "0%",
       opacity: 1,
@@ -443,15 +457,23 @@
       ease: "power2.out"
     })
 
-    // Step 6: “從這裡開始” 由底往上浮現 (1.0 秒)
+    // 🎯 Step 6: “從這裡” 播放 1.5 秒由底往上浮現
     .to("#line2", {
+      y: "0%",
+      opacity: 1,
+      duration: 1.5,
+      ease: "power2.out"
+    }, "+=0.2")
+
+    // 🎯 Step 7: “開始” 接續登場 (1.0 秒)
+    .to("#line3", {
       y: "0%",
       opacity: 1,
       duration: 1.0,
       ease: "power2.out"
     }, "+=0.2")
 
-    // Step 7: 白色跳動箭頭登場
+    // Step 8: 白色跳動箭頭登場
     .to("#nextPageBtn", {
       opacity: 1,
       duration: 0.8,
@@ -467,13 +489,13 @@
     });
 
     // -------------------------------------------------------------
-    // 🎯 4. 按下 Ｖ 按鈕時淡出並徹底關閉 Canvas
+    // 🎯 4. 按下 Ｖ 按鈕時淡出並關閉 Canvas
     // -------------------------------------------------------------
     document.getElementById('nextPageBtn').addEventListener('click', () => {
       lCanvas.style.opacity = '0';
       
       setTimeout(() => {
-        isWaveActive = false; // 停止動畫
+        isWaveActive = false;
       }, 1200);
 
       console.log('進入第 2 頁');
