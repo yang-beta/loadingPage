@@ -5,24 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>洸限 - 展覽導覽</title>
 
-  <!-- 1. 字體與圖示庫 -->
+  <!-- 1. 常用字體與圖示庫 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" href="data:,">
 
-  <!-- 2. 既有專案 CSS 樣式表 -->
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/animation.css">
-
-  <!-- 3. GSAP 核心動畫庫與套件 -->
+  <!-- 2. GSAP 核心動畫庫 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
   <style>
-    /* -------------------------------------------------------------
-       開場首頁 (前置 Logo 與水波紋區塊) 專用樣式
-       ------------------------------------------------------------- */
+    /* =============================================================
+       0. 全域邊界重置與全螢幕滿版強制鎖定 (解決白邊與捲動軸)
+       ============================================================= */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0 !important;
+      padding: 0 !important;
+      background-color: #121212 !important;
+      color: #FFFFFF;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      overflow-x: hidden;
+      overflow-y: hidden; /* 開場時鎖定滾動，避免看到下方第一階段 */
+      box-sizing: border-box;
+    }
+
+    *, *::before, *::after {
+      box-sizing: inherit;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 全頁背景光束 Canvas */
+    #mandalaCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* =============================================================
+       1. 開場前置區塊 (#openingHero) - 滿版 100vh 強制獨立
+       ============================================================= */
     #openingHero {
       position: relative;
       width: 100vw;
@@ -32,9 +61,8 @@
       justify-content: center;
       align-items: center;
       background-color: #121212;
-      z-index: 10; /* 高於背景圖層 */
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
+      z-index: 10; /* 高於背景 Canvas */
+      overflow: hidden;
     }
 
     #loadingCanvas {
@@ -113,19 +141,9 @@
       position: relative;
     }
 
-    .title-wrapper {
-      height: 48px;
-    }
-
-    .subtitle-wrapper-1 {
-      height: 36px;
-      margin-top: 12px;
-    }
-
-    .subtitle-wrapper-2 {
-      height: 36px;
-      margin-top: 6px;
-    }
+    .title-wrapper { height: 48px; }
+    .subtitle-wrapper-1 { height: 36px; margin-top: 12px; }
+    .subtitle-wrapper-2 { height: 36px; margin-top: 6px; }
 
     .text-line {
       color: #FFFFFF;
@@ -174,7 +192,68 @@
       100% { filter: drop-shadow(0 0 12px rgba(242, 152, 80, 0.5)); }
     }
 
-    /* 🎯 統一改為白色 v 型箭頭按鈕樣式 (取代原有的橘色 ↓) */
+    /* =============================================================
+       2. 第一階段：洸限 Banner 區域 (#heroSection) 樣式美化
+       ============================================================= */
+    .hero-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      background-color: #1a1a1a;
+      overflow: hidden;
+    }
+
+    .brand-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 4.5rem;
+      font-weight: 300;
+      letter-spacing: 1.2rem;
+      padding-left: 1.2rem; /* 抵銷字距偏左偏移 */
+      color: #e5e5e5;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+      opacity: 0; 
+      margin-bottom: 1.5rem;
+    }
+
+    .main-question {
+      font-size: 1.2rem;
+      font-weight: 300;
+      letter-spacing: 0.4rem;
+      color: #c5a880; 
+      opacity: 0; 
+      line-height: 2;
+    }
+
+    /* Skip 略過按鈕重置美化 */
+    .skip-anim-btn {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      background: none;
+      border: 1px solid rgba(197, 168, 128, 0.4);
+      color: #c5a880;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-family: 'Noto Sans TC', sans-serif;
+      letter-spacing: 1px;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .skip-anim-btn:hover {
+      background-color: #c5a880;
+      color: #1a1a1a;
+      border-color: #c5a880;
+    }
+
     .scroll-hint-v {
       position: absolute;
       bottom: 8%;
@@ -184,6 +263,7 @@
       background: none;
       border: none;
       outline: none;
+      transition: transform 0.3s;
     }
 
     .scroll-hint-v:hover {
@@ -193,7 +273,7 @@
 </head>
 <body>
 
-  <!-- 0. 背景動態 Canvas (光束與金色粒子) -->
+  <!-- 0. 背景光束與金色粒子 Canvas -->
   <canvas id="mandalaCanvas"></canvas>
 
   <!-- ==========================================================
@@ -339,17 +419,10 @@
   <div class="hero-container" id="heroSection">
     <button class="skip-anim-btn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
-    <!-- 🖼️ 【展覽主視覺橫幅海報 ── 放置位置】 -->
-    <!--
-    <div class="main-banner-poster">
-      <img src="images/your-exhibition-banner.png" alt="洸限 展覽主視覺海報" />
-    </div>
-    -->
-
     <h1 class="brand-title">洸限</h1>
     <p class="main-question">如果還有一次機會，你最想告訴他/她/牠什麼？</p>
 
-    <!-- 🎯 換成白色 v 型向下按鈕 -->
+    <!-- 白色 v 型向下按鈕 -->
     <button class="scroll-hint-v" onclick="scrollToContent()" aria-label="進入下一頁">
       <svg class="arrow-icon" viewBox="0 0 24 24">
         <polyline points="6 9 12 15 18 9"></polyline>
@@ -357,7 +430,7 @@
     </button>
   </div>
 
-  <!-- 🎯 載入腳本路徑 -->
+  <!-- 🎯 載入背景 Canvas 腳本 (如果有的話) -->
   <script src="js/canvas.js"></script>
 
   <script>
@@ -483,19 +556,20 @@
     });
 
     // -------------------------------------------------------------
-    // 🎯 3. 平滑滾動與引導控制邏輯
+    // 🎯 3. 滿版跳轉與允許滾動邏輯
     // -------------------------------------------------------------
-    // 按下開場首頁的 V 鍵：進入第一階段「洸限 Banner」
     function scrollToStage1() {
       lCanvas.style.opacity = '0';
       setTimeout(() => { isWaveActive = false; }, 1200);
+
+      // 解鎖滾動
+      document.body.style.overflowY = 'auto';
+
       document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // 第一階段按鈕跳轉邏輯
     function scrollToContent() {
       if (window.tl) window.tl.progress(1);
-      // 如果後續階段不在本頁，滑動停留在第一階段區塊
       document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
       gsap.to(".skip-anim-btn", { opacity: 0, pointerEvents: "none", duration: 0.5 });
     }
