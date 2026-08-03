@@ -270,7 +270,7 @@
     .scroll-hint-v:hover { transform: scale(1.15); }
 
     /* =============================================================
-       3. 第一頁 視聽演示 (Page 2) - 採用獨立全黑背景
+       3. 第一頁 視聽演示 (Page 2) - 純黑底阻隔
        ============================================================= */
     .audiovisual-section {
       z-index: 10;
@@ -534,19 +534,14 @@
     drawWaveLandscape();
 
     // =============================================================
-    // 🌌 2. 背景 Canvas (🎯 調整：限定區域 + 跳繩/波浪弧線抖動)
+    // 🌌 2. 背景 Canvas (🎯 完美對角線 + 左右兩側擴散 + 波浪擺動)
     // =============================================================
     const bgCanvas = document.getElementById('mandalaCanvas');
     const bgCtx = bgCanvas.getContext('2d');
 
-    let cx = window.innerWidth / 2;
-    let cy = window.innerHeight / 2;
-
     function resizeBgCanvas() {
       bgCanvas.width = window.innerWidth;
       bgCanvas.height = window.innerHeight;
-      cx = window.innerWidth / 2;
-      cy = window.innerHeight / 2;
     }
     resizeBgCanvas();
     window.addEventListener('resize', resizeBgCanvas);
@@ -572,19 +567,22 @@
       });
     }
 
-    // 🎯 限定在紅框斜向區域內的跳繩/波浪弧線
-    const ropeLineCount = 28;
-    const ropeParams = [];
-    for (let i = 0; i < ropeLineCount; i++) {
-      ropeParams.push({
-        // 集中在中央區域附近分佈 (控制起止點)
-        startOffsetRatio: 0.1 + (i / ropeLineCount) * 0.75, // 0.1~0.85 的寬度區間
-        speed: 0.015 + Math.random() * 0.012,
+    // 🎯 製作對角線及兩側擴散分佈的線條參數
+    const diagLineCount = 42; // 線條數量
+    const diagParams = [];
+
+    for (let i = 0; i < diagLineCount; i++) {
+      // 偏移量 ratio：從 -0.8 到 +0.8（包含中央主對角線與兩側）
+      const offsetRatio = -0.85 + (i / (diagLineCount - 1)) * 1.7; 
+
+      diagParams.push({
+        offsetRatio: offsetRatio,
+        speed: 0.012 + Math.random() * 0.012,
         phase: Math.random() * Math.PI * 2,
-        ropeDip: (Math.random() - 0.5) * 160, // 跳繩垂墜與隆起幅度
-        freq: 0.003 + Math.random() * 0.003,
-        alpha: 0.08 + Math.random() * 0.16,
-        width: Math.random() * 1.5 + 1.0
+        amplitude: 35 + Math.random() * 65, // 波浪擺動幅度
+        // 越靠近中央對角線或隨機層次稍微亮一點
+        alpha: Math.abs(offsetRatio) < 0.15 ? (0.18 + Math.random() * 0.15) : (0.05 + Math.random() * 0.12),
+        width: Math.abs(offsetRatio) < 0.15 ? (Math.random() * 1.8 + 1.2) : (Math.random() * 1.2 + 0.8)
       });
     }
 
@@ -594,51 +592,57 @@
       const progress = animationParams.beamDownProgress;
       if (progress <= 0) return;
 
-      const width = bgCanvas.width;
-      const height = bgCanvas.height;
+      const W = bgCanvas.width;
+      const H = bgCanvas.height;
+
+      // 主對角線向量 V = (W, H)，對角線長度 L
+      const L = Math.hypot(W, H);
+      // 對角線垂直法向向量 N = (-H/L, W/L)
+      const nx = -H / L;
+      const ny = W / L;
 
       bgCtx.save();
-      for (let i = 0; i < ropeLineCount; i++) {
-        const p = ropeParams[i];
+      diagParams.forEach(p => {
+        // 垂直於主對角線的距離偏移
+        const offsetDist = p.offsetRatio * (Math.max(W, H) * 0.65);
 
-        // 🎯 1. 限制線條生成範圍在右上到左下的斜向紅框帶內
-        const baseStartX = width * p.startOffsetRatio;
-        const startX = baseStartX - width * 0.2;
-        const startY = -height * 0.1;
+        // 基本對角起點與終點 (加上法向偏移)
+        const startX = 0 + nx * offsetDist;
+        const startY = 0 + ny * offsetDist;
+        const endX = W + nx * offsetDist;
+        const endY = H + ny * offsetDist;
 
-        const endX = baseStartX + width * 0.3;
-        const endY = height * 1.1;
+        // 當前隨動畫發展的實時繪製終點
+        const currEndX = startX + (endX - startX) * progress;
+        const currEndY = startY + (endY - startY) * progress;
 
-        // 當前動態發展終點 (隨動畫進度延伸)
-        const currentEndX = startX + (endX - startX) * progress;
-        const currentEndY = startY + (endY - startY) * progress;
+        // 中點座標（用於繪製弧線控制點）
+        const midX = (startX + currEndX) / 2;
+        const midY = (startY + currEndY) / 2;
 
-        // 🎯 2. 跳繩 / 波浪弧線的控制點 (Control Points) 計算
-        const midX = (startX + currentEndX) / 2;
-        const midY = (startY + currentEndY) / 2;
+        // 動態波浪擺動量
+        const waveSwing = Math.sin(globalTime * p.speed + p.phase) * p.amplitude;
+        const waveSwing2 = Math.cos(globalTime * p.speed * 0.6 + p.phase) * (p.amplitude * 0.4);
 
-        // 動態注入波浪/跳繩甩動正弦波
-        const waveSwing = Math.sin(globalTime * p.speed + p.phase) * p.ropeDip;
-        const waveSwing2 = Math.cos(globalTime * p.speed * 0.7 + p.phase) * (p.ropeDip * 0.5);
-
-        // 垂直於斜線方向的法向偏移向量
-        const nx = -(endY - startY);
-        const ny = (endX - startX);
-        const len = Math.hypot(nx, ny) || 1;
-
-        // 二次貝茲曲線控制點（產生跳繩圓弧）
-        const ctrlX1 = midX + (nx / len) * (waveSwing + waveSwing2);
-        const ctrlY1 = midY + (ny / len) * (waveSwing + waveSwing2);
+        // 控制點沿法線方向做波浪甩動
+        const ctrlX = midX + nx * (waveSwing + waveSwing2);
+        const ctrlY = midY + ny * (waveSwing + waveSwing2);
 
         bgCtx.beginPath();
-        bgCtx.strokeStyle = `rgba(215, 190, 150, ${p.alpha * progress})`;
+        // 如果是正中央附近的主對角線，稍微帶點金暖色調，其餘為深淺灰色
+        if (Math.abs(p.offsetRatio) < 0.12) {
+          bgCtx.strokeStyle = `rgba(225, 195, 140, ${p.alpha * progress})`;
+        } else {
+          bgCtx.strokeStyle = `rgba(180, 180, 180, ${p.alpha * progress})`;
+        }
+        
         bgCtx.lineWidth = p.width;
 
-        // 繪製柔軟平滑的跳繩波浪弧線
+        // 畫出滑順波浪弧線
         bgCtx.moveTo(startX, startY);
-        bgCtx.quadraticCurveTo(ctrlX1, ctrlY1, currentEndX, currentEndY);
+        bgCtx.quadraticCurveTo(ctrlX, ctrlY, currEndX, currEndY);
         bgCtx.stroke();
-      }
+      });
       bgCtx.restore();
     }
 
