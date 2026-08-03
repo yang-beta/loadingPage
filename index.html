@@ -534,7 +534,7 @@
     drawWaveLandscape();
 
     // =============================================================
-    // 🌌 2. 背景 Canvas (🎯 起始範圍限制於左上 1/4 區域，集束噴發波浪感)
+    // 🌌 2. 背景 Canvas (🎯 修正：強制線條起止點都在螢幕外邊框，解決畫面內斷頭問題)
     // =============================================================
     const bgCanvas = document.getElementById('mandalaCanvas');
     const bgCtx = bgCanvas.getContext('2d');
@@ -567,24 +567,24 @@
       });
     }
 
-    // 🎯 製作限制於左上 1/4 區域起飛的束狀線條參數
+    // 🎯 參數設置：線條起點均落在畫面左側/上方外部 (-150px)
     const diagLineCount = 38;
     const diagParams = [];
 
     for (let i = 0; i < diagLineCount; i++) {
+      const isTopStart = i % 2 === 0; // 一半從頂部外邊界出發，一半從左側外邊界出發
+      
       diagParams.push({
-        // 🎯 起始點限制率：在 0 ~ 0.25 (1/4 區域) 之間分佈
-        startXRatio: (i / (diagLineCount - 1)) * 0.25,
-        startYRatio: (Math.random()) * 0.25,
+        isTopStart: isTopStart,
+        // 頂部外或左側外的隨機偏移比率
+        startPosRatio: (i / (diagLineCount - 1)),
+        // 終點延伸比率（確保完全超越右下邊界）
+        endPosRatio: 0.6 + (i / (diagLineCount - 1)) * 0.6,
 
-        // 終點延伸率：放射向右下區域 (0.75 ~ 1.15)
-        endXRatio: 0.75 + (i / (diagLineCount - 1)) * 0.4,
-        endYRatio: 0.85 + Math.random() * 0.3,
-
-        speed: 0.015 + Math.random() * 0.012,
+        speed: 0.012 + Math.random() * 0.012,
         phase: Math.random() * Math.PI * 2,
-        amplitude: 40 + Math.random() * 65, // 波浪擺動振幅
-        alpha: 0.08 + Math.random() * 0.20,
+        amplitude: 45 + Math.random() * 60, // 波浪擺動振幅
+        alpha: 0.08 + Math.random() * 0.18,
         width: Math.random() * 1.5 + 0.8
       });
     }
@@ -597,45 +597,53 @@
 
       const W = bgCanvas.width;
       const H = bgCanvas.height;
+      const margin = 150; // 🎯 外擴邊界像素，確保起止點隱藏在螢幕外
 
       bgCtx.save();
       diagParams.forEach(p => {
-        // 🎯 1. 嚴格鎖定起始點 X 與 Y 於 0 ~ 螢幕 1/4 (25%) 區域
-        const startX = W * p.startXRatio;
-        const startY = H * p.startYRatio;
+        let startX, startY;
 
-        // 放射終點
-        const endX = W * p.endXRatio;
-        const endY = H * p.endYRatio;
+        // 🎯 1. 嚴格讓起點落在螢幕外 (X < 0 或 Y < 0)
+        if (p.isTopStart) {
+          // 從上方邊框外 (-margin) 進入
+          startX = (p.startPosRatio * 0.45) * W - margin;
+          startY = -margin;
+        } else {
+          // 從左側邊框外 (-margin) 進入
+          startX = -margin;
+          startY = (p.startPosRatio * 0.45) * H - margin;
+        }
 
-        // 當前隨動畫進度漸進畫出的終點
+        // 🎯 2. 嚴格讓終點落在右側與下方的邊框外
+        const endX = W + margin + (p.endPosRatio * 0.3 * W);
+        const endY = H + margin + (p.endPosRatio * 0.3 * H);
+
+        // 當前動態發展到的終點
         const currEndX = startX + (endX - startX) * progress;
         const currEndY = startY + (endY - startY) * progress;
 
-        // 中點座標（用於產生二次貝茲控制點）
+        // 計算中點與法線向量，製作波浪彎曲
         const midX = (startX + currEndX) / 2;
         const midY = (startY + currEndY) / 2;
 
-        // 線條切線方向與垂直法向向量 (-dY, dX)
         const dx = endX - startX;
         const dy = endY - startY;
         const len = Math.hypot(dx, dy) || 1;
         const nx = -dy / len;
         const ny = dx / len;
 
-        // 動態注入波浪 Swing (正弦波 + 餘弦波複合，呈現極其柔和自然甩動)
+        // 波浪動態正弦擺動
         const waveSwing = Math.sin(globalTime * p.speed + p.phase) * p.amplitude;
-        const waveSwing2 = Math.cos(globalTime * p.speed * 0.7 + p.phase) * (p.amplitude * 0.45);
+        const waveSwing2 = Math.cos(globalTime * p.speed * 0.75 + p.phase) * (p.amplitude * 0.4);
 
         const ctrlX = midX + nx * (waveSwing + waveSwing2);
         const ctrlY = midY + ny * (waveSwing + waveSwing2);
 
         bgCtx.beginPath();
-        // 顏色採暖金灰色調，集中交織時質感極佳
         bgCtx.strokeStyle = `rgba(210, 190, 155, ${p.alpha * progress})`;
         bgCtx.lineWidth = p.width;
 
-        // 畫出束狀波浪弧線
+        // 畫出滑順無斷頭的波浪線條
         bgCtx.moveTo(startX, startY);
         bgCtx.quadraticCurveTo(ctrlX, ctrlY, currEndX, currEndY);
         bgCtx.stroke();
