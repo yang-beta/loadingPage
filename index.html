@@ -3,32 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>展覽導覽頁 - 第一頁</title>
-  
-  <!-- 引入 GSAP (GreenSock Animation Platform) 核心動畫庫 -->
+  <title>洸限 - 展覽導覽</title>
+
+  <!-- 1. 字體與圖示庫 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" href="data:,">
+
+  <!-- 2. 既有專案 CSS 樣式表 -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animation.css">
+
+  <!-- 3. GSAP 核心動畫庫與套件 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
   <style>
     /* -------------------------------------------------------------
-       1. 全域基礎樣式 (Global Base Styles)
+       開場首頁 (前置 Logo 與水波紋區塊) 專用樣式
        ------------------------------------------------------------- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden; /* 鎖定第一頁，避免滑鼠隨意滾動導致版面破壞 */
-      background-color: #121212; /* 暗色系沈浸式背景 */
-      font-family: "PingFang TC", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
-      color: #FFFFFF;
-    }
-
-    /* 首頁 Hero 區域容器 */
-    .hero-page {
+    #openingHero {
       position: relative;
       width: 100vw;
       height: 100vh;
@@ -36,24 +31,23 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      background-color: #121212;
+      z-index: 10; /* 高於背景圖層 */
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
     }
 
-    /* -------------------------------------------------------------
-       2. 開場水波 Canvas 與 載入中文字 (Loading Component)
-       ------------------------------------------------------------- */
-    /* 背景水波線條 Canvas */
     #loadingCanvas {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 40vh; /* 固定涵蓋畫面下方 40% 區域 */
-      z-index: 1;   /* 設於背景層 */
+      height: 40vh;
+      z-index: 1;
       pointer-events: none;
-      transition: opacity 1.2s ease; /* 點擊向下箭頭時平滑淡出 */
+      transition: opacity 1.2s ease;
     }
 
-    /* 白色「載入中．．．」容器 */
     .loading-text-box {
       position: absolute;
       z-index: 10;
@@ -66,17 +60,13 @@
       align-items: center;
     }
 
-    /* 逐字出現動畫節點 */
     .char {
       opacity: 0;
       display: inline-block;
       transform: translateY(10px);
-      will-change: opacity, transform; /* 開啟瀏覽器渲染加速 */
+      will-change: opacity, transform;
     }
 
-    /* -------------------------------------------------------------
-       3. 主視覺 Logo 區域 (Main Visual Logo)
-       ------------------------------------------------------------- */
     .logo-container {
       width: 580px;
       height: 580px;
@@ -85,12 +75,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* GSAP 初始擴散遮罩點 */
       clip-path: circle(0% at 50% 50%);
       transform: scale(0.7);
       filter: blur(20px);
       opacity: 0;
-      /* 版面位置微調：提升 Logo 並將空間釋放給下方文字與波浪線 */
       margin-bottom: -110px;
       margin-top: -40px;
       will-change: clip-path, transform, filter, opacity;
@@ -99,7 +87,6 @@
     .logo-container svg {
       width: 100%;
       height: 100%;
-      /* 呼吸金色光暈效果 */
       animation: goldGlowPulse 4.0s ease-in-out infinite alternate;
     }
 
@@ -108,12 +95,9 @@
       transition: fill 0.5s ease;
     }
 
-    /* -------------------------------------------------------------
-       4. 標題與互動區域 (Interactive Area & Typography)
-       ------------------------------------------------------------- */
     .interactive-area {
       position: relative;
-      z-index: 3; /* 置於最高層，確保文字在波浪線上邊界清晰可見 */
+      z-index: 3;
       margin-top: 0px;
       display: flex;
       flex-direction: column;
@@ -121,7 +105,6 @@
       text-align: center;
     }
 
-    /* 遮罩容器：確保文字向上浮現前絕對不會滲漏出上緣 */
     .text-wrapper {
       overflow: hidden;
       display: flex;
@@ -130,24 +113,20 @@
       position: relative;
     }
 
-    /* 主標題遮罩高度 */
     .title-wrapper {
       height: 48px;
     }
 
-    /* 副標題第 1 行（從這裡）遮罩高度 */
     .subtitle-wrapper-1 {
       height: 36px;
       margin-top: 12px;
     }
 
-    /* 副標題第 2 行（開始）遮罩高度 */
     .subtitle-wrapper-2 {
       height: 36px;
       margin-top: 6px;
     }
 
-    /* 文字本體：預設隱藏在遮罩下方 200% 的安全距離 */
     .text-line {
       color: #FFFFFF;
       transform: translateY(200%);
@@ -169,7 +148,6 @@
       opacity: 0.9;
     }
 
-    /* 向下指示箭頭按鈕 */
     .scroll-arrow-btn {
       margin-top: 24px;
       background: none;
@@ -190,27 +168,42 @@
       filter: drop-shadow(0px 0px 6px rgba(255, 255, 255, 0.5));
     }
 
-    /* Keyframes: Logo 呼吸金效芒波動 */
     @keyframes goldGlowPulse {
-      0% {
-        filter: drop-shadow(0 0 8px rgba(242, 152, 80, 0.4));
-      }
-      50% {
-        filter: drop-shadow(0 0 24px rgba(247, 208, 112, 0.85));
-      }
-      100% {
-        filter: drop-shadow(0 0 12px rgba(242, 152, 80, 0.5));
-      }
+      0% { filter: drop-shadow(0 0 8px rgba(242, 152, 80, 0.4)); }
+      50% { filter: drop-shadow(0 0 24px rgba(247, 208, 112, 0.85)); }
+      100% { filter: drop-shadow(0 0 12px rgba(242, 152, 80, 0.5)); }
+    }
+
+    /* 🎯 統一改為白色 v 型箭頭按鈕樣式 (取代原有的橘色 ↓) */
+    .scroll-hint-v {
+      position: absolute;
+      bottom: 8%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 5;
+      background: none;
+      border: none;
+      outline: none;
+    }
+
+    .scroll-hint-v:hover {
+      transform: scale(1.15);
     }
   </style>
 </head>
 <body>
 
-  <div class="hero-page" id="heroSection">
-    <!-- 1. 背景水波紋 Canvas -->
+  <!-- 0. 背景動態 Canvas (光束與金色粒子) -->
+  <canvas id="mandalaCanvas"></canvas>
+
+  <!-- ==========================================================
+       0. 開場前置區塊：Logo + 水波紋 + 文字漸進動畫
+       ========================================================== -->
+  <div id="openingHero">
+    <!-- 水波 Canvas -->
     <canvas id="loadingCanvas"></canvas>
 
-    <!-- 2. 白色「載入中．．．」文字區塊 -->
+    <!-- 白色「載入中．．．」 -->
     <div class="loading-text-box" id="loadingText">
       <span class="char">載</span>
       <span class="char">入</span>
@@ -220,13 +213,11 @@
       <span class="char">．</span>
     </div>
 
-    <!-- 3. 主視覺 SVG Logo (580px 放大最佳化規格) -->
+    <!-- SVG Logo -->
     <div class="logo-container" id="logoBox">
       <svg id="_圖層_1" data-name="圖層_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 841.89 595.28">
         <defs>
-          <style>
-            .st0 { fill: #f29850; }
-          </style>
+          <style>.st0 { fill: #f29850; }</style>
         </defs>
         <circle class="st0" cx="420.88" cy="297.44" r="14.4"/>
         <g>
@@ -321,25 +312,20 @@
       </svg>
     </div>
 
-    <!-- 4. 文字與互動按鈕區域 -->
+    <!-- 文字與按鈕區域 -->
     <div class="interactive-area">
-      <!-- 主標題：回憶 -->
       <div class="text-wrapper title-wrapper">
-        <div class="text-line title-part1" id="line1">回憶</div>
+        <div class="text-line title-part1" id="line1">回億</div>
       </div>
-      
-      <!-- 副標題第 1 行：從這裡 -->
       <div class="text-wrapper subtitle-wrapper-1">
         <div class="text-line title-part2" id="line2">從這裡</div>
       </div>
-
-      <!-- 副標題第 2 行：開始 -->
       <div class="text-wrapper subtitle-wrapper-2">
         <div class="text-line title-part2" id="line3">開始</div>
       </div>
 
-      <!-- 下拉提示箭頭 -->
-      <button class="scroll-arrow-btn" id="nextPageBtn" aria-label="向下滾動至下一頁">
+      <!-- 下拉按鈕：點擊平滑滑動至第一階段 (hero-container) -->
+      <button class="scroll-arrow-btn" id="startExhibitionBtn" onclick="scrollToStage1()" aria-label="向下進入第一階段">
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
@@ -347,14 +333,40 @@
     </div>
   </div>
 
+  <!-- ==========================================================
+       第一階段：洸限 主視覺海報與光束 Banner (前台全螢幕 Banner 圖層)
+       ========================================================== -->
+  <div class="hero-container" id="heroSection">
+    <button class="skip-anim-btn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
+
+    <!-- 🖼️ 【展覽主視覺橫幅海報 ── 放置位置】 -->
+    <!--
+    <div class="main-banner-poster">
+      <img src="images/your-exhibition-banner.png" alt="洸限 展覽主視覺海報" />
+    </div>
+    -->
+
+    <h1 class="brand-title">洸限</h1>
+    <p class="main-question">如果還有一次機會，你最想告訴他/她/牠什麼？</p>
+
+    <!-- 🎯 換成白色 v 型向下按鈕 -->
+    <button class="scroll-hint-v" onclick="scrollToContent()" aria-label="進入下一頁">
+      <svg class="arrow-icon" viewBox="0 0 24 24">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- 🎯 載入腳本路徑 -->
+  <script src="js/canvas.js"></script>
+
   <script>
-    // =============================================================
-    // 🌊 1. 水波 Canvas 渲染邏輯 (Double Sine Wave Renderer)
-    // =============================================================
+    // -------------------------------------------------------------
+    // 🌊 1. 水波 Canvas (開場首頁專用)
+    // -------------------------------------------------------------
     const lCanvas = document.getElementById('loadingCanvas');
     const lCtx = lCanvas.getContext('2d');
 
-    // 自動適應視窗寬度，繪製於畫面下方 40%
     function resizeLoadingCanvas() {
       lCanvas.width = window.innerWidth;
       lCanvas.height = window.innerHeight * 0.4;
@@ -363,25 +375,22 @@
     window.addEventListener('resize', resizeLoadingCanvas);
 
     let step = 0;
-    let isWaveActive = true;     // 開關：按下按鈕後銷毀渲染
-    let isCanvasVisible = true;  // 狀態：是否在瀏覽器視線內 (由 IntersectionObserver 控制)
+    let isWaveActive = true;
+    let isCanvasVisible = true;
 
-    // 初始化 28 條線條的獨立隨機參數（確保波浪呈現自然的隨機交錯感）
     const lineCount = 28;
     const waveParams = [];
     for (let i = 0; i < lineCount; i++) {
       waveParams.push({
-        phaseOffset: Math.random() * Math.PI * 2, // 隨機初始相位
-        speed: 0.015 + Math.random() * 0.01,       // 隨機推進速度
-        frequency1: 0.003 + Math.random() * 0.002, // 正弦波 1 頻率
-        frequency2: 0.007 + Math.random() * 0.003, // 餘弦波 2 頻率
-        amplitude: 12 + Math.random() * 8          // 振幅高度
+        phaseOffset: Math.random() * Math.PI * 2,
+        speed: 0.015 + Math.random() * 0.01,
+        frequency1: 0.003 + Math.random() * 0.002,
+        frequency2: 0.007 + Math.random() * 0.003,
+        amplitude: 12 + Math.random() * 8
       });
     }
 
-    // Canvas 幀繪製主迴圈
     function drawWaveLandscape() {
-      // 雙重效能門檻：被手動關閉 OR 滾動離開店家畫面時，立刻暫停渲染迴圈
       if (!isWaveActive || !isCanvasVisible) return;
 
       lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
@@ -392,16 +401,14 @@
       for (let i = 0; i < lineCount; i++) {
         const p = waveParams[i];
         lCtx.beginPath();
-        lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / lineCount) * 0.25})`; // 縱深漸層透明度
+        lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / lineCount) * 0.25})`;
         lCtx.lineWidth = 1.2;
 
         const baseY = height * 0.2 + (i * 8);
 
-        // 採用雙正弦/餘弦波疊加法 (Math.sin + Math.cos) 產生有機地形起伏
         for (let x = 0; x <= width; x += 12) {
           const wave1 = Math.sin((x * p.frequency1) + (step * p.speed) + p.phaseOffset);
           const wave2 = Math.cos((x * p.frequency2) - (step * p.speed * 0.8) + p.phaseOffset);
-          
           const y = baseY + (wave1 * p.amplitude) + (wave2 * (p.amplitude * 0.5));
           
           if (x === 0) lCtx.moveTo(x, y);
@@ -415,35 +422,12 @@
     }
     drawWaveLandscape();
 
-    // =============================================================
-    // 👁️ 2. IntersectionObserver 視線偵測器 (GPU 效能最佳化)
-    // =============================================================
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // 當首頁回到視線內，重啟動畫迴圈
-          if (!isCanvasVisible && isWaveActive) {
-            isCanvasVisible = true;
-            drawWaveLandscape();
-          }
-        } else {
-          // 滾離首頁，瞬間凍結 CPU/GPU 動態繪製
-          isCanvasVisible = false;
-        }
-      });
-    }, { threshold: 0.05 });
-
-    observer.observe(document.getElementById('heroSection'));
-
-    // =============================================================
-    // 🎬 3. GSAP 時間軸控制 (Sequential Timeline Animation)
-    // =============================================================
+    // -------------------------------------------------------------
+    // 🎬 2. GSAP 時間軸控制 (開場首頁登場順序)
+    // -------------------------------------------------------------
     const mainTl = gsap.timeline();
-
-    // 🎯 關鍵修復：強制將所有標題預設鎖定在遮罩下方 200% 的安全位置，避免走漏頂部
     gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
 
-    // Step 1: 白色「載 入 中 ． ． ．」 逐字(stagger)登場
     mainTl.to(".loading-text-box .char", {
       opacity: 1,
       y: 0,
@@ -452,15 +436,11 @@
       ease: "power2.out"
     })
     .to({}, { duration: 0.8 })
-
-    // Step 2: 載入文字平滑淡出
     .to("#loadingText", {
       opacity: 0,
       duration: 1.0,
       ease: "power2.inOut"
     })
-
-    // Step 3: Logo 由圓心擴散、縮放並解模糊 (3.5 秒)
     .to("#logoBox", {
       clipPath: "circle(70% at 50% 50%)",
       scale: 1,
@@ -469,40 +449,30 @@
       duration: 3.5,
       ease: "power1.inOut"
     }, "-=0.5")
-
-    // Step 4: Logo 獨立展現呼吸金光芒 (5.0 秒)
     .to({}, { duration: 5.0 })
-
-    // Step 5: 主標題「回憶」由底往上浮現 (2.0 秒)
     .to("#line1", {
       y: "0%",
       opacity: 1,
       duration: 2.0,
       ease: "power2.out"
     })
-
-    // Step 6: 副標題第 1 行「從這裡」獨立登場 (1.5 秒)
     .to("#line2", {
       y: "0%",
       opacity: 1,
       duration: 1.5,
       ease: "power2.out"
     }, "+=0.2")
-
-    // Step 7: 副標題第 2 行「開始」接續登場 (1.0 秒)
     .to("#line3", {
       y: "0%",
       opacity: 1,
       duration: 1.0,
       ease: "power2.out"
     }, "+=0.2")
-
-    // Step 8: 下拉提示箭頭淡入，並開始循環上下跳動
-    .to("#nextPageBtn", {
+    .to("#startExhibitionBtn", {
       opacity: 1,
       duration: 0.8,
       onComplete: () => {
-        gsap.to("#nextPageBtn", {
+        gsap.to("#startExhibitionBtn", {
           y: 8,
           duration: 1.0,
           repeat: -1,
@@ -512,20 +482,23 @@
       }
     });
 
-    // =============================================================
-    // 🎯 4. 按下 Ｖ 箭頭點擊事件 (向下進入下一頁)
-    // =============================================================
-    document.getElementById('nextPageBtn').addEventListener('click', () => {
-      // 1. 淡出水波 Canvas
+    // -------------------------------------------------------------
+    // 🎯 3. 平滑滾動與引導控制邏輯
+    // -------------------------------------------------------------
+    // 按下開場首頁的 V 鍵：進入第一階段「洸限 Banner」
+    function scrollToStage1() {
       lCanvas.style.opacity = '0';
-      
-      // 2. 待淡出動畫完成後徹底釋放記憶體與循環
-      setTimeout(() => {
-        isWaveActive = false;
-      }, 1200);
+      setTimeout(() => { isWaveActive = false; }, 1200);
+      document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-      console.log('準備進入第 2 頁：沙畫粒子與 Banner 嵌入頁面');
-    });
+    // 第一階段按鈕跳轉邏輯
+    function scrollToContent() {
+      if (window.tl) window.tl.progress(1);
+      // 如果後續階段不在本頁，滑動停留在第一階段區塊
+      document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      gsap.to(".skip-anim-btn", { opacity: 0, pointerEvents: "none", duration: 0.5 });
+    }
   </script>
 </body>
 </html>
