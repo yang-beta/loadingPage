@@ -24,10 +24,10 @@
       height: 100%;
       margin: 0 !important;
       padding: 0 !important;
-      background-color: #1a1a1a !important; /* 🎯 統一底色為 #1a1a1a */
+      background-color: #1a1a1a !important;
       color: #FFFFFF;
       font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-      overflow: hidden; /* 隱藏原生捲動軸，改由 JS 控管滿版切換 */
+      overflow: hidden;
       box-sizing: border-box;
     }
 
@@ -54,7 +54,7 @@
     .sections-wrapper {
       width: 100vw;
       height: 100vh;
-      transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); /* 平滑滾動切換曲線 */
+      transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
       will-change: transform;
     }
 
@@ -65,15 +65,39 @@
       overflow: hidden;
     }
 
+    /* 通用 Skip 略過按鈕樣式 */
+    .skip-anim-btn {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #d5d5d5;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-family: 'Noto Sans TC', sans-serif;
+      letter-spacing: 1px;
+      cursor: pointer;
+      z-index: 20;
+      transition: all 0.3s ease;
+      border-radius: 20px;
+    }
+
+    .skip-anim-btn:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
     /* =============================================================
-       1. 開場前置區塊 (#openingHero)
+       1. Loading Page (載入頁)
        ============================================================= */
     #openingHero {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background-color: #1a1a1a; /* 🎯 底色調整與第一階段相同 */
+      background-color: #1a1a1a;
       z-index: 10;
     }
 
@@ -205,7 +229,7 @@
     }
 
     /* =============================================================
-       2. 第一階段：洸限 Banner 區域 (#heroSection)
+       2. Banner 頁
        ============================================================= */
     .hero-container {
       z-index: 2;
@@ -215,7 +239,7 @@
       align-items: center;
       text-align: center;
       padding: 20px;
-      background-color: transparent; /* 保持透明以露出 Canvas 光束 */
+      background-color: transparent;
     }
 
     .brand-title {
@@ -239,28 +263,6 @@
       line-height: 2;
     }
 
-    .skip-anim-btn {
-      position: absolute;
-      top: 30px;
-      right: 40px;
-      background: none;
-      border: 1px solid rgba(197, 168, 128, 0.4);
-      color: #c5a880;
-      padding: 8px 16px;
-      font-size: 12px;
-      font-family: 'Noto Sans TC', sans-serif;
-      letter-spacing: 1px;
-      cursor: pointer;
-      z-index: 10;
-      transition: all 0.3s ease;
-    }
-
-    .skip-anim-btn:hover {
-      background-color: #c5a880;
-      color: #1a1a1a;
-      border-color: #c5a880;
-    }
-
     .scroll-hint-v {
       position: absolute;
       bottom: 8%;
@@ -276,20 +278,65 @@
     .scroll-hint-v:hover {
       transform: scale(1.15);
     }
+
+    /* =============================================================
+       3. 第一頁 視聽演示 (Page 2)
+       ============================================================= */
+    .audiovisual-section {
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      background-color: transparent;
+    }
+
+    .audiovisual-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      letter-spacing: 0.6rem;
+      color: #e5e5e5;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    .audiovisual-subtitle {
+      font-size: 1.0rem;
+      font-weight: 300;
+      letter-spacing: 0.3rem;
+      color: #c5a880;
+      margin-top: 1rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1.2s ease 0.3s, transform 1.2s ease 0.3s;
+    }
+
+    .audiovisual-section.active .audiovisual-title,
+    .audiovisual-section.active .audiovisual-subtitle {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
 
-  <!-- 0. 背景光束與金色粒子 Canvas -->
+  <!-- 0. 背景光束與金色粒子 Canvas (覆蓋全螢幕背景) -->
   <canvas id="mandalaCanvas"></canvas>
 
   <!-- 全頁滾動包裹容器 -->
   <div class="sections-wrapper" id="sectionsWrapper">
 
     <!-- ==========================================================
-         Page 0. 開場頁 (Loading Page)
+         Page 0. Loading Page (載入頁)
          ========================================================== -->
     <div class="section-page" id="openingHero">
+      <!-- 🎯 1. Loading 頁新增的 Skip 按鈕 -->
+      <button class="skip-anim-btn" onclick="skipLoadingToBanner()">Skip 略過動畫 ✕</button>
+
       <canvas id="loadingCanvas"></canvas>
 
       <div class="loading-text-box" id="loadingText">
@@ -401,7 +448,7 @@
 
       <div class="interactive-area">
         <div class="text-wrapper title-wrapper">
-          <div class="text-line title-part1" id="line1">回憶</div>
+          <div class="text-line title-part1" id="line1">回億</div>
         </div>
         <div class="text-wrapper subtitle-wrapper-1">
           <div class="text-line title-part2" id="line2">從這裡</div>
@@ -419,7 +466,7 @@
     </div>
 
     <!-- ==========================================================
-         Page 1. 第一階段：洸限 Banner
+         Page 1. Banner 頁
          ========================================================== -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
@@ -427,11 +474,19 @@
       <h1 class="brand-title">洸限</h1>
       <p class="main-question">如果還有一次機會，你最想告訴他/她/牠什麼？</p>
 
-      <button class="scroll-hint-v" onclick="nextPage()" aria-label="進入下一頁">
+      <button class="scroll-hint-v" onclick="nextPage()" aria-label="進入第一頁視聽演示">
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
+    </div>
+
+    <!-- ==========================================================
+         Page 2. 第一頁 視聽演示
+         ========================================================== -->
+    <div class="section-page audiovisual-section" id="audiovisualSection">
+      <h2 class="audiovisual-title">視聽演示</h2>
+      <p class="audiovisual-subtitle">沉浸於光與聲響的漫遊旅程</p>
     </div>
 
   </div>
@@ -498,7 +553,7 @@
     drawWaveLandscape();
 
     // =============================================================
-    // 🌌 2. 光束與金色粒子背景 Canvas
+    // 🌌 2. 光束與金色粒子背景 Canvas (深淺灰色光束 + 微波流動感)
     // =============================================================
     const bgCanvas = document.getElementById('mandalaCanvas');
     const bgCtx = bgCanvas.getContext('2d');
@@ -521,20 +576,20 @@
       particleGlowProgress: 0
     };
 
+    // 🎯 2. 線條顏色全部改為深淺不一的灰色 (RGB: 140~220 間的灰色度)
     const beamLines = [];
     const beamCount = 55;
     for (let i = 0; i < beamCount; i++) {
       const offset = (Math.random() - 0.5) * 600;
-      const isGold = Math.random() > 0.25;
-      const r = isGold ? Math.floor(200 + Math.random() * 40) : 240;
-      const g = isGold ? Math.floor(130 + Math.random() * 50) : 220;
-      const b = isGold ? Math.floor(40 + Math.random() * 40) : 180;
+      const grayVal = Math.floor(130 + Math.random() * 90); // 130 ~ 220 質感灰色
 
       beamLines.push({
         offset: offset,
-        width: Math.random() * 6.0 + 2.0,
-        color: `${r}, ${g}, ${b}`,
-        alpha: Math.random() * 0.25 + 0.12
+        width: Math.random() * 4.5 + 1.2,
+        color: `${grayVal}, ${grayVal}, ${grayVal}`,
+        alpha: Math.random() * 0.22 + 0.08,
+        freq: 0.02 + Math.random() * 0.03, // 抖動波形頻率
+        phase: Math.random() * Math.PI * 2   // 抖動相位
       });
     }
 
@@ -552,6 +607,8 @@
       });
     }
 
+    let globalTime = 0;
+
     function drawLightBeams() {
       const horizonY = bgCanvas.height * 0.65;
       const turnRadius = 35;
@@ -562,6 +619,7 @@
 
       const currentY = horizonY * beamProgress;
 
+      // 1. 中間黃金色大光束 (維持經典原樣)
       bgCtx.save();
       bgCtx.shadowColor = 'rgba(215, 160, 80, 0.25)';
       bgCtx.shadowBlur = 120;
@@ -598,26 +656,35 @@
       bgCtx.fill();
       bgCtx.restore();
 
+      // 2. 兩側灰色三段線條 (含動感微波抖動與光彩呼吸)
       bgCtx.save();
       beamLines.forEach(line => {
+        // 動態波動計算 (X軸 1.5px 的自然流動波紋)
+        const waveOffset = Math.sin(globalTime * line.freq + line.phase) * 1.8;
+        const dynamicAlpha = line.alpha + Math.sin(globalTime * 0.05 + line.phase) * 0.04;
+
         bgCtx.beginPath();
         bgCtx.lineCap = 'round';
         bgCtx.lineWidth = line.width;
-        bgCtx.strokeStyle = `rgba(${line.color}, ${line.alpha})`;
-        const startX = cx + line.offset;
+        bgCtx.strokeStyle = `rgba(${line.color}, ${Math.max(0.02, dynamicAlpha)})`;
+
+        const startX = cx + line.offset + waveOffset;
         bgCtx.moveTo(startX, 0);
 
         if (spreadProgress <= 0) {
           bgCtx.lineTo(startX, currentY);
         } else {
-          const endX = cx + line.offset * 2.6;
+          const endX = cx + line.offset * 2.6 + (waveOffset * 2);
           const finalEndY = horizonY + (bgCanvas.height - horizonY);
           const turnStartY = horizonY - turnRadius;
           const currentEndX = startX + (endX - startX) * spreadProgress;
           const currentEndY = horizonY + (finalEndY - horizonY) * spreadProgress;
 
+          // 第一段：垂直線 (Top to Turn)
           bgCtx.lineTo(startX, turnStartY);
+          // 第二段：圓弧轉折 (Bezier Curve)
           bgCtx.quadraticCurveTo(startX, horizonY, startX + (currentEndX - startX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15);
+          // 第三段：擴散斜線 (Spread Line)
           bgCtx.lineTo(currentEndX, currentEndY);
         }
         bgCtx.stroke();
@@ -652,6 +719,7 @@
     }
 
     function renderBg() {
+      globalTime += 1;
       bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
       bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
       bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
@@ -664,7 +732,7 @@
     renderBg();
 
     // =============================================================
-    // 🎬 3. GSAP 時間軸控制
+    // 🎬 3. GSAP 時間軸控制 (Loading Page 登場)
     // =============================================================
     const mainTl = gsap.timeline();
     gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
@@ -698,11 +766,17 @@
       .to(".scroll-hint-v", { opacity: 1, duration: 1 });
     }
 
+    // 🎯 1. Skip 略過 Loading 頁動畫並直接滑向 Banner 頁
+    function skipLoadingToBanner() {
+      mainTl.progress(1); // 立即跳過 GSAP Loading 時間軸
+      goToPage(1);        // 直接前往 Page 1 (Banner 頁)
+    }
+
     // =============================================================
-    // 🎯 4. 全頁自動 Snap 滾動鎖定邏輯 (Full Page Snap Wheel/Touch)
+    // 🎯 4. 全頁自動 Snap 滾動鎖定邏輯
     // =============================================================
     let currentPageIndex = 0;
-    const totalPages = 2; // 目前有 Page 0 (開場) 與 Page 1 (第一階段)
+    const totalPages = 3;
     let isScrollLocked = false;
 
     function goToPage(index) {
@@ -711,19 +785,24 @@
       isScrollLocked = true;
       currentPageIndex = index;
 
-      // 滾動容器
       const wrapper = document.getElementById('sectionsWrapper');
       wrapper.style.transform = `translateY(-${currentPageIndex * 100}vh)`;
 
-      // 如果進入 Page 1 (第一階段)，觸發光束動畫
-      if (currentPageIndex === 1) {
+      const audioVisualSec = document.getElementById('audiovisualSection');
+
+      if (currentPageIndex === 0) {
+        lCanvas.style.opacity = '1';
+        audioVisualSec.classList.remove('active');
+      } else if (currentPageIndex === 1) {
         lCanvas.style.opacity = '0';
         playBannerBeamAnimation();
-      } else if (currentPageIndex === 0) {
-        lCanvas.style.opacity = '1';
+        audioVisualSec.classList.remove('active');
+      } else if (currentPageIndex === 2) {
+        lCanvas.style.opacity = '0';
+        playBannerBeamAnimation();
+        audioVisualSec.classList.add('active');
       }
 
-      // 解鎖滾動冷卻 (800ms)
       setTimeout(() => {
         isScrollLocked = false;
       }, 850);
@@ -737,7 +816,6 @@
       goToPage(currentPageIndex - 1);
     }
 
-    // 監聽滑鼠滾輪 (Wheel)
     window.addEventListener('wheel', (e) => {
       if (isScrollLocked) return;
       if (e.deltaY > 20) {
@@ -747,7 +825,6 @@
       }
     }, { passive: true });
 
-    // 監聽手機觸控滑動 (Touch)
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => {
       touchStartY = e.touches[0].clientY;
