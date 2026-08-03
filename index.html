@@ -17,18 +17,18 @@
 
   <style>
     /* =============================================================
-       0. 全域邊界重置與全螢幕滿版強制鎖定 (解決白邊與捲動軸)
+       0. 全域邊界重置與全螢幕滿版強制鎖定
        ============================================================= */
     html, body {
       width: 100%;
       height: 100%;
       margin: 0 !important;
       padding: 0 !important;
-      background-color: #121212 !important;
+      background-color: #1a1a1a !important;
       color: #FFFFFF;
       font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
       overflow-x: hidden;
-      overflow-y: hidden; /* 開場時鎖定滾動，避免看到下方第一階段 */
+      overflow-y: hidden; /* 開場時鎖定滾動 */
       box-sizing: border-box;
     }
 
@@ -50,7 +50,7 @@
     }
 
     /* =============================================================
-       1. 開場前置區塊 (#openingHero) - 滿版 100vh 強制獨立
+       1. 開場前置區塊 (#openingHero) - 滿版 100vh
        ============================================================= */
     #openingHero {
       position: relative;
@@ -193,7 +193,7 @@
     }
 
     /* =============================================================
-       2. 第一階段：洸限 Banner 區域 (#heroSection) 樣式美化
+       2. 第一階段：洸限 Banner 區域 (#heroSection)
        ============================================================= */
     .hero-container {
       position: relative;
@@ -206,7 +206,7 @@
       align-items: center;
       text-align: center;
       padding: 20px;
-      background-color: #1a1a1a;
+      background-color: transparent; /* 保持透明以露出 Canvas 光束 */
       overflow: hidden;
     }
 
@@ -215,7 +215,7 @@
       font-size: 4.5rem;
       font-weight: 300;
       letter-spacing: 1.2rem;
-      padding-left: 1.2rem; /* 抵銷字距偏左偏移 */
+      padding-left: 1.2rem; /* 抵銷字距偏左 */
       color: #e5e5e5;
       text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
       opacity: 0; 
@@ -231,7 +231,6 @@
       line-height: 2;
     }
 
-    /* Skip 略過按鈕重置美化 */
     .skip-anim-btn {
       position: absolute;
       top: 30px;
@@ -280,10 +279,8 @@
        0. 開場前置區塊：Logo + 水波紋 + 文字漸進動畫
        ========================================================== -->
   <div id="openingHero">
-    <!-- 水波 Canvas -->
     <canvas id="loadingCanvas"></canvas>
 
-    <!-- 白色「載入中．．．」 -->
     <div class="loading-text-box" id="loadingText">
       <span class="char">載</span>
       <span class="char">入</span>
@@ -293,7 +290,6 @@
       <span class="char">．</span>
     </div>
 
-    <!-- SVG Logo -->
     <div class="logo-container" id="logoBox">
       <svg id="_圖層_1" data-name="圖層_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 841.89 595.28">
         <defs>
@@ -392,10 +388,9 @@
       </svg>
     </div>
 
-    <!-- 文字與按鈕區域 -->
     <div class="interactive-area">
       <div class="text-wrapper title-wrapper">
-        <div class="text-line title-part1" id="line1">回憶</div>
+        <div class="text-line title-part1" id="line1">回億</div>
       </div>
       <div class="text-wrapper subtitle-wrapper-1">
         <div class="text-line title-part2" id="line2">從這裡</div>
@@ -404,7 +399,6 @@
         <div class="text-line title-part2" id="line3">開始</div>
       </div>
 
-      <!-- 下拉按鈕：點擊平滑滑動至第一階段 (hero-container) -->
       <button class="scroll-arrow-btn" id="startExhibitionBtn" onclick="scrollToStage1()" aria-label="向下進入第一階段">
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -414,7 +408,7 @@
   </div>
 
   <!-- ==========================================================
-       第一階段：洸限 主視覺海報與光束 Banner (前台全螢幕 Banner 圖層)
+       第一階段：洸限 主視覺 Banner
        ========================================================== -->
   <div class="hero-container" id="heroSection">
     <button class="skip-anim-btn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
@@ -422,7 +416,6 @@
     <h1 class="brand-title">洸限</h1>
     <p class="main-question">如果還有一次機會，你最想告訴他/她/牠什麼？</p>
 
-    <!-- 白色 v 型向下按鈕 -->
     <button class="scroll-hint-v" onclick="scrollToContent()" aria-label="進入下一頁">
       <svg class="arrow-icon" viewBox="0 0 24 24">
         <polyline points="6 9 12 15 18 9"></polyline>
@@ -430,13 +423,10 @@
     </button>
   </div>
 
-  <!-- 🎯 載入背景 Canvas 腳本 (如果有的話) -->
-  <script src="js/canvas.js"></script>
-
   <script>
-    // -------------------------------------------------------------
-    // 🌊 1. 水波 Canvas (開場首頁專用)
-    // -------------------------------------------------------------
+    // =============================================================
+    // 🌊 1. 開場水波紋 Canvas (100% 獨立)
+    // =============================================================
     const lCanvas = document.getElementById('loadingCanvas');
     const lCtx = lCanvas.getContext('2d');
 
@@ -449,7 +439,6 @@
 
     let step = 0;
     let isWaveActive = true;
-    let isCanvasVisible = true;
 
     const lineCount = 28;
     const waveParams = [];
@@ -464,7 +453,7 @@
     }
 
     function drawWaveLandscape() {
-      if (!isWaveActive || !isCanvasVisible) return;
+      if (!isWaveActive) return;
 
       lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
 
@@ -495,82 +484,230 @@
     }
     drawWaveLandscape();
 
-    // -------------------------------------------------------------
-    // 🎬 2. GSAP 時間軸控制 (開場首頁登場順序)
-    // -------------------------------------------------------------
+    // =============================================================
+    // 🌌 2. 光束與金色粒子背景 Canvas (原 canvas.js 完整邏輯)
+    // =============================================================
+    const bgCanvas = document.getElementById('mandalaCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+
+    let cx = window.innerWidth / 2;
+    let cy = window.innerHeight / 2;
+
+    function resizeBgCanvas() {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+      cx = window.innerWidth / 2;
+      cy = window.innerHeight / 2;
+    }
+    resizeBgCanvas();
+    window.addEventListener('resize', resizeBgCanvas);
+
+    let animationParams = {
+      beamDownProgress: 0,
+      horizonSpreadProgress: 0,
+      particleGlowProgress: 0
+    };
+
+    const beamLines = [];
+    const beamCount = 55;
+    for (let i = 0; i < beamCount; i++) {
+      const offset = (Math.random() - 0.5) * 600;
+      const isGold = Math.random() > 0.25;
+      const r = isGold ? Math.floor(200 + Math.random() * 40) : 240;
+      const g = isGold ? Math.floor(130 + Math.random() * 50) : 220;
+      const b = isGold ? Math.floor(40 + Math.random() * 40) : 180;
+
+      beamLines.push({
+        offset: offset,
+        width: Math.random() * 6.0 + 2.0,
+        color: `${r}, ${g}, ${b}`,
+        alpha: Math.random() * 0.25 + 0.12
+      });
+    }
+
+    const goldParticles = [];
+    const particleCount = 80;
+    for (let i = 0; i < particleCount; i++) {
+      goldParticles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 2.5 + 0.8,
+        alpha: Math.random() * 0.6 + 0.2,
+        speedY: (Math.random() - 0.5) * 0.8,
+        speedX: (Math.random() - 0.5) * 0.5,
+        pulse: Math.random() * Math.PI
+      });
+    }
+
+    function drawLightBeams() {
+      const horizonY = bgCanvas.height * 0.65;
+      const turnRadius = 35;
+      const beamProgress = animationParams.beamDownProgress;
+      const spreadProgress = animationParams.horizonSpreadProgress;
+
+      if (beamProgress <= 0) return;
+
+      const currentY = horizonY * beamProgress;
+
+      // 中央高亮主光束
+      bgCtx.save();
+      bgCtx.shadowColor = 'rgba(215, 160, 80, 0.25)';
+      bgCtx.shadowBlur = 120;
+      
+      const centerGlow = bgCtx.createLinearGradient(cx, 0, cx, bgCanvas.height);
+      centerGlow.addColorStop(0, 'rgba(255, 250, 230, 0.25)');
+      centerGlow.addColorStop(0.65, 'rgba(235, 190, 110, 0.35)');
+      centerGlow.addColorStop(1, 'rgba(180, 120, 50, 0.2)');
+      bgCtx.fillStyle = centerGlow;
+      
+      const beamHalfWidth = 60;
+      const spreadFactor = 2.5;
+      const leftTopX = cx - beamHalfWidth;
+      const rightTopX = cx + beamHalfWidth;
+      
+      bgCtx.beginPath();
+      if (spreadProgress <= 0) {
+        bgCtx.rect(leftTopX, 0, beamHalfWidth * 2, currentY);
+      } else {
+        const leftEndX = cx - (beamHalfWidth * spreadFactor) * spreadProgress;
+        const rightEndX = cx + (beamHalfWidth * spreadFactor) * spreadProgress;
+        const currentEndY = horizonY + (bgCanvas.height - horizonY) * spreadProgress;
+
+        bgCtx.moveTo(leftTopX, 0);
+        bgCtx.lineTo(leftTopX, horizonY - turnRadius);
+        bgCtx.quadraticCurveTo(leftTopX, horizonY, leftTopX + (leftEndX - leftTopX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15);
+        bgCtx.lineTo(leftEndX, currentEndY);
+        bgCtx.lineTo(rightEndX, currentEndY);
+        bgCtx.lineTo(rightTopX + (rightEndX - rightTopX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15);
+        bgCtx.quadraticCurveTo(rightTopX, horizonY, rightTopX, horizonY - turnRadius);
+        bgCtx.lineTo(rightTopX, 0);
+      }
+      bgCtx.closePath();
+      bgCtx.fill();
+      bgCtx.restore();
+
+      // 兩側束狀光條
+      bgCtx.save();
+      beamLines.forEach(line => {
+        bgCtx.beginPath();
+        bgCtx.lineCap = 'round';
+        bgCtx.lineWidth = line.width;
+        bgCtx.strokeStyle = `rgba(${line.color}, ${line.alpha})`;
+        const startX = cx + line.offset;
+        bgCtx.moveTo(startX, 0);
+
+        if (spreadProgress <= 0) {
+          bgCtx.lineTo(startX, currentY);
+        } else {
+          const endX = cx + line.offset * 2.6;
+          const finalEndY = horizonY + (bgCanvas.height - horizonY);
+          const turnStartY = horizonY - turnRadius;
+          const currentEndX = startX + (endX - startX) * spreadProgress;
+          const currentEndY = horizonY + (finalEndY - horizonY) * spreadProgress;
+
+          bgCtx.lineTo(startX, turnStartY);
+          bgCtx.quadraticCurveTo(startX, horizonY, startX + (currentEndX - startX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15);
+          bgCtx.lineTo(currentEndX, currentEndY);
+        }
+        bgCtx.stroke();
+      });
+      bgCtx.restore();
+    }
+
+    function drawGoldParticles() {
+      if (animationParams.particleGlowProgress <= 0) return;
+
+      goldParticles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.pulse += 0.02;
+
+        if (p.x < 0) p.x = bgCanvas.width;
+        if (p.x > bgCanvas.width) p.x = 0;
+        if (p.y < 0) p.y = bgCanvas.height;
+        if (p.y > bgCanvas.height) p.y = 0;
+
+        const currentAlpha = Math.sin(p.pulse) * 0.2 + p.alpha;
+
+        bgCtx.save();
+        bgCtx.fillStyle = `rgba(235, 195, 100, ${Math.max(0, currentAlpha * animationParams.particleGlowProgress)})`;
+        bgCtx.shadowColor = 'rgba(215, 160, 60, 0.6)';
+        bgCtx.shadowBlur = 6;
+        bgCtx.beginPath();
+        bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        bgCtx.fill();
+        bgCtx.restore();
+      });
+    }
+
+    function renderBg() {
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+      bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
+      bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+      drawLightBeams();
+      drawGoldParticles();
+
+      requestAnimationFrame(renderBg);
+    }
+    renderBg();
+
+    // =============================================================
+    // 🎬 3. 開場首頁與第一階段 GSAP 時間軸串接
+    // =============================================================
     const mainTl = gsap.timeline();
     gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
 
-    mainTl.to(".loading-text-box .char", {
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      stagger: 0.7,
-      ease: "power2.out"
-    })
+    // 開場文字與 Logo 登場
+    mainTl.to(".loading-text-box .char", { opacity: 1, y: 0, duration: 0.6, stagger: 0.7, ease: "power2.out" })
     .to({}, { duration: 0.8 })
-    .to("#loadingText", {
-      opacity: 0,
-      duration: 1.0,
-      ease: "power2.inOut"
-    })
-    .to("#logoBox", {
-      clipPath: "circle(70% at 50% 50%)",
-      scale: 1,
-      filter: "blur(0px)",
-      opacity: 1,
-      duration: 3.5,
-      ease: "power1.inOut"
-    }, "-=0.5")
+    .to("#loadingText", { opacity: 0, duration: 1.0, ease: "power2.inOut" })
+    .to("#logoBox", { clipPath: "circle(70% at 50% 50%)", scale: 1, filter: "blur(0px)", opacity: 1, duration: 3.5, ease: "power1.inOut" }, "-=0.5")
     .to({}, { duration: 5.0 })
-    .to("#line1", {
-      y: "0%",
-      opacity: 1,
-      duration: 2.0,
-      ease: "power2.out"
-    })
-    .to("#line2", {
-      y: "0%",
-      opacity: 1,
-      duration: 1.5,
-      ease: "power2.out"
-    }, "+=0.2")
-    .to("#line3", {
-      y: "0%",
-      opacity: 1,
-      duration: 1.0,
-      ease: "power2.out"
-    }, "+=0.2")
+    .to("#line1", { y: "0%", opacity: 1, duration: 2.0, ease: "power2.out" })
+    .to("#line2", { y: "0%", opacity: 1, duration: 1.5, ease: "power2.out" }, "+=0.2")
+    .to("#line3", { y: "0%", opacity: 1, duration: 1.0, ease: "power2.out" }, "+=0.2")
     .to("#startExhibitionBtn", {
       opacity: 1,
       duration: 0.8,
       onComplete: () => {
-        gsap.to("#startExhibitionBtn", {
-          y: 8,
-          duration: 1.0,
-          repeat: -1,
-          yoyo: true,
-          ease: "power1.inOut"
-        });
+        gsap.to("#startExhibitionBtn", { y: 8, duration: 1.0, repeat: -1, yoyo: true, ease: "power1.inOut" });
       }
     });
 
+    // 播放「洸限 Banner 光束登場」的 GSAP Function
+    function playBannerBeamAnimation() {
+      const beamTl = gsap.timeline();
+      beamTl.to(animationParams, { beamDownProgress: 1, duration: 1.6, ease: "power2.inOut" })
+      .to(animationParams, { horizonSpreadProgress: 1, duration: 1.4, ease: "power2.out" }, "-=0.2")
+      .to(".brand-title", { opacity: 1, letterSpacing: "1.2rem", duration: 1.4, ease: "power1.out" }, "-=1.0")
+      .to(animationParams, { particleGlowProgress: 1, duration: 1.2, ease: "power1.out" }, "-=0.4")
+      .to(".main-question", { opacity: 1, y: -10, duration: 1.2, ease: "power1.out" }, "-=0.8")
+      .to(".scroll-hint-v", { opacity: 1, duration: 1 });
+    }
+
     // -------------------------------------------------------------
-    // 🎯 3. 滿版跳轉與允許滾動邏輯
+    // 🎯 4. 跳轉與解鎖控制
     // -------------------------------------------------------------
     function scrollToStage1() {
+      // 1. 淡出波紋
       lCanvas.style.opacity = '0';
       setTimeout(() => { isWaveActive = false; }, 1200);
 
-      // 解鎖滾動
+      // 2. 解鎖滾動並滑動至 Banner
       document.body.style.overflowY = 'auto';
-
       document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // 3. 觸發第一階段「光束與文字」降落動畫
+      playBannerBeamAnimation();
     }
 
     function scrollToContent() {
-      if (window.tl) window.tl.progress(1);
-      document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Skip 略過按鈕處理
+      animationParams.beamDownProgress = 1;
+      animationParams.horizonSpreadProgress = 1;
+      animationParams.particleGlowProgress = 1;
+      gsap.to(".brand-title, .main-question, .scroll-hint-v", { opacity: 1, duration: 0.5 });
       gsap.to(".skip-anim-btn", { opacity: 0, pointerEvents: "none", duration: 0.5 });
     }
   </script>
