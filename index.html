@@ -534,7 +534,7 @@
     drawWaveLandscape();
 
     // =============================================================
-    // 🌌 2. 背景 Canvas (🎯 修正：強制線條起止點都在螢幕外邊框，解決畫面內斷頭問題)
+    // 🌌 2. 背景 Canvas (🎯 多波峰連續動態 + 極致縮小起點 X 範圍)
     // =============================================================
     const bgCanvas = document.getElementById('mandalaCanvas');
     const bgCtx = bgCanvas.getContext('2d');
@@ -567,23 +567,28 @@
       });
     }
 
-    // 🎯 參數設置：線條起點均落在畫面左側/上方外部 (-150px)
+    // 🎯 參數設置：束狀緊密噴發 + 多重正弦波波動
     const diagLineCount = 38;
     const diagParams = [];
 
     for (let i = 0; i < diagLineCount; i++) {
-      const isTopStart = i % 2 === 0; // 一半從頂部外邊界出發，一半從左側外邊界出發
+      const isTopStart = i % 2 === 0;
       
       diagParams.push({
         isTopStart: isTopStart,
-        // 頂部外或左側外的隨機偏移比率
-        startPosRatio: (i / (diagLineCount - 1)),
-        // 終點延伸比率（確保完全超越右下邊界）
-        endPosRatio: 0.6 + (i / (diagLineCount - 1)) * 0.6,
+        // 🎯 起點 X 範圍極致縮小（0 ~ 15% 螢幕寬度）
+        startPosRatio: (i / (diagLineCount - 1)) * 0.15,
+        // 終點向右下角廣角延伸
+        endPosRatio: 0.7 + (i / (diagLineCount - 1)) * 0.5,
 
-        speed: 0.012 + Math.random() * 0.012,
+        speed: 0.015 + Math.random() * 0.015,
         phase: Math.random() * Math.PI * 2,
-        amplitude: 45 + Math.random() * 60, // 波浪擺動振幅
+        // 正弦波波動頻率與振幅（實現一條線多個波峰）
+        frequency1: 0.003 + Math.random() * 0.002,
+        frequency2: 0.006 + Math.random() * 0.003,
+        amplitude1: 18 + Math.random() * 15,
+        amplitude2: 10 + Math.random() * 8,
+
         alpha: 0.08 + Math.random() * 0.18,
         width: Math.random() * 1.5 + 0.8
       });
@@ -597,55 +602,65 @@
 
       const W = bgCanvas.width;
       const H = bgCanvas.height;
-      const margin = 150; // 🎯 外擴邊界像素，確保起止點隱藏在螢幕外
+      const margin = 120; // 邊界安全延伸
 
       bgCtx.save();
       diagParams.forEach(p => {
         let startX, startY;
 
-        // 🎯 1. 嚴格讓起點落在螢幕外 (X < 0 或 Y < 0)
+        // 🎯 1. 強制讓起點集中在左上極小區域 (0 ~ 15% X) 且落在邊界外
         if (p.isTopStart) {
-          // 從上方邊框外 (-margin) 進入
-          startX = (p.startPosRatio * 0.45) * W - margin;
+          startX = (p.startPosRatio * W) - margin;
           startY = -margin;
         } else {
-          // 從左側邊框外 (-margin) 進入
           startX = -margin;
-          startY = (p.startPosRatio * 0.45) * H - margin;
+          startY = (p.startPosRatio * H) - margin;
         }
 
-        // 🎯 2. 嚴格讓終點落在右側與下方的邊框外
-        const endX = W + margin + (p.endPosRatio * 0.3 * W);
-        const endY = H + margin + (p.endPosRatio * 0.3 * H);
+        // 🎯 2. 終點延伸至右下邊界外
+        const endX = W + margin + (p.endPosRatio * 0.2 * W);
+        const endY = H + margin + (p.endPosRatio * 0.2 * H);
 
-        // 當前動態發展到的終點
-        const currEndX = startX + (endX - startX) * progress;
-        const currEndY = startY + (endY - startY) * progress;
+        // 動態延伸繪製向量 Length
+        const targetLen = Math.hypot(endX - startX, endY - startY);
+        const currentLen = targetLen * progress;
 
-        // 計算中點與法線向量，製作波浪彎曲
-        const midX = (startX + currEndX) / 2;
-        const midY = (startY + currEndY) / 2;
+        const dirX = (endX - startX) / targetLen;
+        const dirY = (endY - startY) / targetLen;
 
-        const dx = endX - startX;
-        const dy = endY - startY;
-        const len = Math.hypot(dx, dy) || 1;
-        const nx = -dy / len;
-        const ny = dx / len;
-
-        // 波浪動態正弦擺動
-        const waveSwing = Math.sin(globalTime * p.speed + p.phase) * p.amplitude;
-        const waveSwing2 = Math.cos(globalTime * p.speed * 0.75 + p.phase) * (p.amplitude * 0.4);
-
-        const ctrlX = midX + nx * (waveSwing + waveSwing2);
-        const ctrlY = midY + ny * (waveSwing + waveSwing2);
+        // 切線的法向向量 (Normal Vector，用於讓波浪垂直於斜線抖動)
+        const nx = -dirY;
+        const ny = dirX;
 
         bgCtx.beginPath();
         bgCtx.strokeStyle = `rgba(210, 190, 155, ${p.alpha * progress})`;
         bgCtx.lineWidth = p.width;
 
-        // 畫出滑順無斷頭的波浪線條
-        bgCtx.moveTo(startX, startY);
-        bgCtx.quadraticCurveTo(ctrlX, ctrlY, currEndX, currEndY);
+        // 🎯 3. 分段繪製多重正弦波波浪線條（如同 Loading Page）
+        const stepSize = 15; // 採樣步長
+        let isFirstPoint = true;
+
+        for (let dist = 0; dist <= currentLen; dist += stepSize) {
+          // 線性斜向基準點
+          const baseX = startX + dirX * dist;
+          const baseY = startY + dirY * dist;
+
+          // 疊加兩個不同頻率的正弦波，讓每條線有多個波峰與波谷
+          const wave1 = Math.sin(dist * p.frequency1 + globalTime * p.speed + p.phase) * p.amplitude1;
+          const wave2 = Math.cos(dist * p.frequency2 - globalTime * p.speed * 0.8 + p.phase) * p.amplitude2;
+          const totalDisplacement = wave1 + wave2;
+
+          // 法向偏移計算
+          const px = baseX + nx * totalDisplacement;
+          const py = baseY + ny * totalDisplacement;
+
+          if (isFirstPoint) {
+            bgCtx.moveTo(px, py);
+            isFirstPoint = false;
+          } else {
+            bgCtx.lineTo(px, py);
+          }
+        }
         bgCtx.stroke();
       });
       bgCtx.restore();
