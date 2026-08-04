@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>洸限</title>
+  <title>洸限 - 展覽導覽</title>
 
   <!-- 1. 字體與圖示庫 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
 
   <style>
     /* =============================================================
-       0. 全域與統一元件樣式 (Flexbox 獨立圖層遮罩)
+       0. 全域與統一元件樣式
        ============================================================= */
     html, body {
       width: 100%;
@@ -37,7 +37,6 @@
       padding: 0;
     }
 
-    /* 全頁背景 Canvas */
     #mandalaCanvas {
       position: fixed;
       top: 0;
@@ -62,28 +61,29 @@
       overflow: hidden;
     }
 
-    /* 通用文字遮罩結構 */
+    /* 🎯 核心：全站統一的文字遮罩與文字級距結構 */
     .ui-line-mask {
       overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
       padding-bottom: 4px;
-      white-space: nowrap;
+      width: 100%;
     }
 
     .ui-line-content {
       font-family: 'Noto Serif TC', serif;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 400;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.18em;
       color: #E6E6E8;
       transform: translateY(115%);
       opacity: 0;
-      line-height: 1.6;
+      line-height: 1.8;
       will-change: transform, opacity;
-      display: inline-flex;
-      align-items: center;
+      text-align: center;
+      white-space: normal;
+      word-break: break-word;
     }
 
     .skip-anim-btn {
@@ -144,8 +144,8 @@
     .char { opacity: 0; display: inline-block; transform: translateY(10px); }
 
     .logo-container {
-      width: 580px;
-      height: 580px;
+      width: 500px;
+      height: 500px;
       position: relative;
       z-index: 2;
       display: flex;
@@ -155,8 +155,8 @@
       transform: scale(0.7);
       filter: blur(20px);
       opacity: 0;
-      margin-bottom: -160px;
-      margin-top: -40px;
+      margin-bottom: -90px;
+      margin-top: -30px;
       will-change: clip-path, transform, filter, opacity;
     }
 
@@ -177,13 +177,13 @@
       text-align: center;
     }
 
-    .title-wrapper { height: 48px; }
-    .subtitle-wrapper-1 { height: 36px; margin-top: 12px; }
-    .subtitle-wrapper-2 { height: 36px; margin-top: 12px; }
+    .title-wrapper { height: 36px; }
+    .subtitle-wrapper-1 { height: 36px; margin-top: 10px; }
+    .subtitle-wrapper-2 { height: 36px; margin-top: 10px; }
 
     .text-line { color: #E6E6E8; transform: translateY(200%); opacity: 0; line-height: 1; }
-    .title-part1 { font-size: 1.35rem; letter-spacing: 0.4em; font-weight: 300; }
-    .title-part2 { font-size: 1.35rem; letter-spacing: 0.4em; font-weight: 300; opacity: 0.9; }
+    .title-part1 { font-size: 1.6rem; letter-spacing: 0.4em; font-weight: 300; }
+    .title-part2 { font-size: 1.1rem; letter-spacing: 0.3em; font-weight: 300; opacity: 0.9; }
 
     .scroll-arrow-btn { margin-top: 24px; background: none; border: none; cursor: pointer; outline: none; opacity: 0; }
     .arrow-icon { width: 36px; height: 36px; stroke: #E6E6E8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5)); }
@@ -195,7 +195,7 @@
     }
 
     /* =============================================================
-       2. Banner 頁 (🎯 替換為 /img/logo02.png 且縮小 10%)
+       2. Banner 頁
        ============================================================= */
     .hero-container {
       z-index: 2;
@@ -208,7 +208,7 @@
     }
 
     .brand-logo-img {
-      width: 280px; /* 🎯 比原本文字整體視覺占比精準縮小約 10% */
+      width: 320px;
       max-width: 75vw;
       height: auto;
       opacity: 0; 
@@ -222,15 +222,13 @@
       flex-direction: column;
       align-items: center;
       gap: 18px;
+      width: 90%;
+      max-width: 800px;
     }
 
-    .banner-question-part { font-size: 1.25rem; font-weight: 300; letter-spacing: 0.25rem; }
+    .banner-question-part { font-size: 1.2rem; font-weight: 300; letter-spacing: 0.2rem; }
+    .bq-part:last-child { margin-left: 0.8rem; }
 
-    /* 🎯 讓前後兩段文字在 flex 排版時自動維持對稱間距 */
-    .bq-part:last-child {
-      margin-left: 0.8rem; /* 👈 可自由微調此數值！例如 0.6rem ~ 1.0rem，數值越大距離越遠 */
-    }
-    
     .scroll-hint-v {
       position: absolute;
       bottom: 8%;
@@ -278,103 +276,69 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
-      width: 85%;
-      max-width: 900px;
-      pointer-events: none;
-    }
-
-    /* 🎯 獨立重構金句樣式，確保 100% 顯現並永遠停留 */
-    .final-golden-wrapper {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 1.35rem;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      color: #E6E6E8;
-      display: inline-flex;
-      align-items: center;
       justify-content: center;
-      white-space: nowrap;
-      margin-top: 10px;
-    }
-
-    .f-part-text {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(110%);
-      will-change: transform, opacity;
+      gap: 20px;
+      width: 90%;
+      max-width: 850px;
+      pointer-events: none;
     }
 
     .dot-char {
       opacity: 0;
       display: inline-block;
-      margin: 0 1px;
+      margin: 0 2px;
     }
 
     /* =============================================================
-   📱 手機版 (Mobile RWD) 專屬閱讀優化
-   ============================================================= */
-@media (max-width: 768px) {
-  
-  /* 1. 調整整體內邊距，防止邊緣文字緊貼螢幕邊框 */
-  #text-container, .banner-questions-wrapper {
-    width: 92% !important;
-    max-width: 92% !important;
-    padding: 0 10px;
-  }
+       📱 手機版 (Mobile RWD) 統一渲染規範
+       ============================================================= */
+    @media (max-width: 768px) {
+      #text-container, .banner-questions-wrapper {
+        width: 92% !important;
+        max-width: 92% !important;
+        padding: 0 10px;
+      }
 
-  /* 2. 統一縮小手機上的文字字級與字距 */
-  .ui-line-content, 
-  .banner-question-part, 
-  .story-line, 
-  .final-golden-wrapper {
-    font-size: 1.02rem !important;  /* 適合手機閱讀的黃金字級 */
-    letter-spacing: 0.08em !important; /* 縮減字距，避免左右溢出 */
-    line-height: 1.6 !important;
-  }
+      /* 🎯 全站段落文字在手機上一律強制對齊相同規格，防止突兀變大或爆框 */
+      .ui-line-content, 
+      .banner-question-part, 
+      .story-line {
+        font-size: 1.02rem !important;
+        letter-spacing: 0.08em !important;
+        line-height: 1.7 !important;
+      }
 
-  /* 3. Banner 頁：允許雙段問句在手機上優雅換行 */
-  .banner-questions-wrapper .ui-line-mask {
-    flex-wrap: wrap !important; /* 寬度不夠時自動換行 */
-    height: auto !important;
-    overflow: visible !important;
-    gap: 4px;
-    margin-bottom: 12px;
-  }
+      .banner-questions-wrapper .ui-line-mask {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        overflow: visible !important;
+        gap: 4px;
+        margin-bottom: 12px;
+      }
 
-  .bq-part:last-child {
-    margin-left: 0 !important; /* 換行後移除左外邊距 */
-  }
+      .bq-part:last-child {
+        margin-left: 0 !important;
+      }
 
-  /* 4. Banner Logo 圖片大小修正 */
-  .brand-logo-img {
-    width: 240px !important;
-    max-width: 65vw !important;
-    margin-bottom: 1.8rem !important;
-  }
+      .brand-logo-img {
+        width: 220px !important;
+        max-width: 65vw !important;
+        margin-bottom: 1.8rem !important;
+      }
 
-  /* 5. Loading Page Logo 容器調整 */
-  .logo-container {
-    width: 320px !important;
-    height: 320px !important;
-    margin-bottom: -50px !important;
-  }
+      .logo-container {
+        width: 300px !important;
+        height: 300px !important;
+        margin-bottom: -50px !important;
+      }
 
-  /* 6. 沙畫頁結尾金句換行彈性 */
-  .final-golden-wrapper {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    white-space: normal !important;
-  }
-
-  /* 7. 右上角 Skip 按鈕樣式調小 (避免擋到視覺) */
-  .skip-anim-btn {
-    top: 20px !important;
-    right: 20px !important;
-    padding: 6px 12px !important;
-    font-size: 11px !important;
-  }
-}
+      .skip-anim-btn {
+        top: 20px !important;
+        right: 20px !important;
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -382,7 +346,6 @@
   <!-- 0. 全頁背景 Canvas (波浪光束) -->
   <canvas id="mandalaCanvas"></canvas>
 
-  <!-- 全頁滾動包裹容器 -->
   <div class="sections-wrapper" id="sectionsWrapper">
 
     <!-- Page 0. Loading Page -->
@@ -493,7 +456,7 @@
       </div>
 
       <div class="interactive-area">
-        <div class="ui-line-mask title-wrapper"><div class="text-line title-part1" id="line1">回憶</div></div>
+        <div class="ui-line-mask title-wrapper"><div class="text-line title-part1" id="line1">回億</div></div>
         <div class="ui-line-mask subtitle-wrapper-1"><div class="text-line title-part2" id="line2">從這裡</div></div>
         <div class="ui-line-mask subtitle-wrapper-2"><div class="text-line title-part2" id="line3">開始</div></div>
 
@@ -503,7 +466,7 @@
       </div>
     </div>
 
-    <!-- Page 1. Banner 頁 (🎯 替換為 logo02.png 圖片) -->
+    <!-- Page 1. Banner 頁 -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn show" id="bannerSkipBtn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
@@ -529,24 +492,25 @@
       </button>
     </div>
 
-    <!-- Page 2. 第一頁 視聽演示 (沙畫頁) -->
+    <!-- Page 2. 沙畫頁 (🎯 文字結構徹底統一) -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
       <div id="text-container">
-        <div class="ui-line-mask"><div class="ui-line-content story-line">也許是那位一直默默遞上肩膀、比你還相信你自己的摯友！</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">或者是無論你飛得高不高、只在乎你累不累的家人！</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨！</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩！</div></div>
+        <!-- 第 1~4 行故事文字 -->
+        <div class="ui-line-mask"><div class="ui-line-content story-line">也許是那位一直默默遞上肩膀、比你還相信你自己的摯友</div></div>
+        <div class="ui-line-mask"><div class="ui-line-content story-line">或者是無論你飛得高不高、只在乎你累不累的家人</div></div>
+        <div class="ui-line-mask"><div class="ui-line-content story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨</div></div>
+        <div class="ui-line-mask"><div class="ui-line-content story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩</div></div>
         
-        <!-- 🎯 獨立無縫接續結尾金句 (永久留下) -->
-        <div class="ui-line-mask" style="margin-top: 15px;">
-          <div class="final-golden-wrapper">
-            <span class="f-part-text" id="fPart1">回憶 雖然會慢慢消逝</span>
+        <!-- 🎯 第 5 行：結尾金句，採用完全相同的 ui-line-mask & ui-line-content 結構 -->
+        <div class="ui-line-mask">
+          <div class="ui-line-content story-line" id="goldenLine">
+            <span id="fPart1">回憶 雖然會慢慢消逝</span>
             <span class="dot-char" id="dot1">．</span>
             <span class="dot-char" id="dot2">．</span>
             <span class="dot-char" id="dot3">．</span>
-            <span class="f-part-text" id="fPart2">卻仍安靜地沉澱在心靈...某個深處</span>
+            <span id="fPart2">卻也會停留</span>
           </div>
         </div>
       </div>
@@ -714,7 +678,7 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫核心 (點陣圖像 + 完美顯示最後一行金句)
+    // ⏳ 3. 沙畫動畫與統一文字時間軸
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
@@ -734,7 +698,7 @@
     let floatingDustParticles = [];
     let sandImageParticles = [];
     let sandGlobalProgress = { t: 0 };
-    let totalAnimationDuration = 15;
+    let totalAnimationDuration = 20;
     let isSandInitialized = false;
 
     class FloatingDust {
@@ -780,20 +744,20 @@
       }
       update(totalElapsedSec) {
         const localTime = totalElapsedSec - this.delay;
-        if (localTime < 0 || localTime > 8) { this.alpha = 0; return; }
-        const progress = localTime / 8;
+        if (localTime < 0 || localTime > 7.5) { this.alpha = 0; return; }
+        const progress = localTime / 7.5;
 
         if (progress < 0.25) {
           const p = progress / 0.25;
           this.x = this.startX + (this.targetX - this.startX) * (1 - Math.pow(1 - p, 2));
           this.y = this.startY + (this.targetY - this.startY) * (1 - Math.pow(1 - p, 2));
           this.alpha = Math.min(1, p * 1.5) * this.baseAlpha;
-        } else if (progress <= 0.75) {
+        } else if (progress <= 0.70) {
           this.x = this.targetX + Math.sin(Date.now() * 0.003 + this.targetY) * this.noiseX;
           this.y = this.targetY + Math.cos(Date.now() * 0.003 + this.targetX) * this.noiseY;
           this.alpha = this.baseAlpha;
         } else {
-          const p = (progress - 0.75) / 0.25;
+          const p = (progress - 0.70) / 0.30;
           this.x = this.targetX + (this.endX - this.targetX) * (p * p);
           this.y = this.targetY + (this.endY - this.targetY) * (p * p);
           this.alpha = this.baseAlpha * (1 - p);
@@ -808,58 +772,45 @@
       }
     }
 
-    // 🎯 精確計算：前 4 行各自出現與消失後，登場最後一句並永久定格
+    // 🎯 統一改寫後的文字動畫時間軸控制
     function playTextAnimationSequence() {
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
-    
-      // 🎯 1. 登場時機（沙畫結束前幾秒）：原本是 totalAnimationDuration - 3.0
-      // 如果想讓文字更晚/更慢登場，可以改為 - 1.5 或固定更長的時間（例如沙畫播完後停頓 1~2 秒才出現）
-      const textStartTime = totalAnimationDuration + 1.0; // 👈 改為沙畫播完 1 秒後才開始出現第一行
-    
-      storyLines.forEach((line, index) => {
-        // 🎯 2. 每行之間的登場間隔：原本是 2.0 秒，改為 3.0 秒（節奏更慢、更沉靜）
-        const lineAppearTime = textStartTime + (index * 3.0);
-    
-        // 1. 登場動畫（將滑出時間 duration 從 1.6s 延長至 2.0s，讓動作更柔和）
+
+      const textStartTime = totalAnimationDuration + 0.5; 
+
+      // 1. 前 4 行故事文字優雅輪流登場
+      for (let i = 0; i < 4; i++) {
+        const line = storyLines[i];
+        const lineAppearTime = textStartTime + (i * 3.0);
+
         textTl.to(line, {
           y: "0%",
           opacity: 1,
           duration: 2.0,
           ease: "power2.out"
         }, lineAppearTime);
-    
-        // 🎯 3. 每行的停留時間：原本是 6.0 秒，改為 8.0 秒（讓使用者有充裕時間閱讀）
+
         textTl.to(line, {
           opacity: 0,
           duration: 2.0,
           ease: "power2.inOut"
-        }, lineAppearTime + 2.0 + 8.0); // 👈 2.0s 登場 + 停留 8.0s
-      });
-    
-      // 🎯 4. 計算最後金句登場的時間點
-      const lastLineExitTime = textStartTime + (3 * 3.0) + 2.0 + 8.0 + 1.0;
-    
-      // 登場「回憶 雖然會慢慢消逝」
-      textTl.to("#fPart1", {
+        }, lineAppearTime + 2.0 + 7.0);
+      }
+
+      // 2. 🎯 第 5 行（金句）：使用與前幾行完全相同的 ui-line-mask 向上滑出
+      const lastLineExitTime = textStartTime + (4 * 3.0) + 2.0 + 7.0 + 0.8;
+      const goldenLine = document.getElementById('goldenLine');
+
+      textTl.to(goldenLine, {
         y: "0%",
         opacity: 1,
         duration: 2.0,
         ease: "power2.out"
       }, lastLineExitTime)
-    
-      // 打字機點點點（間隔從 0.5s 拉長至 0.8s，步調更慢）
-      .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.8")
-      .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.8")
-      .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.8")
-    
-      // 登場「卻仍安靜地....」
-      .to("#fPart2", {
-        y: "0%",
-        opacity: 1,
-        duration: 2.0,
-        ease: "power2.out"
-      }, "+=0.8");
+      .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.5")
+      .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.5")
+      .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.5");
     }
 
     async function initSandArtSection() {
@@ -868,32 +819,29 @@
 
       floatingDustParticles = Array.from({ length: 45 }, () => new FloatingDust());
 
-      const shuffled = [...ALL_IMAGE_SOURCES].sort(() => 0.5 - Math.random()).slice(0, 5);
+      const shuffled = [...ALL_IMAGE_SOURCES].sort(() => 0.5 - Math.random()).slice(0, 4);
       let currentDelay = 0;
+      
       const imageConfigs = shuffled.map((src, i) => {
-        if (i > 0) currentDelay += (1.2 + Math.random() * 4.0);
+        if (i > 0) currentDelay += 6.0;
         return { src, delay: currentDelay };
       });
 
-      totalAnimationDuration = imageConfigs[imageConfigs.length - 1].delay + 8 + 0.5;
+      totalAnimationDuration = imageConfigs[imageConfigs.length - 1].delay + 7.5 + 0.5;
 
-      const loadPromises = imageConfigs.map((config, imgIndex) => {
+      const loadPromises = imageConfigs.map((config) => {
         return new Promise((resolve) => {
           const img = new Image();
           img.src = config.src;
           img.onload = () => {
-            const TARGET_WIDTH = (480 + Math.random() * 80) * DPR;
+            const isMobile = window.innerWidth <= 768;
+            const TARGET_WIDTH = (isMobile ? 280 : 450) * DPR;
             const scale = TARGET_WIDTH / img.width;
             const imgW = img.width * scale, imgH = img.height * scale;
 
             const W = sandCanvas.width, H = sandCanvas.height;
-            const baseCenters = [
-              { x: W * 0.22, y: H * 0.25 }, { x: W * 0.78, y: H * 0.25 },
-              { x: W * 0.50, y: H * 0.50 }, { x: W * 0.22, y: H * 0.75 }, { x: W * 0.78, y: H * 0.75 }
-            ];
-            const center = baseCenters[imgIndex % 5];
-            const finalX = Math.max(imgW / 2 + 20, Math.min(W - imgW / 2 - 20, center.x + (Math.random() - 0.5) * 0.2 * W));
-            const finalY = Math.max(imgH / 2 + 20, Math.min(H - imgH / 2 - 20, center.y + (Math.random() - 0.5) * 0.2 * H));
+            const finalX = W / 2;
+            const finalY = H / 2;
 
             const offscreen = document.createElement('canvas');
             offscreen.width = sandCanvas.width; offscreen.height = sandCanvas.height;
@@ -924,8 +872,8 @@
       playTextAnimationSequence();
 
       gsap.to(sandGlobalProgress, {
-        t: totalAnimationDuration,
-        duration: totalAnimationDuration,
+        t: totalAnimationDuration + 40, 
+        duration: totalAnimationDuration + 40,
         ease: "none"
       });
 
@@ -936,14 +884,12 @@
       sandCtx.clearRect(0, 0, sandCanvas.width, sandCanvas.height);
       floatingDustParticles.forEach(d => { d.update(); d.draw(); });
 
-      if (sandGlobalProgress.t < totalAnimationDuration) {
-        sandImageParticles.forEach(p => { p.update(sandGlobalProgress.t); p.draw(); });
-      }
+      sandImageParticles.forEach(p => { p.update(sandGlobalProgress.t); p.draw(); });
       requestAnimationFrame(animateSand);
     }
 
     // =============================================================
-    // 🎬 4. GSAP 開場與 Banner 時間軸控制 (🎯 支援 Logo 圖片優雅登場)
+    // 🎬 4. GSAP 開場與 Banner 時間軸控制
     // =============================================================
     const mainTl = gsap.timeline();
     gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
@@ -954,8 +900,8 @@
     .to("#loadingText", { opacity: 0, duration: 1.0, ease: "power2.inOut" })
     .to("#logoBox", { clipPath: "circle(70% at 50% 50%)", scale: 1, filter: "blur(0px)", opacity: 1, duration: 3.5, ease: "power1.inOut" }, "-=0.5")
     .to({}, { duration: 1.5 })
-    .to("#line1", { y: "0%", opacity: 1, duration: 2.0, ease: "power2.out" })
-    .to("#line2", { y: "0%", opacity: 1, duration: 1.5, ease: "power2.out" }, "+=0.2")
+    .to("#line1", { y: "0%", opacity: 1, duration: 1.5, ease: "power2.out" })
+    .to("#line2", { y: "0%", opacity: 1, duration: 1.2, ease: "power2.out" }, "+=0.2")
     .to("#line3", { y: "0%", opacity: 1, duration: 1.0, ease: "power2.out" }, "+=0.2")
     .to("#startExhibitionBtn", {
       opacity: 1, duration: 0.8,
@@ -1029,7 +975,7 @@
       } else if (currentPageIndex === 2) {
         lCanvas.style.opacity = '0';
         playBannerBeamAnimation();
-        isBgCanvasRendering = false; // Page 2 暫停背景，集中資源給沙畫
+        isBgCanvasRendering = false;
         initSandArtSection();
       }
 
