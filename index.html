@@ -310,6 +310,71 @@
       display: inline-block;
       margin: 0 1px;
     }
+
+    /* =============================================================
+   📱 手機版 (Mobile RWD) 專屬閱讀優化
+   ============================================================= */
+@media (max-width: 768px) {
+  
+  /* 1. 調整整體內邊距，防止邊緣文字緊貼螢幕邊框 */
+  #text-container, .banner-questions-wrapper {
+    width: 92% !important;
+    max-width: 92% !important;
+    padding: 0 10px;
+  }
+
+  /* 2. 統一縮小手機上的文字字級與字距 */
+  .ui-line-content, 
+  .banner-question-part, 
+  .story-line, 
+  .final-golden-wrapper {
+    font-size: 1.02rem !important;  /* 適合手機閱讀的黃金字級 */
+    letter-spacing: 0.08em !important; /* 縮減字距，避免左右溢出 */
+    line-height: 1.6 !important;
+  }
+
+  /* 3. Banner 頁：允許雙段問句在手機上優雅換行 */
+  .banner-questions-wrapper .ui-line-mask {
+    flex-wrap: wrap !important; /* 寬度不夠時自動換行 */
+    height: auto !important;
+    overflow: visible !important;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .bq-part:last-child {
+    margin-left: 0 !important; /* 換行後移除左外邊距 */
+  }
+
+  /* 4. Banner Logo 圖片大小修正 */
+  .brand-logo-img {
+    width: 240px !important;
+    max-width: 65vw !important;
+    margin-bottom: 1.8rem !important;
+  }
+
+  /* 5. Loading Page Logo 容器調整 */
+  .logo-container {
+    width: 320px !important;
+    height: 320px !important;
+    margin-bottom: -50px !important;
+  }
+
+  /* 6. 沙畫頁結尾金句換行彈性 */
+  .final-golden-wrapper {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    white-space: normal !important;
+  }
+
+  /* 7. 右上角 Skip 按鈕樣式調小 (避免擋到視覺) */
+  .skip-anim-btn {
+    top: 20px !important;
+    right: 20px !important;
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+  }
+}
   </style>
 </head>
 <body>
