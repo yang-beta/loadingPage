@@ -283,8 +283,8 @@
       pointer-events: none;
     }
 
-    /* 🎯 預設隱藏金句與點點點，等待 GSAP 按順序驅動 */
-    #fPart1, #fPart2, .dot-char {
+    /* 🎯 故事拆解子句與金句點點點的初始狀態控制 */
+    .sub-part, #fPart1, #fPart2, .dot-char {
       opacity: 0;
       display: inline-block;
     }
@@ -390,7 +390,7 @@
               <polygon class="st0" points="486.54 380.13 436.35 318.88 438.71 316.94 488.83 378.1 486.54 380.13"/>
               <polygon class="st0" points="498.39 369.13 439.43 316.25 441.47 313.97 500.34 366.77 498.39 369.13"/>
               <polygon class="st0" points="508.4 356.43 442.07 313.18 443.75 310.62 509.99 353.81 509.24 355.15 508.4 356.43"/>
-              <polygon class="st0" points="516.34 342.35 442.23 309.76 445.48 306.97 517.55 339.54 517 340.97 516.34 342.35"/>
+              <polygon class="st0" points="516.34 342.35 444.23 309.76 445.48 306.97 517.55 339.54 517 340.97 516.34 342.35"/>
               <polygon class="st0" points="522.08 327.24 445.83 306.04 446.65 303.09 522.83 324.28 522.51 325.78 522.08 327.24"/>
               <polygon class="st0" points="525.49 311.44 446.85 302.12 447.21 299.08 525.74 308.4 525.49 311.44"/>
               <polygon class="st0" points="447.27 298.08 447.16 295.03 526.18 292.25 526.43 295.29 447.27 298.08"/>
@@ -469,7 +469,7 @@
       </div>
     </div>
 
-    <!-- Page 1. Banner 頁 -->
+    <!-- Page 1. Banner 頁 (🎯 已採用您微調後的最新文案) -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn show" id="bannerSkipBtn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
@@ -495,18 +495,44 @@
       </button>
     </div>
 
-    <!-- Page 2. 沙畫頁 -->
+    <!-- Page 2. 沙畫頁 (🎯 已採用最新文案並拆解為前後半句) -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
       <div id="text-container">
-        <!-- 第 1~4 行故事文字 -->
-        <div class="ui-line-mask"><div class="ui-line-content story-line">也許是那位一直默默遞上肩膀、比你還相信你自己的摯友</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">或者是無論你飛得高不高、只在乎你累不累的家人</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩</div></div>
+        <!-- 🎯 故事 1：遞上肩膀 ➔ 摯友 -->
+        <div class="ui-line-mask">
+          <div class="ui-line-content story-line">
+            <span class="sub-part s1-p1">也許是那位一直遞上肩膀、</span>
+            <span class="sub-part s1-p2">比你還相信你自己的摯友！</span>
+          </div>
+        </div>
+
+        <!-- 🎯 故事 2：飛多高 ➔ 家人 -->
+        <div class="ui-line-mask">
+          <div class="ui-line-content story-line">
+            <span class="sub-part s2-p1">或是無論你飛多高、</span>
+            <span class="sub-part s2-p2">只在乎你累不累的家人！</span>
+          </div>
+        </div>
+
+        <!-- 🎯 故事 3：吃不飽 ➔ 長輩嘮叨 -->
+        <div class="ui-line-mask">
+          <div class="ui-line-content story-line">
+            <span class="sub-part s3-p1">也可能是怕你吃不飽、</span>
+            <span class="sub-part s3-p2">過不好的長輩嘮叨！</span>
+          </div>
+        </div>
+
+        <!-- 🎯 故事 4：搖尾巴 ➔ 毛孩 -->
+        <div class="ui-line-mask">
+          <div class="ui-line-content story-line">
+            <span class="sub-part s4-p1">還有那無論多晚，總在門口搖著尾巴、</span>
+            <span class="sub-part s4-p2">把你當作全世界的毛孩！</span>
+          </div>
+        </div>
         
-        <!-- 🎯 第 5 行：結尾金句，嚴格控制語序分階段呈現 -->
+        <!-- 🎯 結尾金句：三階段登場 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line" id="goldenLine">
             <span id="fPart1">回憶 雖然會慢慢消逝</span>
@@ -681,7 +707,7 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫與精準時序控制 (🎯 恢復螢幕梅花五點隨機位置)
+    // ⏳ 3. 沙畫動畫與拆解語序的精準時間軸
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
@@ -698,7 +724,6 @@
       '/img/lovers-l.png', '/img/kid-l.png', '/img/cat-l.png'
     ];
 
-    // 🎯 螢幕版梅花五點位置比例陣列：[左上, 右上, 左下, 右下, 中間]
     const PLUM_POSITIONS = [
       { xRatio: 0.25, yRatio: 0.30 },
       { xRatio: 0.75, yRatio: 0.30 },
@@ -784,53 +809,68 @@
       }
     }
 
-    // 🎯 修正後精準語序的文字動畫時間軸控制
+    // 🎯 精準掌控拆解語序與 2 秒間隔的時間軸控制
     function playTextAnimationSequence() {
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
 
-      const textStartTime = totalAnimationDuration + 0.5; 
+      const textStartTime = totalAnimationDuration + 0.5;
 
-      // 1. 前 4 行故事文字優雅輪流登場
-      for (let i = 0; i < 4; i++) {
-        const line = storyLines[i];
-        const lineAppearTime = textStartTime + (i * 3.0);
+      // 定義 4 句拆解文案的選擇器名稱
+      const storyConfigs = [
+        { p1: ".s1-p1", p2: ".s1-p2", lineIdx: 0 },
+        { p1: ".s2-p1", p2: ".s2-p2", lineIdx: 1 },
+        { p1: ".s3-p1", p2: ".s3-p2", lineIdx: 2 },
+        { p1: ".s4-p1", p2: ".s4-p2", lineIdx: 3 }
+      ];
 
+      storyConfigs.forEach((cfg) => {
+        const line = storyLines[cfg.lineIdx];
+
+        // 1. 整行容器滑出，同時登場前半句
         textTl.to(line, {
           y: "0%",
           opacity: 1,
-          duration: 2.0,
+          duration: 1.5,
           ease: "power2.out"
-        }, lineAppearTime);
+        })
+        .to(cfg.p1, {
+          opacity: 1,
+          duration: 1.2,
+          ease: "power1.out"
+        }, "<")
 
-        textTl.to(line, {
+        // 2. 前半句停留 2 秒後，登場後半句
+        .to(cfg.p2, {
+          opacity: 1,
+          duration: 1.2,
+          ease: "power1.out"
+        }, "+=2.0")
+
+        // 3. 完整句子停留 2.5 秒閱讀，接著整體淡出
+        .to(line, {
           opacity: 0,
-          duration: 2.0,
+          duration: 1.8,
           ease: "power2.inOut"
-        }, lineAppearTime + 2.0 + 7.0);
-      }
+        }, "+=2.5")
 
-      // 2. 🎯 第 5 行（金句）：精確的三階段語序動畫
-      const lastLineExitTime = textStartTime + (4 * 3.0) + 2.0 + 7.0 + 0.8;
+        // 4. 句與句之間間隔 2 秒
+        .to({}, { duration: 2.0 });
+      });
+
+      // 5. 第 5 行（金句）：三階段流暢登場
       const goldenLine = document.getElementById('goldenLine');
 
-      // 階段 A: 容器滑出
       textTl.to(goldenLine, {
         y: "0%",
         opacity: 1,
         duration: 1.8,
         ease: "power2.out"
-      }, lastLineExitTime)
-
-      // 階段 B: 顯現前半句「回憶 雖然會慢慢消逝」
-      .to("#fPart1", { opacity: 1, duration: 1.2, ease: "power1.out" }, lastLineExitTime + 0.2)
-
-      // 階段 C: 依序點亮「．．．」
+      })
+      .to("#fPart1", { opacity: 1, duration: 1.2, ease: "power1.out" }, "-=1.2")
       .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.4")
       .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.3")
       .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.3")
-
-      // 階段 D: 顯現後半句「卻也會沉澱在心靈中某個深處」
       .to("#fPart2", { opacity: 1, duration: 1.5, ease: "power1.out" }, "+=0.5");
     }
 
@@ -840,7 +880,6 @@
 
       floatingDustParticles = Array.from({ length: 45 }, () => new FloatingDust());
 
-      // 隨機抽選 4 張圖片，並洗牌梅花五點位置
       const shuffledImgs = [...ALL_IMAGE_SOURCES].sort(() => 0.5 - Math.random()).slice(0, 4);
       const shuffledPositions = [...PLUM_POSITIONS].sort(() => 0.5 - Math.random());
 
@@ -851,7 +890,7 @@
         return { 
           src, 
           delay: currentDelay,
-          pos: shuffledPositions[i] // 指定隨機梅花位置
+          pos: shuffledPositions[i]
         };
       });
 
@@ -869,7 +908,6 @@
 
             const W = sandCanvas.width, H = sandCanvas.height;
             
-            // 🎯 根據梅花五點座標隨機生成
             const finalX = config.pos.xRatio * W;
             const finalY = config.pos.yRatio * H;
 
@@ -902,8 +940,8 @@
       playTextAnimationSequence();
 
       gsap.to(sandGlobalProgress, {
-        t: totalAnimationDuration + 40, 
-        duration: totalAnimationDuration + 40,
+        t: totalAnimationDuration + 60, 
+        duration: totalAnimationDuration + 60,
         ease: "none"
       });
 
