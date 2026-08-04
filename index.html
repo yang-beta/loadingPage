@@ -845,7 +845,7 @@
           opacity: 1,
           duration: 1.2,
           ease: "power1.out"
-        }, "+=2.0")
+        }, "+=1.5")
 
         // 3. 完整句子停留 2.5 秒閱讀，接著整體淡出
         .to(line, {
@@ -855,7 +855,7 @@
         }, "+=2.5")
 
         // 4. 句與句之間間隔 2 秒
-        .to({}, { duration: 2.0 });
+        .to({}, { duration: 1.5 });
       });
 
       // 5. 第 5 行（金句）：三階段流暢登場
@@ -864,7 +864,7 @@
       textTl.to(goldenLine, {
         y: "0%",
         opacity: 1,
-        duration: 1.8,
+        duration: 1.5,
         ease: "power2.out"
       })
       .to("#fPart1", { opacity: 1, duration: 1.2, ease: "power1.out" }, "-=1.2")
