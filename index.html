@@ -283,9 +283,13 @@
       pointer-events: none;
     }
 
-    .dot-char {
+    /* 🎯 預設隱藏金句與點點點，等待 GSAP 按順序驅動 */
+    #fPart1, #fPart2, .dot-char {
       opacity: 0;
       display: inline-block;
+    }
+
+    .dot-char {
       margin: 0 2px;
     }
 
@@ -299,7 +303,6 @@
         padding: 0 10px;
       }
 
-      /* 🎯 全站段落文字在手機上一律強制對齊相同規格，防止突兀變大或爆框 */
       .ui-line-content, 
       .banner-question-part, 
       .story-line {
@@ -387,7 +390,7 @@
               <polygon class="st0" points="486.54 380.13 436.35 318.88 438.71 316.94 488.83 378.1 486.54 380.13"/>
               <polygon class="st0" points="498.39 369.13 439.43 316.25 441.47 313.97 500.34 366.77 498.39 369.13"/>
               <polygon class="st0" points="508.4 356.43 442.07 313.18 443.75 310.62 509.99 353.81 509.24 355.15 508.4 356.43"/>
-              <polygon class="st0" points="516.34 342.35 444.23 309.76 445.48 306.97 517.55 339.54 517 340.97 516.34 342.35"/>
+              <polygon class="st0" points="516.34 342.35 442.23 309.76 445.48 306.97 517.55 339.54 517 340.97 516.34 342.35"/>
               <polygon class="st0" points="522.08 327.24 445.83 306.04 446.65 303.09 522.83 324.28 522.51 325.78 522.08 327.24"/>
               <polygon class="st0" points="525.49 311.44 446.85 302.12 447.21 299.08 525.74 308.4 525.49 311.44"/>
               <polygon class="st0" points="447.27 298.08 447.16 295.03 526.18 292.25 526.43 295.29 447.27 298.08"/>
@@ -475,14 +478,14 @@
       <div class="banner-questions-wrapper">
         <div class="ui-line-mask">
           <div class="ui-line-content banner-question-part bq-part">你的生命中，有沒有一個人 ――</div>
-          <div class="ui-line-content banner-question-part bq-part">讓你成就了今天的自己？</div>
+          <div class="ui-line-content banner-question-part bq-part">讓你 成就了今天的自己？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">哪一段回憶，當每次想起 ――</div>
-          <div class="ui-line-content banner-question-part bq-part">都會微笑？</div>
+          <div class="ui-line-content banner-question-part bq-part">某一段回憶，每當想起 ――</div>
+          <div class="ui-line-content banner-question-part bq-part">都會默默地露出微笑？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">有沒有一份陪伴，即使經過很久 ――</div>
+          <div class="ui-line-content banner-question-part bq-part">有沒有一份陪伴，即使過了很久 ――</div>
           <div class="ui-line-content banner-question-part bq-part">依然溫暖著你？</div>
         </div>
       </div>
@@ -492,7 +495,7 @@
       </button>
     </div>
 
-    <!-- Page 2. 沙畫頁 (🎯 文字結構徹底統一) -->
+    <!-- Page 2. 沙畫頁 -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
@@ -503,7 +506,7 @@
         <div class="ui-line-mask"><div class="ui-line-content story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨</div></div>
         <div class="ui-line-mask"><div class="ui-line-content story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩</div></div>
         
-        <!-- 🎯 第 5 行：結尾金句，採用完全相同的 ui-line-mask & ui-line-content 結構 -->
+        <!-- 🎯 第 5 行：結尾金句，嚴格控制語序分階段呈現 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line" id="goldenLine">
             <span id="fPart1">回憶 雖然會慢慢消逝</span>
@@ -678,7 +681,7 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫與統一文字時間軸
+    // ⏳ 3. 沙畫動畫與精準時序控制 (🎯 恢復螢幕梅花五點隨機位置)
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
@@ -693,6 +696,15 @@
     const ALL_IMAGE_SOURCES = [
       '/img/dog-l.png', '/img/grandpa-l.png', '/img/grandmom-l.png',
       '/img/lovers-l.png', '/img/kid-l.png', '/img/cat-l.png'
+    ];
+
+    // 🎯 螢幕版梅花五點位置比例陣列：[左上, 右上, 左下, 右下, 中間]
+    const PLUM_POSITIONS = [
+      { xRatio: 0.25, yRatio: 0.30 },
+      { xRatio: 0.75, yRatio: 0.30 },
+      { xRatio: 0.25, yRatio: 0.70 },
+      { xRatio: 0.75, yRatio: 0.70 },
+      { xRatio: 0.50, yRatio: 0.50 }
     ];
 
     let floatingDustParticles = [];
@@ -772,7 +784,7 @@
       }
     }
 
-    // 🎯 統一改寫後的文字動畫時間軸控制
+    // 🎯 修正後精準語序的文字動畫時間軸控制
     function playTextAnimationSequence() {
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
@@ -798,19 +810,28 @@
         }, lineAppearTime + 2.0 + 7.0);
       }
 
-      // 2. 🎯 第 5 行（金句）：使用與前幾行完全相同的 ui-line-mask 向上滑出
+      // 2. 🎯 第 5 行（金句）：精確的三階段語序動畫
       const lastLineExitTime = textStartTime + (4 * 3.0) + 2.0 + 7.0 + 0.8;
       const goldenLine = document.getElementById('goldenLine');
 
+      // 階段 A: 容器滑出
       textTl.to(goldenLine, {
         y: "0%",
         opacity: 1,
-        duration: 2.0,
+        duration: 1.8,
         ease: "power2.out"
       }, lastLineExitTime)
-      .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.5")
-      .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.5")
-      .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.5");
+
+      // 階段 B: 顯現前半句「回憶 雖然會慢慢消逝」
+      .to("#fPart1", { opacity: 1, duration: 1.2, ease: "power1.out" }, lastLineExitTime + 0.2)
+
+      // 階段 C: 依序點亮「．．．」
+      .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.4")
+      .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.3")
+      .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.3")
+
+      // 階段 D: 顯現後半句「卻也會沉澱在心靈中某個深處」
+      .to("#fPart2", { opacity: 1, duration: 1.5, ease: "power1.out" }, "+=0.5");
     }
 
     async function initSandArtSection() {
@@ -819,12 +840,19 @@
 
       floatingDustParticles = Array.from({ length: 45 }, () => new FloatingDust());
 
-      const shuffled = [...ALL_IMAGE_SOURCES].sort(() => 0.5 - Math.random()).slice(0, 4);
+      // 隨機抽選 4 張圖片，並洗牌梅花五點位置
+      const shuffledImgs = [...ALL_IMAGE_SOURCES].sort(() => 0.5 - Math.random()).slice(0, 4);
+      const shuffledPositions = [...PLUM_POSITIONS].sort(() => 0.5 - Math.random());
+
       let currentDelay = 0;
       
-      const imageConfigs = shuffled.map((src, i) => {
+      const imageConfigs = shuffledImgs.map((src, i) => {
         if (i > 0) currentDelay += 6.0;
-        return { src, delay: currentDelay };
+        return { 
+          src, 
+          delay: currentDelay,
+          pos: shuffledPositions[i] // 指定隨機梅花位置
+        };
       });
 
       totalAnimationDuration = imageConfigs[imageConfigs.length - 1].delay + 7.5 + 0.5;
@@ -835,13 +863,15 @@
           img.src = config.src;
           img.onload = () => {
             const isMobile = window.innerWidth <= 768;
-            const TARGET_WIDTH = (isMobile ? 280 : 450) * DPR;
+            const TARGET_WIDTH = (isMobile ? 260 : 420) * DPR;
             const scale = TARGET_WIDTH / img.width;
             const imgW = img.width * scale, imgH = img.height * scale;
 
             const W = sandCanvas.width, H = sandCanvas.height;
-            const finalX = W / 2;
-            const finalY = H / 2;
+            
+            // 🎯 根據梅花五點座標隨機生成
+            const finalX = config.pos.xRatio * W;
+            const finalY = config.pos.yRatio * H;
 
             const offscreen = document.createElement('canvas');
             offscreen.width = sandCanvas.width; offscreen.height = sandCanvas.height;
