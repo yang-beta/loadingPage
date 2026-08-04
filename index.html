@@ -838,23 +838,23 @@
         })
         .to(cfg.p1, {
           opacity: 1,
-          duration: 1.0,
+          duration: 0.8,
           ease: "power1.out"
         }, "<")
 
         // 2. 前半句停留 1.0 秒後，登場後半句
         .to(cfg.p2, {
           opacity: 1,
-          duration: 1.0,
+          duration: 0.8,
           ease: "power1.out"
         }, "+=1.5")
 
         // 3. 完整句子停留 2.5 秒閱讀，接著整體淡出
         .to(line, {
           opacity: 0,
-          duration: 1.0,
+          duration: 0.8,
           ease: "power2.inOut"
-        }, "+=2.0")
+        }, "+=1.5")
 
         // 4. 句與句之間間隔 1.0 秒
         .to({}, { duration: 0.5 });
