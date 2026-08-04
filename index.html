@@ -743,56 +743,58 @@
       }
     }
 
-    // 🎯 精確計算：前 4 行各自出現與消失後，登場最後金句並永久定格
+    // 🎯 精確計算：前 4 行各自出現與消失後，登場最後一句並永久定格
     function playTextAnimationSequence() {
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
-
-      // 計算開場時間 (沙畫快結束前 3 秒)
-      const textStartTime = Math.max(2.0, totalAnimationDuration - 3.0); 
-
+    
+      // 🎯 1. 登場時機（沙畫結束前幾秒）：原本是 totalAnimationDuration - 3.0
+      // 如果想讓文字更晚/更慢登場，可以改為 - 1.5 或固定更長的時間（例如沙畫播完後停頓 1~2 秒才出現）
+      const textStartTime = totalAnimationDuration + 1.0; // 👈 改為沙畫播完 1 秒後才開始出現第一行
+    
       storyLines.forEach((line, index) => {
-        const lineAppearTime = textStartTime + (index * 2.0);
-
-        // 1. 登場 (向上滑出 + 淡入)
+        // 🎯 2. 每行之間的登場間隔：原本是 2.0 秒，改為 3.0 秒（節奏更慢、更沉靜）
+        const lineAppearTime = textStartTime + (index * 3.0);
+    
+        // 1. 登場動畫（將滑出時間 duration 從 1.6s 延長至 2.0s，讓動作更柔和）
         textTl.to(line, {
           y: "0%",
           opacity: 1,
-          duration: 1.6,
+          duration: 2.0,
           ease: "power2.out"
         }, lineAppearTime);
-
-        // 2. 停留 6 秒獨立淡出
+    
+        // 🎯 3. 每行的停留時間：原本是 6.0 秒，改為 8.0 秒（讓使用者有充裕時間閱讀）
         textTl.to(line, {
           opacity: 0,
-          duration: 1.6,
+          duration: 2.0,
           ease: "power2.inOut"
-        }, lineAppearTime + 1.6 + 6.0);
+        }, lineAppearTime + 2.0 + 8.0); // 👈 2.0s 登場 + 停留 8.0s
       });
-
-      // 🎯 關鍵修復：計算第 4 行消失後的精確時間，無縫登場結尾金句
-      const lastLineExitTime = textStartTime + (3 * 2.0) + 1.6 + 6.0 + 0.6;
-
+    
+      // 🎯 4. 計算最後金句登場的時間點
+      const lastLineExitTime = textStartTime + (3 * 3.0) + 2.0 + 8.0 + 1.0;
+    
       // 登場「回憶 雖然會慢慢消逝」
       textTl.to("#fPart1", {
         y: "0%",
         opacity: 1,
-        duration: 1.6,
+        duration: 2.0,
         ease: "power2.out"
       }, lastLineExitTime)
-
-      // 打字機點點點 (各延遲 0.5 秒)
-      .to("#dot1", { opacity: 1, duration: 0.2 }, "+=0.5")
-      .to("#dot2", { opacity: 1, duration: 0.2 }, "+=0.5")
-      .to("#dot3", { opacity: 1, duration: 0.2 }, "+=0.5")
-
-      // 登場「卻也會停留」
+    
+      // 打字機點點點（間隔從 0.5s 拉長至 0.8s，步調更慢）
+      .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.8")
+      .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.8")
+      .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.8")
+    
+      // 登場「卻仍安靜地....」
       .to("#fPart2", {
         y: "0%",
         opacity: 1,
-        duration: 1.6,
+        duration: 2.0,
         ease: "power2.out"
-      }, "+=0.5");
+      }, "+=0.8");
     }
 
     async function initSandArtSection() {
