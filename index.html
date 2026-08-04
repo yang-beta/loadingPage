@@ -814,7 +814,7 @@
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
 
-      const textStartTime = totalAnimationDuration + 0.5;
+      const textStartTime = 1.5;
 
       // 定義 4 句拆解文案的選擇器名稱
       const storyConfigs = [
@@ -823,7 +823,9 @@
         { p1: ".s3-p1", p2: ".s3-p2", lineIdx: 2 },
         { p1: ".s4-p1", p2: ".s4-p2", lineIdx: 3 }
       ];
-
+      // 1. 在時間軸起頭留白等待 1.5 秒
+      textTl.to({}, { duration: textStartTime });
+      
       storyConfigs.forEach((cfg) => {
         const line = storyLines[cfg.lineIdx];
 
@@ -840,7 +842,7 @@
           ease: "power1.out"
         }, "<")
 
-        // 2. 前半句停留 2 秒後，登場後半句
+        // 2. 前半句停留 1.5 秒後，登場後半句
         .to(cfg.p2, {
           opacity: 1,
           duration: 1.2,
