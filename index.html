@@ -833,31 +833,31 @@
         textTl.to(line, {
           y: "0%",
           opacity: 1,
-          duration: 1.5,
+          duration: 1.0,
           ease: "power2.out"
         })
         .to(cfg.p1, {
           opacity: 1,
-          duration: 1.2,
+          duration: 1.0,
           ease: "power1.out"
         }, "<")
 
-        // 2. 前半句停留 1.5 秒後，登場後半句
+        // 2. 前半句停留 1.0 秒後，登場後半句
         .to(cfg.p2, {
           opacity: 1,
-          duration: 1.2,
+          duration: 1.0,
           ease: "power1.out"
         }, "+=1.5")
 
         // 3. 完整句子停留 2.5 秒閱讀，接著整體淡出
         .to(line, {
           opacity: 0,
-          duration: 1.8,
+          duration: 1.0,
           ease: "power2.inOut"
-        }, "+=2.5")
+        }, "+=2.0")
 
-        // 4. 句與句之間間隔 2 秒
-        .to({}, { duration: 1.5 });
+        // 4. 句與句之間間隔 1.0 秒
+        .to({}, { duration: 0.5 });
       });
 
       // 5. 第 5 行（金句）：三階段流暢登場
