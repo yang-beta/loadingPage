@@ -25,7 +25,7 @@
       margin: 0 !important;
       padding: 0 !important;
       background-color: #1a1a1a !important;
-      color: #FFFFFF;
+      color: #E6E6E8 !important; /* 🎯 統一字體顏色 */
       font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
       overflow: hidden;
       box-sizing: border-box;
@@ -69,8 +69,8 @@
       top: 30px;
       right: 40px;
       background: none;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #d5d5d5;
+      border: 1px solid rgba(230, 230, 232, 0.25);
+      color: #E6E6E8;
       padding: 8px 16px;
       font-size: 12px;
       font-family: 'Noto Sans TC', sans-serif;
@@ -122,7 +122,7 @@
       z-index: 10;
       font-size: 1.2rem;
       letter-spacing: 0.5em;
-      color: #FFFFFF;
+      color: #E6E6E8;
       font-weight: 300;
       display: flex;
       justify-content: center;
@@ -184,7 +184,7 @@
     .subtitle-wrapper-2 { height: 36px; margin-top: 6px; }
 
     .text-line {
-      color: #FFFFFF;
+      color: #E6E6E8;
       transform: translateY(200%);
       opacity: 0;
       line-height: 1;
@@ -206,12 +206,12 @@
     .arrow-icon {
       width: 36px;
       height: 36px;
-      stroke: #FFFFFF;
+      stroke: #E6E6E8;
       stroke-width: 2;
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
-      filter: drop-shadow(0px 0px 6px rgba(255, 255, 255, 0.5));
+      filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5));
     }
 
     @keyframes goldGlowPulse {
@@ -221,7 +221,7 @@
     }
 
     /* =============================================================
-       2. Banner 頁 (含底線向上浮現文字遮罩)
+       2. Banner 頁 (梯次連動問句)
        ============================================================= */
     .hero-container {
       z-index: 2;
@@ -240,36 +240,40 @@
       font-weight: 300;
       letter-spacing: 1.2rem;
       padding-left: 1.2rem;
-      color: #e5e5e5;
+      color: #E6E6E8;
       text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
       opacity: 0; 
       margin-bottom: 2.5rem;
     }
 
-    /* Banner 3 行文字容器與遮罩 */
     .banner-questions-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 18px;
     }
 
     .banner-line-mask {
       overflow: hidden;
       padding-bottom: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      white-space: nowrap;
     }
 
-    .banner-question-line {
+    .banner-question-part {
       font-family: 'Noto Serif TC', serif;
       font-size: 1.25rem;
       font-weight: 300;
-      letter-spacing: 0.35rem;
-      color: #c5a880; 
+      letter-spacing: 0.25rem;
+      color: #E6E6E8; /* 🎯 改為 #E6E6E8 */
       line-height: 1.6;
-      transform: translateY(110%);
+      transform: translateY(115%);
       opacity: 0;
-      text-shadow: 0 0 10px rgba(197, 168, 128, 0.3);
+      text-shadow: 0 0 10px rgba(230, 230, 232, 0.3);
       will-change: transform, opacity;
+      display: inline-block;
     }
 
     .scroll-hint-v {
@@ -287,7 +291,7 @@
     .scroll-hint-v:hover { transform: scale(1.15); }
 
     /* =============================================================
-       3. Page 2 (第一頁 視聽演示 - 高辨識度沙畫粒子)
+       3. Page 2 (第一頁 視聽演示 - 動畫文案全新時序控制)
        ============================================================= */
     .audiovisual-section {
       z-index: 10;
@@ -320,24 +324,54 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 20px;
+      width: 85%;
+      max-width: 900px;
       pointer-events: none;
     }
 
     .sand-text-line-wrapper {
       overflow: hidden;
-      padding-bottom: 4px;
+      padding-bottom: 6px;
     }
 
     .sand-text-line {
       font-family: 'Noto Serif TC', serif;
-      font-size: 2rem;
-      font-weight: 500;
+      font-size: 1.35rem;
+      font-weight: 400;
       letter-spacing: 0.2em;
-      color: #E6E6E8;
-      text-shadow: 0 0 12px rgba(240, 195, 110, 0.4);
-      transform: translateY(105%);
+      color: #E6E6E8; /* 🎯 改為 #E6E6E8 */
+      text-shadow: 0 0 12px rgba(230, 230, 232, 0.4);
+      transform: translateY(110%);
       opacity: 0;
+      line-height: 1.8;
+      will-change: transform, opacity;
+    }
+
+    /* 最後一行金句樣式 */
+    .final-golden-line {
+      font-size: 1.8rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      color: #E6E6E8;
+      text-shadow: 0 0 15px rgba(240, 195, 110, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .dot-char {
+      opacity: 0;
+      display: inline-block;
+      transition: opacity 0.3s ease;
+    }
+
+    .final-part2 {
+      opacity: 0;
+      transform: translateY(100%);
+      display: inline-block;
+      will-change: transform, opacity;
     }
   </style>
 </head>
@@ -407,7 +441,7 @@
               <rect class="st0" x="391.62" y="230.65" width="78.96" height="3.06" transform="translate(134.41 621.71) rotate(-81.01)"/>
               <rect class="st0" x="381.53" y="229.84" width="78.94" height="3.06" transform="translate(188.4 651.69) rotate(-89.83)"/>
               <rect class="st0" x="409.38" y="192.65" width="3.06" height="78.92" transform="translate(-30.09 64.07) rotate(-8.6)"/>
-              <rect class="st0" x="399.51" y="194.92" width="3.06" height="78.9" transform="translate(-51.7 130.52) rotate(-17.38)"/>
+              <rect class="st0" x="399.51" y="194.92" width="3.06" height="78.89" transform="translate(-51.7 130.52) rotate(-17.38)"/>
               <rect class="st0" x="390.1" y="198.68" width="3.06" height="78.89" transform="translate(-64.87 197.08) rotate(-26.16)"/>
               <polygon class="st0" points="404.25 276.47 384.26 247.88 384.27 247.87 359.07 211.81 361.58 210.06 387.93 247.78 387.93 247.78 406.75 274.71 404.25 276.47"/>
               <rect class="st0" x="373.55" y="210.25" width="3.06" height="78.87" transform="translate(-68.56 328.46) rotate(-43.72)"/>
@@ -479,7 +513,7 @@
       </div>
     </div>
 
-    <!-- Page 1. Banner 頁 (更新 3 行底線向上浮現文字) -->
+    <!-- Page 1. Banner 頁 (🎯 前後段拆解與延遲1.5秒浮現) -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn show" id="bannerSkipBtn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
@@ -487,13 +521,16 @@
 
       <div class="banner-questions-wrapper">
         <div class="banner-line-mask">
-          <p class="banner-question-line" id="bqLine1">你的生命中，有沒有一個人讓你成為了今天的自己？</p>
+          <span class="banner-question-part bq-part">你的生命中，有沒有一個人 ――</span>
+          <span class="banner-question-part bq-part">讓你成就了今天的自己？</span>
         </div>
         <div class="banner-line-mask">
-          <p class="banner-question-line" id="bqLine2">哪一段回憶，讓每次想起 都會微笑？</p>
+          <span class="banner-question-part bq-part">哪一段回憶，當每次想起 ――</span>
+          <span class="banner-question-part bq-part">都會微笑？</span>
         </div>
         <div class="banner-line-mask">
-          <p class="banner-question-line" id="bqLine3">有沒有一份陪伴，即使經過很久，依然溫暖著你？</p>
+          <span class="banner-question-part bq-part">有沒有一份陪伴，即使經過很久 ――</span>
+          <span class="banner-question-part bq-part">依然溫暖著你？</span>
         </div>
       </div>
 
@@ -504,14 +541,27 @@
       </button>
     </div>
 
-    <!-- Page 2. 第一頁 視聽演示 -->
+    <!-- Page 2. 第一頁 視聽演示 (🎯 新版文字時序與永久保留金句) -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
       <div id="text-container">
-        <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 雖然會慢慢消逝</div></div>
-        <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 也會停留</div></div>
-        <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 又慢慢地浮現</div></div>
+        <!-- 前 4 行感性文案 -->
+        <div class="sand-text-line-wrapper"><div class="sand-text-line story-line">也許是那位一直默默遞上肩膀、比你還相信你自己的摯友</div></div>
+        <div class="sand-text-line-wrapper"><div class="sand-text-line story-line">或者是無論你飛得高不高、只在乎你累不累的家人</div></div>
+        <div class="sand-text-line-wrapper"><div class="sand-text-line story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨</div></div>
+        <div class="sand-text-line-wrapper"><div class="sand-text-line story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩</div></div>
+        
+        <!-- 🎯 最後一行金句 (文字點點梯次登場，永久保留) -->
+        <div class="sand-text-line-wrapper" style="margin-top: 15px;">
+          <div class="final-golden-line" id="finalGoldenLine">
+            <span class="final-part1" id="fPart1" style="opacity:0; transform:translateY(100%); display:inline-block;">回憶 雖然會慢慢消逝</span>
+            <span class="dot-char" id="dot1">．</span>
+            <span class="dot-char" id="dot2">．</span>
+            <span class="dot-char" id="dot3">．</span>
+            <span class="final-part2" id="fPart2">卻也會停留</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -736,7 +786,7 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫核心 logic (🎯 高辨識度 gap=3 + 極速畫布快取)
+    // ⏳ 3. 沙畫動畫核心 logic (🎯 只播放一次，不重複刷新)
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
@@ -762,8 +812,8 @@
     let sandImageParticles = [];
     let sandGlobalProgress = { t: 0 };
     let totalAnimationDuration = 15;
-    let sandAnimId = null;
     let isSandInitialized = false;
+    let hasSandPlayedOnce = false; // 🎯 紀錄沙畫是否已播放完畢
 
     class FloatingDust {
       constructor() {
@@ -808,9 +858,7 @@
 
         this.x = this.startX;
         this.y = this.startY;
-        
-        // 🎯 辨識度提升1：適度增大粒徑 (0.8px ~ 1.8px) 讓線條呈現更飽滿紮實
-        this.size = (Math.random() * 1.0 + 0.8) * DPR; 
+        this.size = (Math.random() * 1.0 + 0.8) * DPR;
         this.baseAlpha = Math.random() * 0.65 + 0.35;
         this.alpha = 0;
 
@@ -903,30 +951,54 @@
       return { x: finalX, y: finalY };
     }
 
+    // 🎯 核心精緻文案時間軸控制器
     function playTextAnimationSequence() {
-      const textLines = document.querySelectorAll('.sand-text-line');
+      const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
 
-      textLines.forEach((line, index) => {
-        const randomDelay = index === 0 ? 0.5 : (1.2 + Math.random() * 1.2);
-        textTl.to(line, {
-          y: "0%",
-          opacity: 1,
-          duration: 2.0,
-          ease: "power2.out"
-        }, `+=${randomDelay}`);
-      });
+      // 1. 播放沙畫 3 秒後，前四行文字依序登場 (每行間隔 2 秒)
+      textTl.to(storyLines, {
+        y: "0%",
+        opacity: 1,
+        duration: 1.8,
+        stagger: 2.0,
+        ease: "power2.out"
+      }, "+=3.0")
 
-      const randomStayDuration = 3 + Math.random() * 2;
-      textTl.to("#text-container", {
+      // 2. 全部登場後停頓 5 秒，溫柔淡出
+      .to(storyLines, {
         opacity: 0,
-        duration: 2.2,
+        duration: 2.0,
         ease: "power2.inOut",
-        delay: randomStayDuration
-      });
+        delay: 5.0
+      })
+
+      // 3. 登場最後一行金句前段：「回憶 雖然會慢慢消逝」
+      .to("#fPart1", {
+        y: "0%",
+        opacity: 1,
+        duration: 1.6,
+        ease: "power2.out"
+      }, "+=0.5")
+
+      // 4. 每 0.5 秒依序打出點點：．．．
+      .to("#dot1", { opacity: 1, duration: 0.2 }, "+=0.5")
+      .to("#dot2", { opacity: 1, duration: 0.2 }, "+=0.5")
+      .to("#dot3", { opacity: 1, duration: 0.2 }, "+=0.5")
+
+      // 5. 點點結束後，登場後半句：「卻也會停留」
+      .to("#fPart2", {
+        y: "0%",
+        opacity: 1,
+        duration: 1.6,
+        ease: "power2.out"
+      }, "+=0.5");
+      
+      // 🎯 此金句不設定淡出，永遠保留在畫面上！
     }
 
     async function initSandArtSection() {
+      // 🎯 若已播放過，則不再重新渲染沙畫
       if (isSandInitialized) return;
       isSandInitialized = true;
 
@@ -948,7 +1020,6 @@
           const img = new Image();
           img.src = config.src;
           img.onload = () => {
-            // 🎯 辨識度提升2：適度放大畫像顯示尺寸 (480px ~ 560px)，細節更清晰
             const TARGET_WIDTH = (480 + Math.random() * 80) * DPR;
             const scale = TARGET_WIDTH / img.width;
             const imgW = img.width * scale;
@@ -969,8 +1040,6 @@
             const imageData = offCtx.getImageData(0, 0, sandCanvas.width, sandCanvas.height);
             const data = imageData.data;
             const groupParticles = [];
-            
-            // 🎯 辨識度提升3：設定 gap = 3 密集的精確像素採樣
             const gap = Math.round(3 * DPR);
 
             for (let y = 0; y < sandCanvas.height; y += gap) {
@@ -982,7 +1051,6 @@
                 const alpha = data[index + 3];
                 const brightness = (r + g + b) / 3;
 
-                // 🎯 辨識度提升4：放寬採樣閾值，讓淡線條也能生成粒子
                 if (alpha > 50 && brightness < 230) {
                   groupParticles.push(new SandParticle(x, y, config.delay));
                 }
@@ -997,12 +1065,15 @@
       const results = await Promise.all(loadPromises);
       sandImageParticles = results.flat();
 
+      // 觸發文字鏈與沙畫計時器
+      playTextAnimationSequence();
+
       gsap.to(sandGlobalProgress, {
         t: totalAnimationDuration,
         duration: totalAnimationDuration,
         ease: "none",
         onComplete: () => {
-          playTextAnimationSequence();
+          hasSandPlayedOnce = true;
         }
       });
 
@@ -1024,11 +1095,11 @@
         });
       }
 
-      sandAnimId = requestAnimationFrame(animateSand);
+      requestAnimationFrame(animateSand);
     }
 
     // =============================================================
-    // 🎬 4. GSAP 開場與 Banner 時間軸控制 (🎯 每行間隔 2 秒底線浮現)
+    // 🎬 4. GSAP 開場與 Banner 時間軸控制
     // =============================================================
     const mainTl = gsap.timeline();
     gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
@@ -1061,20 +1132,26 @@
 
       bannerTimeline = gsap.timeline();
       
-      // 光束與主標題登場
       bannerTimeline.to(animationParams, { beamDownProgress: 1, duration: 1.6, ease: "power2.inOut" })
       .to(animationParams, { horizonSpreadProgress: 1, duration: 1.4, ease: "power2.out" }, "-=0.2")
       .to(".brand-title", { opacity: 1, letterSpacing: "1.2rem", duration: 1.4, ease: "power1.out" }, "-=1.0")
-      .to(animationParams, { particleGlowProgress: 1, duration: 1.2, ease: "power1.out" }, "-=0.4")
+      .to(animationParams, { particleGlowProgress: 1, duration: 1.2, ease: "power1.out" }, "-=0.4");
       
-      // 🎯 3 行感性問句從底線向上浮現，每行間隔 2 秒 (stagger: 2.0)
-      .to(".banner-question-line", {
-        y: "0%",
-        opacity: 1,
-        duration: 1.6,
-        stagger: 2.0,
-        ease: "power2.out"
-      }, "-=0.4")
+      // 🎯 梯次浮現問句邏輯：前段 -> 延遲1.5秒 -> 後段 -> 延遲1.5秒 -> 下一行...
+      const bqParts = document.querySelectorAll('.bq-part');
+      
+      // 第 1 行
+      bannerTimeline.to(bqParts[0], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "-=0.4")
+      .to(bqParts[1], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
+      
+      // 第 2 行
+      .to(bqParts[2], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
+      .to(bqParts[3], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
+
+      // 第 3 行
+      .to(bqParts[4], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
+      .to(bqParts[5], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
+
       .to(".scroll-hint-v", { opacity: 1, duration: 1 });
     }
 
@@ -1083,16 +1160,15 @@
       goToPage(1);
     }
 
-    // 🎯 修復：Skip 按鈕點擊後即刻呈現完整 Banner Page 畫面
     function scrollToContent() {
       if (bannerTimeline) {
-        bannerTimeline.progress(1); // 直接衝到時間軸 100%
+        bannerTimeline.progress(1);
       } else {
         animationParams.beamDownProgress = 1;
         animationParams.horizonSpreadProgress = 1;
         animationParams.particleGlowProgress = 1;
         gsap.set(".brand-title, .scroll-hint-v", { opacity: 1 });
-        gsap.set(".banner-question-line", { y: "0%", opacity: 1 });
+        gsap.set(".bq-part", { y: "0%", opacity: 1 });
       }
       gsap.to("#bannerSkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
     }
@@ -1135,7 +1211,7 @@
         playBannerBeamAnimation();
         audioVisualSec.classList.add('active');
 
-        // 進入 Page 2 時，暫停背景 Canvas 專心運算沙畫
+        // 切換至 Page 2 時，停止背景 Canvas 節省效能
         isBgCanvasRendering = false;
 
         initSandArtSection();
