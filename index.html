@@ -8,7 +8,7 @@
   <!-- 1. 常用字體與圖示庫 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" href="data:,">
 
@@ -270,7 +270,7 @@
     .scroll-hint-v:hover { transform: scale(1.15); }
 
     /* =============================================================
-       3. 第一頁 視聽演示 (Page 2) - 純黑底阻隔
+       3. Page 2 (第一頁 視聽演示 - 整合沙畫粒子)
        ============================================================= */
     .audiovisual-section {
       z-index: 10;
@@ -279,42 +279,55 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 20px;
       background-color: #1a1a1a !important;
+      position: relative;
     }
 
-    .audiovisual-title {
+    #CanvasAnime {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 沙畫中央詩意文字容器定位 */
+    #text-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      pointer-events: none;
+    }
+
+    .sand-text-line-wrapper {
+      overflow: hidden;
+      padding-bottom: 4px;
+    }
+
+    .sand-text-line {
       font-family: 'Noto Serif TC', serif;
-      font-size: 2.5rem;
-      font-weight: 300;
-      letter-spacing: 0.6rem;
-      color: #e5e5e5;
+      font-size: 2rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: #E6E6E8;
+      text-shadow: 0 0 12px rgba(240, 195, 110, 0.4);
+      transform: translateY(105%);
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1.2s ease, transform 1.2s ease;
-    }
-
-    .audiovisual-subtitle {
-      font-size: 1.0rem;
-      font-weight: 300;
-      letter-spacing: 0.3rem;
-      color: #c5a880;
-      margin-top: 1rem;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1.2s ease 0.3s, transform 1.2s ease 0.3s;
-    }
-
-    .audiovisual-section.active .audiovisual-title,
-    .audiovisual-section.active .audiovisual-subtitle {
-      opacity: 1;
-      transform: translateY(0);
     }
   </style>
 </head>
 <body>
 
-  <!-- 0. 背景 Canvas -->
+  <!-- 0. 背景 Canvas ( Banner 頁與全頁粒子光束 ) -->
   <canvas id="mandalaCanvas"></canvas>
 
   <!-- 全頁滾動包裹容器 -->
@@ -433,7 +446,7 @@
 
       <div class="interactive-area">
         <div class="text-wrapper title-wrapper">
-          <div class="text-line title-part1" id="line1">回憶</div>
+          <div class="text-line title-part1" id="line1">回億</div>
         </div>
         <div class="text-wrapper subtitle-wrapper-1">
           <div class="text-line title-part2" id="line2">從這裡</div>
@@ -464,10 +477,16 @@
       </button>
     </div>
 
-    <!-- Page 2. 第一頁 視聽演示 -->
+    <!-- Page 2. 第一頁 視聽演示 (沙畫藝術 Canvas + 詩意文字) -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
-      <h2 class="audiovisual-title">視聽演示</h2>
-      <p class="audiovisual-subtitle">沉浸於光與聲響的漫遊旅程</p>
+      <canvas id="CanvasAnime"></canvas>
+
+      <!-- 詩意文字容器 -->
+      <div id="text-container">
+        <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 雖然會慢慢消逝</div></div>
+        <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 也會停留</div></div>
+        <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 又慢慢地浮現</div></div>
+      </div>
     </div>
 
   </div>
@@ -534,7 +553,7 @@
     drawWaveLandscape();
 
     // =============================================================
-    // 🌌 2. 背景 Canvas (🎯 多波峰連續動態 + 極致縮小起點 X 範圍)
+    // 🌌 2. 全頁背景 Canvas ( Banner 頁多波峰束狀對角波浪 )
     // =============================================================
     const bgCanvas = document.getElementById('mandalaCanvas');
     const bgCtx = bgCanvas.getContext('2d');
@@ -552,7 +571,6 @@
       particleGlowProgress: 0
     };
 
-    // 金色粒子
     const goldParticles = [];
     const particleCount = 80;
     for (let i = 0; i < particleCount; i++) {
@@ -567,7 +585,6 @@
       });
     }
 
-    // 🎯 參數設置：束狀緊密噴發 + 多重正弦波波動
     const diagLineCount = 38;
     const diagParams = [];
 
@@ -576,14 +593,11 @@
       
       diagParams.push({
         isTopStart: isTopStart,
-        // 🎯 起點 X 範圍極致縮小（0 ~ 15% 螢幕寬度）
         startPosRatio: (i / (diagLineCount - 1)) * 0.15,
-        // 終點向右下角廣角延伸
         endPosRatio: 0.7 + (i / (diagLineCount - 1)) * 0.5,
 
         speed: 0.015 + Math.random() * 0.015,
         phase: Math.random() * Math.PI * 2,
-        // 正弦波波動頻率與振幅（實現一條線多個波峰）
         frequency1: 0.003 + Math.random() * 0.002,
         frequency2: 0.006 + Math.random() * 0.003,
         amplitude1: 18 + Math.random() * 15,
@@ -602,13 +616,12 @@
 
       const W = bgCanvas.width;
       const H = bgCanvas.height;
-      const margin = 120; // 邊界安全延伸
+      const margin = 120;
 
       bgCtx.save();
       diagParams.forEach(p => {
         let startX, startY;
 
-        // 🎯 1. 強制讓起點集中在左上極小區域 (0 ~ 15% X) 且落在邊界外
         if (p.isTopStart) {
           startX = (p.startPosRatio * W) - margin;
           startY = -margin;
@@ -617,18 +630,15 @@
           startY = (p.startPosRatio * H) - margin;
         }
 
-        // 🎯 2. 終點延伸至右下邊界外
         const endX = W + margin + (p.endPosRatio * 0.2 * W);
         const endY = H + margin + (p.endPosRatio * 0.2 * H);
 
-        // 動態延伸繪製向量 Length
         const targetLen = Math.hypot(endX - startX, endY - startY);
         const currentLen = targetLen * progress;
 
         const dirX = (endX - startX) / targetLen;
         const dirY = (endY - startY) / targetLen;
 
-        // 切線的法向向量 (Normal Vector，用於讓波浪垂直於斜線抖動)
         const nx = -dirY;
         const ny = dirX;
 
@@ -636,21 +646,17 @@
         bgCtx.strokeStyle = `rgba(210, 190, 155, ${p.alpha * progress})`;
         bgCtx.lineWidth = p.width;
 
-        // 🎯 3. 分段繪製多重正弦波波浪線條（如同 Loading Page）
-        const stepSize = 15; // 採樣步長
+        const stepSize = 15;
         let isFirstPoint = true;
 
         for (let dist = 0; dist <= currentLen; dist += stepSize) {
-          // 線性斜向基準點
           const baseX = startX + dirX * dist;
           const baseY = startY + dirY * dist;
 
-          // 疊加兩個不同頻率的正弦波，讓每條線有多個波峰與波谷
           const wave1 = Math.sin(dist * p.frequency1 + globalTime * p.speed + p.phase) * p.amplitude1;
           const wave2 = Math.cos(dist * p.frequency2 - globalTime * p.speed * 0.8 + p.phase) * p.amplitude2;
           const totalDisplacement = wave1 + wave2;
 
-          // 法向偏移計算
           const px = baseX + nx * totalDisplacement;
           const py = baseY + ny * totalDisplacement;
 
@@ -706,7 +712,297 @@
     renderBg();
 
     // =============================================================
-    // 🎬 3. GSAP 時間軸控制
+    // ⏳ 3. 沙畫動畫核心 logic ( Page 2 沙畫專用 )
+    // =============================================================
+    const sandCanvas = document.getElementById('CanvasAnime');
+    const sandCtx = sandCanvas.getContext('2d');
+
+    function resizeSandCanvas() {
+      sandCanvas.width = window.innerWidth;
+      sandCanvas.height = window.innerHeight;
+    }
+    resizeSandCanvas();
+    window.addEventListener('resize', resizeSandCanvas);
+
+    // 🎯 圖片路徑已調整為 /img/
+    const ALL_IMAGE_SOURCES = [
+      '/img/dog-l.png',
+      '/img/grandpa-l.png',
+      '/img/grandmom-l.png',
+      '/img/lovers-l.png',
+      '/img/kid-l.png',
+      '/img/cat-l.png'
+    ];
+
+    const DUST_COUNT = 80;
+    let floatingDustParticles = [];
+    let sandImageParticles = [];
+    let sandGlobalProgress = { t: 0 };
+    let totalAnimationDuration = 15;
+    let sandAnimId = null;
+    let isSandInitialized = false;
+
+    class FloatingDust {
+      constructor() {
+        this.x = Math.random() * sandCanvas.width;
+        this.y = Math.random() * sandCanvas.height;
+        this.size = Math.random() * 2.5 + 0.8;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+        this.baseAlpha = Math.random() * 0.6 + 0.3;
+        this.alpha = this.baseAlpha;
+        this.pulseSpeed = Math.random() * 0.02 + 0.005;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > sandCanvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > sandCanvas.height) this.vy *= -1;
+        this.alpha = this.baseAlpha + Math.sin(Date.now() * this.pulseSpeed) * 0.2;
+      }
+
+      draw() {
+        sandCtx.save();
+        sandCtx.fillStyle = `rgba(240, 195, 110, ${Math.max(0, this.alpha)})`;
+        sandCtx.beginPath();
+        sandCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        sandCtx.fill();
+        sandCtx.restore();
+      }
+    }
+
+    class SandParticle {
+      constructor(targetX, targetY, delay) {
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.delay = delay;
+
+        this.startX = -Math.random() * sandCanvas.width * 0.4 - 50;
+        this.startY = targetY + (Math.random() - 0.5) * 200;
+
+        this.endX = sandCanvas.width + Math.random() * sandCanvas.width * 0.4 + 50;
+        this.endY = targetY + (Math.random() - 0.5) * 200;
+
+        this.x = this.startX;
+        this.y = this.startY;
+        this.size = Math.random() * 1.0 + 0.6;
+        this.baseAlpha = Math.random() * 0.7 + 0.3;
+        this.alpha = 0;
+
+        this.noiseX = (Math.random() - 0.5) * 2;
+        this.noiseY = (Math.random() - 0.5) * 2;
+      }
+
+      update(totalElapsedSec) {
+        const localTime = totalElapsedSec - this.delay;
+        const duration = 8;
+
+        if (localTime < 0 || localTime > duration) {
+          this.alpha = 0;
+          return;
+        }
+
+        const progress = localTime / duration;
+
+        if (progress < 0.25) {
+          const p = progress / 0.25;
+          const easeP = 1 - Math.pow(1 - p, 2.5);
+          this.x = this.startX + (this.targetX - this.startX) * easeP;
+          this.y = this.startY + (this.targetY - this.startY) * easeP;
+          this.alpha = Math.min(1, p * 1.5) * this.baseAlpha;
+        } else if (progress >= 0.25 && progress <= 0.75) {
+          this.x = this.targetX + Math.sin(Date.now() * 0.003 + this.targetY) * this.noiseX;
+          this.y = this.targetY + Math.cos(Date.now() * 0.003 + this.targetX) * this.noiseY;
+          this.alpha = this.baseAlpha;
+        } else {
+          const p = (progress - 0.75) / 0.25;
+          const easeP = Math.pow(p, 2.5);
+          this.x = this.targetX + (this.endX - this.targetX) * easeP;
+          this.y = this.targetY + (this.endY - this.targetY) * easeP;
+          this.alpha = this.baseAlpha * (1 - p);
+        }
+      }
+
+      draw() {
+        if (this.alpha <= 0) return;
+        sandCtx.save();
+        sandCtx.fillStyle = `rgba(240, 195, 110, ${this.alpha})`;
+        sandCtx.beginPath();
+        sandCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        sandCtx.fill();
+        sandCtx.restore();
+      }
+    }
+
+    function getRandomImages(sourceArray, minCount = 4, maxCount = 5) {
+      const shuffled = [...sourceArray].sort(() => 0.5 - Math.random());
+      const targetCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+      return shuffled.slice(0, Math.min(targetCount, sourceArray.length));
+    }
+
+    function createRandomImageConfigs(selectedSources) {
+      let currentDelay = 0;
+      return selectedSources.map((src, index) => {
+        if (index === 0) {
+          currentDelay = 0;
+        } else {
+          const randomInterval = 1.2 + Math.random() * (5.2 - 1.2);
+          currentDelay += randomInterval;
+        }
+        return { src, delay: currentDelay };
+      });
+    }
+
+    function getFixed5ZonePosition(index, imgW, imgH) {
+      const W = sandCanvas.width;
+      const H = sandCanvas.height;
+
+      const baseCenters = [
+        { x: W * 0.22, y: H * 0.25 },
+        { x: W * 0.78, y: H * 0.25 },
+        { x: W * 0.50, y: H * 0.50 },
+        { x: W * 0.22, y: H * 0.75 },
+        { x: W * 0.78, y: H * 0.75 }
+      ];
+
+      if (!window.shuffledBaseZones) {
+        window.shuffledBaseZones = [0, 1, 2, 3, 4].sort(() => 0.5 - Math.random());
+      }
+
+      const center = baseCenters[window.shuffledBaseZones[index]];
+
+      const offsetX = (Math.random() - 0.5) * 0.2 * W;
+      const offsetY = (Math.random() - 0.5) * 0.2 * H;
+
+      const finalX = Math.max(imgW / 2 + 20, Math.min(W - imgW / 2 - 20, center.x + offsetX));
+      const finalY = Math.max(imgH / 2 + 20, Math.min(H - imgH / 2 - 20, center.y + offsetY));
+
+      return { x: finalX, y: finalY };
+    }
+
+    function playTextAnimationSequence() {
+      const textLines = document.querySelectorAll('.sand-text-line');
+      const textTl = gsap.timeline();
+
+      textLines.forEach((line, index) => {
+        const randomDelay = index === 0 ? 0.5 : (1.5 + Math.random() * 1.5);
+        textTl.to(line, {
+          y: "0%",
+          opacity: 1,
+          duration: 2.2,
+          ease: "power2.out"
+        }, `+=${randomDelay}`);
+      });
+
+      const randomStayDuration = 3 + Math.random() * 2;
+      textTl.to("#text-container", {
+        opacity: 0,
+        duration: 2.5,
+        ease: "power2.inOut",
+        delay: randomStayDuration
+      });
+    }
+
+    async function initSandArtSection() {
+      if (isSandInitialized) return;
+      isSandInitialized = true;
+
+      floatingDustParticles = [];
+      for (let i = 0; i < DUST_COUNT; i++) {
+        floatingDustParticles.push(new FloatingDust());
+      }
+
+      window.shuffledBaseZones = null;
+
+      const selectedSources = getRandomImages(ALL_IMAGE_SOURCES, 4, 5);
+      const imageConfigs = createRandomImageConfigs(selectedSources);
+
+      const lastDelay = imageConfigs[imageConfigs.length - 1].delay;
+      totalAnimationDuration = lastDelay + 8 + 0.5;
+
+      const loadPromises = imageConfigs.map((config, imgIndex) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = config.src;
+          img.onload = () => {
+            const TARGET_WIDTH = 400 + Math.random() * 80;
+            const scale = TARGET_WIDTH / img.width;
+            const imgW = img.width * scale;
+            const imgH = img.height * scale;
+
+            const pos = getFixed5ZonePosition(imgIndex, imgW, imgH);
+
+            const offscreen = document.createElement('canvas');
+            const offCtx = offscreen.getContext('2d');
+
+            offscreen.width = sandCanvas.width;
+            offscreen.height = sandCanvas.height;
+
+            const offsetX = pos.x - imgW / 2;
+            const offsetY = pos.y - imgH / 2;
+            offCtx.drawImage(img, offsetX, offsetY, imgW, imgH);
+
+            const imageData = offCtx.getImageData(0, 0, sandCanvas.width, sandCanvas.height);
+            const data = imageData.data;
+            const groupParticles = [];
+            const gap = 3;
+
+            for (let y = 0; y < sandCanvas.height; y += gap) {
+              for (let x = 0; x < sandCanvas.width; x += gap) {
+                const index = (y * sandCanvas.width + x) * 4;
+                const r = data[index];
+                const g = data[index + 1];
+                const b = data[index + 2];
+                const alpha = data[index + 3];
+                const brightness = (r + g + b) / 3;
+
+                if (alpha > 100 && brightness < 200) {
+                  groupParticles.push(new SandParticle(x, y, config.delay));
+                }
+              }
+            }
+            resolve(groupParticles);
+          };
+          img.onerror = () => resolve([]); // 防呆保護
+        });
+      });
+
+      const results = await Promise.all(loadPromises);
+      sandImageParticles = results.flat();
+
+      gsap.to(sandGlobalProgress, {
+        t: totalAnimationDuration,
+        duration: totalAnimationDuration,
+        ease: "none",
+        onComplete: () => {
+          playTextAnimationSequence();
+        }
+      });
+
+      animateSand();
+    }
+
+    function animateSand() {
+      sandCtx.clearRect(0, 0, sandCanvas.width, sandCanvas.height);
+
+      floatingDustParticles.forEach(dust => {
+        dust.update();
+        dust.draw();
+      });
+
+      if (sandGlobalProgress.t < totalAnimationDuration) {
+        sandImageParticles.forEach(p => {
+          p.update(sandGlobalProgress.t);
+          p.draw();
+        });
+      }
+
+      sandAnimId = requestAnimationFrame(animateSand);
+    }
+
+    // =============================================================
+    // 🎬 4. GSAP 開場時間軸控制
     // =============================================================
     const mainTl = gsap.timeline();
     gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
@@ -749,7 +1045,7 @@
     }
 
     // =============================================================
-    // 🎯 4. 全頁 Snap 滾動控制
+    // 🎯 5. 全頁 Snap 滾動控制
     // =============================================================
     let currentPageIndex = 0;
     const totalPages = 3;
@@ -777,6 +1073,8 @@
         lCanvas.style.opacity = '0';
         playBannerBeamAnimation();
         audioVisualSec.classList.add('active');
+        // 🎯 切換到 Page 2 時啟動沙畫繪製
+        initSandArtSection();
       }
 
       setTimeout(() => {
