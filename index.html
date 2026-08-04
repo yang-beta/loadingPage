@@ -25,7 +25,7 @@
       margin: 0 !important;
       padding: 0 !important;
       background-color: #1a1a1a !important;
-      color: #E6E6E8 !important; /* 🎯 統一字體顏色 */
+      color: #E6E6E8 !important;
       font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
       overflow: hidden;
       box-sizing: border-box;
@@ -221,7 +221,7 @@
     }
 
     /* =============================================================
-       2. Banner 頁 (梯次連動問句)
+       2. Banner 頁
        ============================================================= */
     .hero-container {
       z-index: 2;
@@ -267,11 +267,10 @@
       font-size: 1.25rem;
       font-weight: 300;
       letter-spacing: 0.25rem;
-      color: #E6E6E8; /* 🎯 改為 #E6E6E8 */
+      color: #E6E6E8;
       line-height: 1.6;
       transform: translateY(115%);
       opacity: 0;
-      text-shadow: 0 0 10px rgba(230, 230, 232, 0.3);
       will-change: transform, opacity;
       display: inline-block;
     }
@@ -291,7 +290,7 @@
     .scroll-hint-v:hover { transform: scale(1.15); }
 
     /* =============================================================
-       3. Page 2 (第一頁 視聽演示 - 動畫文案全新時序控制)
+       3. Page 2 (第一頁 視聽演示)
        ============================================================= */
     .audiovisual-section {
       z-index: 10;
@@ -340,21 +339,20 @@
       font-size: 1.35rem;
       font-weight: 400;
       letter-spacing: 0.2em;
-      color: #E6E6E8; /* 🎯 改為 #E6E6E8 */
-      text-shadow: 0 0 12px rgba(230, 230, 232, 0.4);
+      color: #E6E6E8;
       transform: translateY(110%);
       opacity: 0;
       line-height: 1.8;
       will-change: transform, opacity;
     }
 
-    /* 最後一行金句樣式 */
+    /* 🎯 調整：最後一行金句與前面文字保持一致的大小與字重，不發光 */
     .final-golden-line {
-      font-size: 1.8rem;
-      font-weight: 500;
-      letter-spacing: 0.25em;
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
       color: #E6E6E8;
-      text-shadow: 0 0 15px rgba(240, 195, 110, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -513,7 +511,7 @@
       </div>
     </div>
 
-    <!-- Page 1. Banner 頁 (🎯 前後段拆解與延遲1.5秒浮現) -->
+    <!-- Page 1. Banner 頁 -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn show" id="bannerSkipBtn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
@@ -541,7 +539,7 @@
       </button>
     </div>
 
-    <!-- Page 2. 第一頁 視聽演示 (🎯 新版文字時序與永久保留金句) -->
+    <!-- Page 2. 第一頁 視聽演示 -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
@@ -552,7 +550,7 @@
         <div class="sand-text-line-wrapper"><div class="sand-text-line story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨</div></div>
         <div class="sand-text-line-wrapper"><div class="sand-text-line story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩</div></div>
         
-        <!-- 🎯 最後一行金句 (文字點點梯次登場，永久保留) -->
+        <!-- 🎯 最後一行金句 (無大字體、無亮光) -->
         <div class="sand-text-line-wrapper" style="margin-top: 15px;">
           <div class="final-golden-line" id="finalGoldenLine">
             <span class="final-part1" id="fPart1" style="opacity:0; transform:translateY(100%); display:inline-block;">回憶 雖然會慢慢消逝</span>
@@ -786,7 +784,7 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫核心 logic (🎯 只播放一次，不重複刷新)
+    // ⏳ 3. 沙畫動畫核心 logic
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
@@ -813,7 +811,6 @@
     let sandGlobalProgress = { t: 0 };
     let totalAnimationDuration = 15;
     let isSandInitialized = false;
-    let hasSandPlayedOnce = false; // 🎯 紀錄沙畫是否已播放完畢
 
     class FloatingDust {
       constructor() {
@@ -951,29 +948,29 @@
       return { x: finalX, y: finalY };
     }
 
-    // 🎯 核心精緻文案時間軸控制器
+    // 🎯 文案時間軸靈活調整區
     function playTextAnimationSequence() {
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
 
-      // 1. 播放沙畫 3 秒後，前四行文字依序登場 (每行間隔 2 秒)
+      // 1. 播放沙畫 3 秒後，前 4 行文字依序登場 (每行間隔 2 秒)
       textTl.to(storyLines, {
         y: "0%",
         opacity: 1,
         duration: 1.8,
-        stagger: 2.0,
+        stagger: 2.0, // 👈 調整此數值可更改前 4 行間隔
         ease: "power2.out"
-      }, "+=3.0")
+      }, "+=3.0") // 👈 調整此數值可更改沙畫開始後多久出現第一行
 
-      // 2. 全部登場後停頓 5 秒，溫柔淡出
+      // 2. 停頓 5 秒後淡出
       .to(storyLines, {
         opacity: 0,
         duration: 2.0,
         ease: "power2.inOut",
-        delay: 5.0
+        delay: 5.0 // 👈 調整此數值可更改全體停留時間
       })
 
-      // 3. 登場最後一行金句前段：「回憶 雖然會慢慢消逝」
+      // 3. 最後金句前段：「回憶 雖然會慢慢消逝」
       .to("#fPart1", {
         y: "0%",
         opacity: 1,
@@ -981,24 +978,21 @@
         ease: "power2.out"
       }, "+=0.5")
 
-      // 4. 每 0.5 秒依序打出點點：．．．
-      .to("#dot1", { opacity: 1, duration: 0.2 }, "+=0.5")
-      .to("#dot2", { opacity: 1, duration: 0.2 }, "+=0.5")
-      .to("#dot3", { opacity: 1, duration: 0.2 }, "+=0.5")
+      // 4. 打字機點點點：．．． (每隔 0.5 秒)
+      .to("#dot1", { opacity: 1, duration: 0.2 }, "+=0.5") // 👈 點 1 延遲
+      .to("#dot2", { opacity: 1, duration: 0.2 }, "+=0.5") // 👈 點 2 延遲
+      .to("#dot3", { opacity: 1, duration: 0.2 }, "+=0.5") // 👈 點 3 延遲
 
-      // 5. 點點結束後，登場後半句：「卻也會停留」
+      // 5. 後半句：「卻也會停留」
       .to("#fPart2", {
         y: "0%",
         opacity: 1,
         duration: 1.6,
         ease: "power2.out"
       }, "+=0.5");
-      
-      // 🎯 此金句不設定淡出，永遠保留在畫面上！
     }
 
     async function initSandArtSection() {
-      // 🎯 若已播放過，則不再重新渲染沙畫
       if (isSandInitialized) return;
       isSandInitialized = true;
 
@@ -1040,7 +1034,7 @@
             const imageData = offCtx.getImageData(0, 0, sandCanvas.width, sandCanvas.height);
             const data = imageData.data;
             const groupParticles = [];
-            const gap = Math.round(3 * DPR);
+            const gap = Math.round(4 * DPR);
 
             for (let y = 0; y < sandCanvas.height; y += gap) {
               for (let x = 0; x < sandCanvas.width; x += gap) {
@@ -1065,16 +1059,12 @@
       const results = await Promise.all(loadPromises);
       sandImageParticles = results.flat();
 
-      // 觸發文字鏈與沙畫計時器
       playTextAnimationSequence();
 
       gsap.to(sandGlobalProgress, {
         t: totalAnimationDuration,
         duration: totalAnimationDuration,
-        ease: "none",
-        onComplete: () => {
-          hasSandPlayedOnce = true;
-        }
+        ease: "none"
       });
 
       animateSand();
@@ -1137,18 +1127,15 @@
       .to(".brand-title", { opacity: 1, letterSpacing: "1.2rem", duration: 1.4, ease: "power1.out" }, "-=1.0")
       .to(animationParams, { particleGlowProgress: 1, duration: 1.2, ease: "power1.out" }, "-=0.4");
       
-      // 🎯 梯次浮現問句邏輯：前段 -> 延遲1.5秒 -> 後段 -> 延遲1.5秒 -> 下一行...
+      // 🎯 Banner 三行問句的時間軸 (可自行調整 +=1.5 延遲值)
       const bqParts = document.querySelectorAll('.bq-part');
       
-      // 第 1 行
       bannerTimeline.to(bqParts[0], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "-=0.4")
-      .to(bqParts[1], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
+      .to(bqParts[1], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5") // 👈 修改前段出現後延遲多久
       
-      // 第 2 行
       .to(bqParts[2], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
       .to(bqParts[3], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
 
-      // 第 3 行
       .to(bqParts[4], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
       .to(bqParts[5], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
 
@@ -1211,7 +1198,6 @@
         playBannerBeamAnimation();
         audioVisualSec.classList.add('active');
 
-        // 切換至 Page 2 時，停止背景 Canvas 節省效能
         isBgCanvasRendering = false;
 
         initSandArtSection();
