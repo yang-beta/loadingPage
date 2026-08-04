@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>洸限 - 展覽導覽</title>
+  <title>洸限</title>
 
   <!-- 1. 字體與圖示庫 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,7 +62,7 @@
       overflow: hidden;
     }
 
-    /* 通用文字遮罩結構 (徹底消除文字垂直滑動的抖動感) */
+    /* 通用文字遮罩結構 */
     .ui-line-mask {
       overflow: hidden;
       display: flex;
@@ -183,7 +183,7 @@
 
     .text-line { color: #E6E6E8; transform: translateY(200%); opacity: 0; line-height: 1; }
     .title-part1 { font-size: 1.6rem; letter-spacing: 0.4em; font-weight: 300; }
-    .title-part2 { font-size: 1.6rem; letter-spacing: 0.5em; font-weight: 300; opacity: 0.9; }
+    .title-part2 { font-size: 1.1rem; letter-spacing: 0.3em; font-weight: 300; opacity: 0.9; }
 
     .scroll-arrow-btn { margin-top: 24px; background: none; border: none; cursor: pointer; outline: none; opacity: 0; }
     .arrow-icon { width: 36px; height: 36px; stroke: #E6E6E8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5)); }
@@ -195,7 +195,7 @@
     }
 
     /* =============================================================
-       2. Banner 頁
+       2. Banner 頁 (🎯 替換為 /img/logo02.png 且縮小 10%)
        ============================================================= */
     .hero-container {
       z-index: 2;
@@ -207,16 +207,14 @@
       padding: 20px;
     }
 
-    .brand-title {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 4.5rem;
-      font-weight: 300;
-      letter-spacing: 1.2rem;
-      padding-left: 1.2rem;
-      color: #E6E6E8;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    .brand-logo-img {
+      width: 320px; /* 🎯 比原本文字整體視覺占比精準縮小約 10% */
+      max-width: 75vw;
+      height: auto;
       opacity: 0; 
       margin-bottom: 2.5rem;
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15));
+      will-change: opacity, transform;
     }
 
     .banner-questions-wrapper {
@@ -281,8 +279,32 @@
       pointer-events: none;
     }
 
-    .dot-char { opacity: 0; display: inline-block; }
-    .final-part2 { opacity: 0; transform: translateY(100%); display: inline-block; }
+    /* 🎯 獨立重構金句樣式，確保 100% 顯現並永遠停留 */
+    .final-golden-wrapper {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      color: #E6E6E8;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      margin-top: 10px;
+    }
+
+    .f-part-text {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(110%);
+      will-change: transform, opacity;
+    }
+
+    .dot-char {
+      opacity: 0;
+      display: inline-block;
+      margin: 0 1px;
+    }
   </style>
 </head>
 <body>
@@ -305,7 +327,6 @@
       </div>
 
       <div class="logo-container" id="logoBox">
-        <!-- 完整的 SVG 向量圖稿 -->
         <svg id="_圖層_1" data-name="圖層_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 841.89 595.28">
           <defs><style>.st0 { fill: #f29850; }</style></defs>
           <circle class="st0" cx="420.88" cy="297.44" r="14.4"/>
@@ -412,23 +433,23 @@
       </div>
     </div>
 
-    <!-- Page 1. Banner 頁 -->
+    <!-- Page 1. Banner 頁 (🎯 替換為 logo02.png 圖片) -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn show" id="bannerSkipBtn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
-      <h1 class="brand-title">洸限</h1>
+      <img src="/img/logo02.png" class="brand-logo-img" alt="洸限">
 
       <div class="banner-questions-wrapper">
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">你的生命中，有沒有一個人 ――</div>
+          <div class="ui-line-content banner-question-part bq-part">你的生命中，有沒有一個人 ―― </div>
           <div class="ui-line-content banner-question-part bq-part">讓你成就了今天的自己？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">哪一段回憶，當每次想起 ――</div>
+          <div class="ui-line-content banner-question-part bq-part">哪一段回憶，當每次想起 ―― </div>
           <div class="ui-line-content banner-question-part bq-part">都會微笑？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">有沒有一份陪伴，即使經過很久 ――</div>
+          <div class="ui-line-content banner-question-part bq-part">有沒有一份陪伴，即使經過很久 ―― </div>
           <div class="ui-line-content banner-question-part bq-part">依然溫暖著你？</div>
         </div>
       </div>
@@ -443,19 +464,19 @@
       <canvas id="CanvasAnime"></canvas>
 
       <div id="text-container">
-        <div class="ui-line-mask"><div class="ui-line-content story-line">也許是那位一直默默遞上肩膀、比你還相信你自己的摯友</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">或者是無論你飛得高不高、只在乎你累不累的家人</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨</div></div>
-        <div class="ui-line-mask"><div class="ui-line-content story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩</div></div>
+        <div class="ui-line-mask"><div class="ui-line-content story-line">也許是那位一直默默遞上肩膀、比你還相信你自己的摯友！</div></div>
+        <div class="ui-line-mask"><div class="ui-line-content story-line">或者是無論你飛得高不高、只在乎你累不累的家人！</div></div>
+        <div class="ui-line-mask"><div class="ui-line-content story-line">也可能是永遠怕你吃不飽、過不好的長輩嘮叨！</div></div>
+        <div class="ui-line-mask"><div class="ui-line-content story-line">還有那無論多晚回家，總在門口搖著尾巴、或把你當作全世界的毛孩！</div></div>
         
-        <!-- 結尾金句 (永久留在畫面上) -->
+        <!-- 🎯 獨立無縫接續結尾金句 (永久留下) -->
         <div class="ui-line-mask" style="margin-top: 15px;">
-          <div class="ui-line-content" id="finalGoldenLine">
-            <span id="fPart1" style="opacity:0; transform:translateY(100%); display:inline-block;">回憶 雖然會慢慢消逝</span>
+          <div class="final-golden-wrapper">
+            <span class="f-part-text" id="fPart1">回憶 雖然會慢慢消逝</span>
             <span class="dot-char" id="dot1">．</span>
             <span class="dot-char" id="dot2">．</span>
             <span class="dot-char" id="dot3">．</span>
-            <span class="final-part2" id="fPart2">卻也會停留</span>
+            <span class="f-part-text" id="fPart2">卻也留在某個記憶角落</span>
           </div>
         </div>
       </div>
@@ -623,7 +644,7 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫核心 (點陣圖像 + 快結束前 3 秒登場文字)
+    // ⏳ 3. 沙畫動畫核心 (點陣圖像 + 完美顯示最後一行金句)
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
@@ -717,17 +738,18 @@
       }
     }
 
+    // 🎯 精確計算：前 4 行各自出現與消失後，登場最後金句並永久定格
     function playTextAnimationSequence() {
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
 
-      // 🎯 快結束前 3 秒登場，計算登場時間
+      // 計算開場時間 (沙畫快結束前 3 秒)
       const textStartTime = Math.max(2.0, totalAnimationDuration - 3.0); 
 
       storyLines.forEach((line, index) => {
         const lineAppearTime = textStartTime + (index * 2.0);
 
-        // 登場
+        // 1. 登場 (向上滑出 + 淡入)
         textTl.to(line, {
           y: "0%",
           opacity: 1,
@@ -735,7 +757,7 @@
           ease: "power2.out"
         }, lineAppearTime);
 
-        // 停留 6 秒單獨淡出
+        // 2. 停留 6 秒獨立淡出
         textTl.to(line, {
           opacity: 0,
           duration: 1.6,
@@ -743,14 +765,29 @@
         }, lineAppearTime + 1.6 + 6.0);
       });
 
-      // 4 行全消失後登場最後金句 (永久留下)
-      const lastLineExitTime = textStartTime + (3 * 2.0) + 1.6 + 6.0 + 0.8;
+      // 🎯 關鍵修復：計算第 4 行消失後的精確時間，無縫登場結尾金句
+      const lastLineExitTime = textStartTime + (3 * 2.0) + 1.6 + 6.0 + 0.6;
 
-      textTl.to("#fPart1", { y: "0%", opacity: 1, duration: 1.6, ease: "power2.out" }, lastLineExitTime)
+      // 登場「回憶 雖然會慢慢消逝」
+      textTl.to("#fPart1", {
+        y: "0%",
+        opacity: 1,
+        duration: 1.6,
+        ease: "power2.out"
+      }, lastLineExitTime)
+
+      // 打字機點點點 (各延遲 0.5 秒)
       .to("#dot1", { opacity: 1, duration: 0.2 }, "+=0.5")
       .to("#dot2", { opacity: 1, duration: 0.2 }, "+=0.5")
       .to("#dot3", { opacity: 1, duration: 0.2 }, "+=0.5")
-      .to("#fPart2", { y: "0%", opacity: 1, duration: 1.6, ease: "power2.out" }, "+=0.5");
+
+      // 登場「卻也會停留」
+      .to("#fPart2", {
+        y: "0%",
+        opacity: 1,
+        duration: 1.6,
+        ease: "power2.out"
+      }, "+=0.5");
     }
 
     async function initSandArtSection() {
@@ -834,7 +871,7 @@
     }
 
     // =============================================================
-    // 🎬 4. GSAP 開場與 Banner 時間軸控制
+    // 🎬 4. GSAP 開場與 Banner 時間軸控制 (🎯 支援 Logo 圖片優雅登場)
     // =============================================================
     const mainTl = gsap.timeline();
     gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
@@ -863,7 +900,7 @@
       bannerTimeline = gsap.timeline();
       bannerTimeline.to(animationParams, { beamDownProgress: 1, duration: 1.6, ease: "power2.inOut" })
       .to(animationParams, { horizonSpreadProgress: 1, duration: 1.4, ease: "power2.out" }, "-=0.2")
-      .to(".brand-title", { opacity: 1, letterSpacing: "1.2rem", duration: 1.4, ease: "power1.out" }, "-=1.0")
+      .to(".brand-logo-img", { opacity: 1, duration: 1.4, ease: "power1.out" }, "-=1.0")
       .to(animationParams, { particleGlowProgress: 1, duration: 1.2, ease: "power1.out" }, "-=0.4");
       
       const bqParts = document.querySelectorAll('.bq-part');
@@ -889,7 +926,7 @@
         animationParams.beamDownProgress = 1;
         animationParams.horizonSpreadProgress = 1;
         animationParams.particleGlowProgress = 1;
-        gsap.set(".brand-title, .scroll-hint-v", { opacity: 1 });
+        gsap.set(".brand-logo-img, .scroll-hint-v", { opacity: 1 });
         gsap.set(".bq-part", { y: "0%", opacity: 1 });
       }
       gsap.to("#bannerSkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
