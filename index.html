@@ -949,48 +949,57 @@
     }
 
     // 🎯 文案時間軸靈活調整區
-    function playTextAnimationSequence() {
-      const storyLines = document.querySelectorAll('.story-line');
-      const textTl = gsap.timeline();
+function playTextAnimationSequence() {
+  const storyLines = document.querySelectorAll('.story-line');
+  const textTl = gsap.timeline();
 
-      // 1. 播放沙畫 3 秒後，前 4 行文字依序登場 (每行間隔 2 秒)
-      textTl.to(storyLines, {
-        y: "0%",
-        opacity: 1,
-        duration: 1.8,
-        stagger: 2.0, // 👈 調整此數值可更改前 4 行間隔
-        ease: "power2.out"
-      }, "+=3.0") // 👈 調整此數值可更改沙畫開始後多久出現第一行
+  // 沙畫開始播放 3 秒後，啟動文字鏈
+  let startTime = 3.0; 
 
-      // 2. 停頓 5 秒後淡出
-      .to(storyLines, {
-        opacity: 0,
-        duration: 2.0,
-        ease: "power2.inOut",
-        delay: 5.0 // 👈 調整此數值可更改全體停留時間
-      })
+  storyLines.forEach((line, index) => {
+    // 計算每一行登場的精確時間 (第一行在 3s，第二行在 5s，第三行在 7s...)
+    const lineAppearTime = startTime + (index * 2.0);
 
-      // 3. 最後金句前段：「回憶 雖然會慢慢消逝」
-      .to("#fPart1", {
-        y: "0%",
-        opacity: 1,
-        duration: 1.6,
-        ease: "power2.out"
-      }, "+=0.5")
+    // 1. 該行登場 (從下方滑出 + 淡入)
+    textTl.to(line, {
+      y: "0%",
+      opacity: 1,
+      duration: 1.6,
+      ease: "power2.out"
+    }, lineAppearTime);
 
-      // 4. 打字機點點點：．．． (每隔 0.5 秒)
-      .to("#dot1", { opacity: 1, duration: 0.2 }, "+=0.5") // 👈 點 1 延遲
-      .to("#dot2", { opacity: 1, duration: 0.2 }, "+=0.5") // 👈 點 2 延遲
-      .to("#dot3", { opacity: 1, duration: 0.2 }, "+=0.5") // 👈 點 3 延遲
+    // 2. 該行登場後，停留 6 秒，獨自淡出消失
+    textTl.to(line, {
+      opacity: 0,
+      duration: 1.6,
+      ease: "power2.inOut"
+    }, lineAppearTime + 1.6 + 6.0); // 👈 1.6s 登場完畢 + 停留 6.0s
+  });
 
-      // 5. 後半句：「卻也會停留」
-      .to("#fPart2", {
-        y: "0%",
-        opacity: 1,
-        duration: 1.6,
-        ease: "power2.out"
-      }, "+=0.5");
-    }
+  // 3. 計算前四行全部消失的時間點，接著登場最後一行金句
+  // 最後一行在第四行消失後接續登場
+  const lastLineExitTime = startTime + (3 * 2.0) + 1.6 + 6.0 + 1.0;
+
+  textTl.to("#fPart1", {
+    y: "0%",
+    opacity: 1,
+    duration: 1.6,
+    ease: "power2.out"
+  }, lastLineExitTime)
+
+  // 4. 打字機點點點：．．． (每隔 0.5 秒)
+  .to("#dot1", { opacity: 1, duration: 0.2 }, "+=0.5")
+  .to("#dot2", { opacity: 1, duration: 0.2 }, "+=0.5")
+  .to("#dot3", { opacity: 1, duration: 0.2 }, "+=0.5")
+
+  // 5. 後半句：「卻也會停留」 (永不消失)
+  .to("#fPart2", {
+    y: "0%",
+    opacity: 1,
+    duration: 1.6,
+    ease: "power2.out"
+  }, "+=0.5");
+}
 
     async function initSandArtSection() {
       if (isSandInitialized) return;
