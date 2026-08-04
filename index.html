@@ -226,6 +226,11 @@
 
     .banner-question-part { font-size: 1.25rem; font-weight: 300; letter-spacing: 0.25rem; }
 
+    /* 🎯 讓前後兩段文字在 flex 排版時自動維持對稱間距 */
+    .bq-part:last-child {
+      margin-left: 0.8rem; /* 👈 可自由微調此數值！例如 0.6rem ~ 1.0rem，數值越大距離越遠 */
+    }
+    
     .scroll-hint-v {
       position: absolute;
       bottom: 8%;
@@ -441,15 +446,15 @@
 
       <div class="banner-questions-wrapper">
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">你的生命中，有沒有一個人　――　</div>
+          <div class="ui-line-content banner-question-part bq-part">你的生命中，有沒有一個人――</div>
           <div class="ui-line-content banner-question-part bq-part">讓你成就了今天的自己？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">哪一段回憶，當每次想起　――　</div>
+          <div class="ui-line-content banner-question-part bq-part">哪一段回憶，當每次想起――</div>
           <div class="ui-line-content banner-question-part bq-part">都會微笑？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">有沒有一份陪伴，即使經過很久　――　</div>
+          <div class="ui-line-content banner-question-part bq-part">有沒有一份陪伴，即使經過很久――</div>
           <div class="ui-line-content banner-question-part bq-part">依然溫暖著你？</div>
         </div>
       </div>
