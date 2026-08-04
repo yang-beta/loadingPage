@@ -294,7 +294,6 @@
       pointer-events: none;
     }
 
-    /* 沙畫中央詩意文字容器定位 */
     #text-container {
       position: absolute;
       top: 50%;
@@ -327,7 +326,7 @@
 </head>
 <body>
 
-  <!-- 0. 背景 Canvas ( Banner 頁與全頁粒子光束 ) -->
+  <!-- 0. 背景 Canvas -->
   <canvas id="mandalaCanvas"></canvas>
 
   <!-- 全頁滾動包裹容器 -->
@@ -391,7 +390,7 @@
               <rect class="st0" x="391.62" y="230.65" width="78.96" height="3.06" transform="translate(134.41 621.71) rotate(-81.01)"/>
               <rect class="st0" x="381.53" y="229.84" width="78.94" height="3.06" transform="translate(188.4 651.69) rotate(-89.83)"/>
               <rect class="st0" x="409.38" y="192.65" width="3.06" height="78.92" transform="translate(-30.09 64.07) rotate(-8.6)"/>
-              <rect class="st0" x="399.51" y="194.92" width="3.06" height="78.9" transform="translate(-51.7 130.52) rotate(-17.38)"/>
+              <rect class="st0" x="399.51" y="194.92" width="3.06" height="78.89" transform="translate(-51.7 130.52) rotate(-17.38)"/>
               <rect class="st0" x="390.1" y="198.68" width="3.06" height="78.89" transform="translate(-64.87 197.08) rotate(-26.16)"/>
               <polygon class="st0" points="404.25 276.47 384.26 247.88 384.27 247.87 359.07 211.81 361.58 210.06 387.93 247.78 387.93 247.78 406.75 274.71 404.25 276.47"/>
               <rect class="st0" x="373.55" y="210.25" width="3.06" height="78.87" transform="translate(-68.56 328.46) rotate(-43.72)"/>
@@ -477,11 +476,10 @@
       </button>
     </div>
 
-    <!-- Page 2. 第一頁 視聽演示 (沙畫藝術 Canvas + 詩意文字) -->
+    <!-- Page 2. 第一頁 視聽演示 -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
-      <!-- 詩意文字容器 -->
       <div id="text-container">
         <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 雖然會慢慢消逝</div></div>
         <div class="sand-text-line-wrapper"><div class="sand-text-line">回憶 也會停留</div></div>
@@ -492,6 +490,9 @@
   </div>
 
   <script>
+    // ⚡ 限制最高繪製像素比例，防範 4K / Retina 螢幕卡頓
+    const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+
     // =============================================================
     // 🌊 1. 開場水波紋 Canvas (Loading Page)
     // =============================================================
@@ -499,8 +500,8 @@
     const lCtx = lCanvas.getContext('2d');
 
     function resizeLoadingCanvas() {
-      lCanvas.width = window.innerWidth;
-      lCanvas.height = window.innerHeight * 0.4;
+      lCanvas.width = window.innerWidth * DPR;
+      lCanvas.height = (window.innerHeight * 0.4) * DPR;
     }
     resizeLoadingCanvas();
     window.addEventListener('resize', resizeLoadingCanvas);
@@ -508,7 +509,7 @@
     let step = 0;
     let isWaveActive = true;
 
-    const lineCount = 28;
+    const lineCount = 20; // ⚡ 從 28 降至 20 減輕重繪負擔
     const waveParams = [];
     for (let i = 0; i < lineCount; i++) {
       waveParams.push({
@@ -532,14 +533,14 @@
         const p = waveParams[i];
         lCtx.beginPath();
         lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / lineCount) * 0.25})`;
-        lCtx.lineWidth = 1.2;
+        lCtx.lineWidth = 1.2 * DPR;
 
-        const baseY = height * 0.2 + (i * 8);
+        const baseY = height * 0.2 + (i * 8 * DPR);
 
-        for (let x = 0; x <= width; x += 12) {
+        for (let x = 0; x <= width; x += 16 * DPR) { // ⚡ 步長增加至 16px
           const wave1 = Math.sin((x * p.frequency1) + (step * p.speed) + p.phaseOffset);
           const wave2 = Math.cos((x * p.frequency2) - (step * p.speed * 0.8) + p.phaseOffset);
-          const y = baseY + (wave1 * p.amplitude) + (wave2 * (p.amplitude * 0.5));
+          const y = baseY + (wave1 * p.amplitude * DPR) + (wave2 * (p.amplitude * 0.5 * DPR));
           
           if (x === 0) lCtx.moveTo(x, y);
           else lCtx.lineTo(x, y);
@@ -553,14 +554,15 @@
     drawWaveLandscape();
 
     // =============================================================
-    // 🌌 2. 全頁背景 Canvas ( Banner 頁多波峰束狀對角波浪 )
+    // 🌌 2. 全頁背景 Canvas ( Banner 頁波浪 )
     // =============================================================
     const bgCanvas = document.getElementById('mandalaCanvas');
     const bgCtx = bgCanvas.getContext('2d');
+    let isBgCanvasRendering = true; // ⚡ 凍結標記
 
     function resizeBgCanvas() {
-      bgCanvas.width = window.innerWidth;
-      bgCanvas.height = window.innerHeight;
+      bgCanvas.width = window.innerWidth * DPR;
+      bgCanvas.height = window.innerHeight * DPR;
     }
     resizeBgCanvas();
     window.addEventListener('resize', resizeBgCanvas);
@@ -572,39 +574,36 @@
     };
 
     const goldParticles = [];
-    const particleCount = 80;
+    const particleCount = 50; // ⚡ 粒子數由 80 降至 50
     for (let i = 0; i < particleCount; i++) {
       goldParticles.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        size: Math.random() * 2.5 + 0.8,
+        x: Math.random() * window.innerWidth * DPR,
+        y: Math.random() * window.innerHeight * DPR,
+        size: (Math.random() * 2.5 + 0.8) * DPR,
         alpha: Math.random() * 0.6 + 0.2,
-        speedY: (Math.random() - 0.5) * 0.8,
-        speedX: (Math.random() - 0.5) * 0.5,
+        speedY: (Math.random() - 0.5) * 0.8 * DPR,
+        speedX: (Math.random() - 0.5) * 0.5 * DPR,
         pulse: Math.random() * Math.PI
       });
     }
 
-    const diagLineCount = 38;
+    const diagLineCount = 28; // ⚡ 光束線條數量由 38 降至 28
     const diagParams = [];
 
     for (let i = 0; i < diagLineCount; i++) {
       const isTopStart = i % 2 === 0;
-      
       diagParams.push({
         isTopStart: isTopStart,
         startPosRatio: (i / (diagLineCount - 1)) * 0.15,
         endPosRatio: 0.7 + (i / (diagLineCount - 1)) * 0.5,
-
         speed: 0.015 + Math.random() * 0.015,
         phase: Math.random() * Math.PI * 2,
         frequency1: 0.003 + Math.random() * 0.002,
         frequency2: 0.006 + Math.random() * 0.003,
-        amplitude1: 18 + Math.random() * 15,
-        amplitude2: 10 + Math.random() * 8,
-
+        amplitude1: (18 + Math.random() * 15) * DPR,
+        amplitude2: (10 + Math.random() * 8) * DPR,
         alpha: 0.08 + Math.random() * 0.18,
-        width: Math.random() * 1.5 + 0.8
+        width: (Math.random() * 1.5 + 0.8) * DPR
       });
     }
 
@@ -616,12 +615,11 @@
 
       const W = bgCanvas.width;
       const H = bgCanvas.height;
-      const margin = 120;
+      const margin = 120 * DPR;
 
       bgCtx.save();
       diagParams.forEach(p => {
         let startX, startY;
-
         if (p.isTopStart) {
           startX = (p.startPosRatio * W) - margin;
           startY = -margin;
@@ -638,7 +636,6 @@
 
         const dirX = (endX - startX) / targetLen;
         const dirY = (endY - startY) / targetLen;
-
         const nx = -dirY;
         const ny = dirX;
 
@@ -646,7 +643,7 @@
         bgCtx.strokeStyle = `rgba(210, 190, 155, ${p.alpha * progress})`;
         bgCtx.lineWidth = p.width;
 
-        const stepSize = 15;
+        const stepSize = 20 * DPR; // ⚡ 提高採樣步長減輕頂點計算
         let isFirstPoint = true;
 
         for (let dist = 0; dist <= currentLen; dist += stepSize) {
@@ -689,8 +686,6 @@
 
         bgCtx.save();
         bgCtx.fillStyle = `rgba(235, 195, 100, ${Math.max(0, currentAlpha * animationParams.particleGlowProgress)})`;
-        bgCtx.shadowColor = 'rgba(215, 160, 60, 0.6)';
-        bgCtx.shadowBlur = 6;
         bgCtx.beginPath();
         bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         bgCtx.fill();
@@ -699,6 +694,8 @@
     }
 
     function renderBg() {
+      if (!isBgCanvasRendering) return; // ⚡ 非活性時直接中斷迴圈
+
       globalTime += 1;
       bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
       bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
@@ -712,19 +709,18 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫核心 logic ( Page 2 沙畫專用 )
+    // ⏳ 3. 沙畫動畫核心 logic (高效能點陣快取優化版)
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
 
     function resizeSandCanvas() {
-      sandCanvas.width = window.innerWidth;
-      sandCanvas.height = window.innerHeight;
+      sandCanvas.width = window.innerWidth * DPR;
+      sandCanvas.height = window.innerHeight * DPR;
     }
     resizeSandCanvas();
     window.addEventListener('resize', resizeSandCanvas);
 
-    // 🎯 圖片路徑已調整為 /img/
     const ALL_IMAGE_SOURCES = [
       '/img/dog-l.png',
       '/img/grandpa-l.png',
@@ -734,7 +730,7 @@
       '/img/cat-l.png'
     ];
 
-    const DUST_COUNT = 80;
+    const DUST_COUNT = 45; // ⚡ 常駐微塵由 80 降至 45
     let floatingDustParticles = [];
     let sandImageParticles = [];
     let sandGlobalProgress = { t: 0 };
@@ -746,9 +742,9 @@
       constructor() {
         this.x = Math.random() * sandCanvas.width;
         this.y = Math.random() * sandCanvas.height;
-        this.size = Math.random() * 2.5 + 0.8;
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = (Math.random() - 0.5) * 0.8;
+        this.size = (Math.random() * 2.2 + 0.8) * DPR;
+        this.vx = (Math.random() - 0.5) * 0.8 * DPR;
+        this.vy = (Math.random() - 0.5) * 0.8 * DPR;
         this.baseAlpha = Math.random() * 0.6 + 0.3;
         this.alpha = this.baseAlpha;
         this.pulseSpeed = Math.random() * 0.02 + 0.005;
@@ -772,26 +768,27 @@
       }
     }
 
+    // ⚡ 粒子極速渲染類別：預先算好端點，避免在 update 中做開根號與乘方運算
     class SandParticle {
       constructor(targetX, targetY, delay) {
         this.targetX = targetX;
         this.targetY = targetY;
         this.delay = delay;
 
+        // 快取座標
         this.startX = -Math.random() * sandCanvas.width * 0.4 - 50;
-        this.startY = targetY + (Math.random() - 0.5) * 200;
-
+        this.startY = targetY + (Math.random() - 0.5) * 200 * DPR;
         this.endX = sandCanvas.width + Math.random() * sandCanvas.width * 0.4 + 50;
-        this.endY = targetY + (Math.random() - 0.5) * 200;
+        this.endY = targetY + (Math.random() - 0.5) * 200 * DPR;
 
         this.x = this.startX;
         this.y = this.startY;
-        this.size = Math.random() * 1.0 + 0.6;
+        this.size = (Math.random() * 1.0 + 0.6) * DPR;
         this.baseAlpha = Math.random() * 0.7 + 0.3;
         this.alpha = 0;
 
-        this.noiseX = (Math.random() - 0.5) * 2;
-        this.noiseY = (Math.random() - 0.5) * 2;
+        this.noiseX = (Math.random() - 0.5) * 2 * DPR;
+        this.noiseY = (Math.random() - 0.5) * 2 * DPR;
       }
 
       update(totalElapsedSec) {
@@ -807,17 +804,17 @@
 
         if (progress < 0.25) {
           const p = progress / 0.25;
-          const easeP = 1 - Math.pow(1 - p, 2.5);
+          const easeP = 1 - Math.pow(1 - p, 2); // 簡化次方運算
           this.x = this.startX + (this.targetX - this.startX) * easeP;
           this.y = this.startY + (this.targetY - this.startY) * easeP;
           this.alpha = Math.min(1, p * 1.5) * this.baseAlpha;
-        } else if (progress >= 0.25 && progress <= 0.75) {
+        } else if (progress <= 0.75) {
           this.x = this.targetX + Math.sin(Date.now() * 0.003 + this.targetY) * this.noiseX;
           this.y = this.targetY + Math.cos(Date.now() * 0.003 + this.targetX) * this.noiseY;
           this.alpha = this.baseAlpha;
         } else {
           const p = (progress - 0.75) / 0.25;
-          const easeP = Math.pow(p, 2.5);
+          const easeP = p * p;
           this.x = this.targetX + (this.endX - this.targetX) * easeP;
           this.y = this.targetY + (this.endY - this.targetY) * easeP;
           this.alpha = this.baseAlpha * (1 - p);
@@ -826,12 +823,10 @@
 
       draw() {
         if (this.alpha <= 0) return;
-        sandCtx.save();
         sandCtx.fillStyle = `rgba(240, 195, 110, ${this.alpha})`;
         sandCtx.beginPath();
-        sandCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        sandCtx.arc(this.x | 0, this.y | 0, this.size, 0, Math.PI * 2); // ⚡ 位元運算取整數，加快 Canvas 渲染
         sandCtx.fill();
-        sandCtx.restore();
       }
     }
 
@@ -847,7 +842,7 @@
         if (index === 0) {
           currentDelay = 0;
         } else {
-          const randomInterval = 1.2 + Math.random() * (5.2 - 1.2);
+          const randomInterval = 1.2 + Math.random() * 4.0;
           currentDelay += randomInterval;
         }
         return { src, delay: currentDelay };
@@ -886,11 +881,11 @@
       const textTl = gsap.timeline();
 
       textLines.forEach((line, index) => {
-        const randomDelay = index === 0 ? 0.5 : (1.5 + Math.random() * 1.5);
+        const randomDelay = index === 0 ? 0.5 : (1.2 + Math.random() * 1.2);
         textTl.to(line, {
           y: "0%",
           opacity: 1,
-          duration: 2.2,
+          duration: 2.0,
           ease: "power2.out"
         }, `+=${randomDelay}`);
       });
@@ -898,7 +893,7 @@
       const randomStayDuration = 3 + Math.random() * 2;
       textTl.to("#text-container", {
         opacity: 0,
-        duration: 2.5,
+        duration: 2.2,
         ease: "power2.inOut",
         delay: randomStayDuration
       });
@@ -926,7 +921,7 @@
           const img = new Image();
           img.src = config.src;
           img.onload = () => {
-            const TARGET_WIDTH = 400 + Math.random() * 80;
+            const TARGET_WIDTH = (400 + Math.random() * 80) * DPR;
             const scale = TARGET_WIDTH / img.width;
             const imgW = img.width * scale;
             const imgH = img.height * scale;
@@ -946,7 +941,9 @@
             const imageData = offCtx.getImageData(0, 0, sandCanvas.width, sandCanvas.height);
             const data = imageData.data;
             const groupParticles = [];
-            const gap = 3;
+            
+            // ⚡ 關鍵效能優化：採樣步長由 3 提升至 5，粒子數大幅減少 50% 但維持輪廓清晰
+            const gap = Math.round(5 * DPR);
 
             for (let y = 0; y < sandCanvas.height; y += gap) {
               for (let x = 0; x < sandCanvas.width; x += gap) {
@@ -964,7 +961,7 @@
             }
             resolve(groupParticles);
           };
-          img.onerror = () => resolve([]); // 防呆保護
+          img.onerror = () => resolve([]);
         });
       });
 
@@ -1045,7 +1042,7 @@
     }
 
     // =============================================================
-    // 🎯 5. 全頁 Snap 滾動控制
+    // 🎯 5. 全頁 Snap 滾動控制 (含 Canvas 凍結邏輯)
     // =============================================================
     let currentPageIndex = 0;
     const totalPages = 3;
@@ -1065,15 +1062,30 @@
       if (currentPageIndex === 0) {
         lCanvas.style.opacity = '1';
         audioVisualSec.classList.remove('active');
+        
+        // ⚡ 啟用背景繪製
+        if (!isBgCanvasRendering) {
+          isBgCanvasRendering = true;
+          renderBg();
+        }
       } else if (currentPageIndex === 1) {
         lCanvas.style.opacity = '0';
         playBannerBeamAnimation();
         audioVisualSec.classList.remove('active');
+
+        // ⚡ 啟用背景繪製
+        if (!isBgCanvasRendering) {
+          isBgCanvasRendering = true;
+          renderBg();
+        }
       } else if (currentPageIndex === 2) {
         lCanvas.style.opacity = '0';
         playBannerBeamAnimation();
         audioVisualSec.classList.add('active');
-        // 🎯 切換到 Page 2 時啟動沙畫繪製
+
+        // ⚡ 核心優化：進 Page 2 時凍結背景 Canvas，全力運算沙畫！
+        isBgCanvasRendering = false;
+
         initSandArtSection();
       }
 
