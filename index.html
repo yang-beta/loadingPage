@@ -469,14 +469,14 @@
     .p4-cards {
       width: 100%;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
       align-items: stretch;
     }
 
     .p4-card-item {
       position: relative;
-      min-height: 300px;
+      min-height: 270px;
       height: 100%;
       align-self: stretch;
       overflow: hidden;
@@ -510,6 +510,51 @@
       box-shadow: 0 0 20px rgba(242,152,80,.3);
     }
     .p4-card-item.is-active::after { opacity: 1; }
+
+
+
+    /* Card 4：歲月溫熱（觸覺） */
+    .p4-card-touch .p4-card-visual-stage {
+      isolation: isolate;
+    }
+
+    .p4-touch-glow {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 32%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(.45);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle,
+        rgba(247, 208, 112, .56) 0%,
+        rgba(242, 152, 80, .24) 36%,
+        rgba(242, 152, 80, .08) 58%,
+        transparent 74%);
+      filter: blur(3px);
+      transition: opacity .45s ease, transform .7s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .p4-card-touch .p4-card-canvas {
+      position: relative;
+      z-index: 1;
+      opacity: .58;
+      filter: drop-shadow(0 0 4px rgba(242,152,80,.18));
+      transition: opacity .45s ease, filter .45s ease;
+    }
+
+    .p4-card-touch.is-active .p4-touch-glow {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.9);
+    }
+
+    .p4-card-touch.is-active .p4-card-canvas {
+      opacity: 1;
+      filter: drop-shadow(0 0 10px rgba(247,208,112,.72));
+    }
 
     .p4-card-visual-stage {
       position: relative;
@@ -646,6 +691,11 @@
       }
 
       .p4-header-line { font-size: .92rem; line-height: 1.7; letter-spacing: .06em; }
+
+
+      .p4-cards {
+        grid-template-columns: 1fr !important;
+      }
       .p4-footer-text { font-size: .86rem; line-height: 1.7; letter-spacing: .05em; }
 
       .p4-cards {
@@ -918,7 +968,7 @@
       <div class="p4-content">
         <div class="p4-header-group" id="p4HeaderGroup">
           <div class="ui-line-mask">
-            <div class="ui-line-content p4-header-line">如果思念有形狀，你希望再次看見、聽見什麼？</div>
+            <div class="ui-line-content p4-header-line">如果思念有形狀，你希望再次看見、聽見或感受什麼？</div>
           </div>
           <div class="ui-line-mask">
             <div class="ui-line-content p4-header-line">透過科技的微光，我們試著捕捉時光的餘溫 ――</div>
@@ -952,10 +1002,19 @@
             <h3 class="p4-card-title">✦ 時光留香（記憶）</h3>
             <p class="p4-card-description">描述記憶裡的味道與畫面（如阿嬤的粽香），勾勒出溫暖的歲月景象。</p>
           </article>
+
+          <article class="p4-card-item p4-card-touch" tabindex="0" data-p4-card="touch">
+            <div class="p4-card-visual-stage">
+              <div class="p4-touch-glow" aria-hidden="true"></div>
+              <canvas class="p4-card-canvas" id="p4TouchCanvas" aria-label="掌心與擁抱金沙弧線"></canvas>
+            </div>
+            <h3 class="p4-card-title">✦ 歲月溫熱（觸覺）</h3>
+            <p class="p4-card-description">描述掌心裡殘留的溫度，重現那雙曾緊握過你的手、與溫暖的擁抱。</p>
+          </article>
         </div>
 
         <div class="ui-line-mask">
-          <div class="ui-line-content p4-footer-text">讓記憶裡的影像與聲音，再次為你溫柔重現。</div>
+          <div class="ui-line-content p4-footer-text">讓記憶裡的影像、聲音與溫度，再次為你溫柔重現。</div>
         </div>
       </div>
 
@@ -1795,6 +1854,8 @@
     const p4VisualCtx = p4VisualCanvas.getContext('2d');
     const p4MemoryCanvas = document.getElementById('p4MemoryCanvas');
     const p4MemoryCtx = p4MemoryCanvas.getContext('2d');
+    const p4TouchCanvas = document.getElementById('p4TouchCanvas');
+    const p4TouchCtx = p4TouchCanvas.getContext('2d');
 
     let page4TL = null;
     let isP4Interactive = false;
@@ -1804,7 +1865,7 @@
     let p4MemoryParticles = [];
 
     function resizeP4Canvases() {
-      [p4VisualCanvas, p4MemoryCanvas].forEach((canvas) => {
+      [p4VisualCanvas, p4MemoryCanvas, p4TouchCanvas].forEach((canvas) => {
         const rect = canvas.getBoundingClientRect();
         canvas.width = Math.max(1, Math.round(rect.width * DPR));
         canvas.height = Math.max(1, Math.round(rect.height * DPR));
@@ -1812,6 +1873,7 @@
       buildP4MemoryParticles();
       drawP4VisualFrame();
       drawP4MemoryFrame();
+      drawP4TouchFrame();
     }
 
     function buildP4MemoryParticles() {
@@ -1849,6 +1911,46 @@
         }
         ctx.stroke();
       }
+      ctx.restore();
+    }
+
+    function drawP4TouchFrame() {
+      const ctx = p4TouchCtx;
+      const w = p4TouchCanvas.width;
+      const h = p4TouchCanvas.height;
+      if (!w || !h) return;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      ctx.translate(w / 2, h / 2 + 4 * DPR);
+
+      const particleCount = window.innerWidth <= 768 ? 70 : 105;
+      const arcs = [
+        { cx: -w * .075, start: Math.PI * .18, end: Math.PI * 1.30, flip: 1 },
+        { cx:  w * .075, start: Math.PI * -.30, end: Math.PI * .82, flip: -1 }
+      ];
+
+      arcs.forEach((arc, arcIndex) => {
+        for (let i = 0; i < particleCount; i += 1) {
+          const t = i / (particleCount - 1);
+          const angle = arc.start + (arc.end - arc.start) * t;
+          const rx = w * .18;
+          const ry = h * .31;
+          const jitter = Math.sin(i * 2.17 + arcIndex) * 1.2 * DPR;
+          const x = arc.cx + Math.cos(angle) * rx + jitter;
+          const y = Math.sin(angle) * ry + Math.cos(i * 1.37) * 1.1 * DPR;
+          const alpha = .28 + .48 * Math.sin(Math.PI * t);
+          const radius = (.75 + (i % 4) * .18) * DPR;
+
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(242, 152, 80, ${alpha})`;
+          ctx.shadowColor = 'rgba(247, 208, 112, .42)';
+          ctx.shadowBlur = 3 * DPR;
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
       ctx.restore();
     }
 
@@ -1988,8 +2090,8 @@
       page4TL = gsap.timeline();
       page4TL
         .to('#p4MandalaBackdrop', { opacity: .2, scale: .85, duration: 1.2, ease: 'power2.inOut' }, 0)
-        .to(p4HeaderLines[0], { autoAlpha: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 0.2)
-        .to(p4HeaderLines[1], { autoAlpha: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 1.7)
+        .to(p4HeaderLines[0], { autoAlpha: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 1.7)
+        .to(p4HeaderLines[1], { autoAlpha: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 3.2)
         .to(p4Cards, {
           autoAlpha: 1,
           y: 0,
@@ -1997,10 +2099,10 @@
           duration: .8,
           stagger: .22,
           ease: 'power2.out'
-        }, 3.0)
-        .to('#aiReconstructionSection .p4-footer-text', { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 4.35)
-        .call(enableP4Interaction, null, 5.2)
-        .call(() => animateArrow(aiReconstructionSection), null, 5.5);
+        }, 4.4)
+        .to('#aiReconstructionSection .p4-footer-text', { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 6.15)
+        .call(enableP4Interaction, null, 7.0)
+        .call(() => animateArrow(aiReconstructionSection), null, 7.3);
     }
 
     function skipP4Animation() {
