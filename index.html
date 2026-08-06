@@ -107,7 +107,7 @@
     .skip-anim-btn:hover { background-color: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.5); }
 
     /* =============================================================
-       🎯 全站跨頁統一 v 箭頭 CSS 規範 (LP, P1, P2, 及未來所有頁面)
+       🎯 全站跨頁統一 v 箭頭 CSS 規範
        ============================================================= */
     .scroll-arrow-btn {
       position: absolute;
@@ -120,15 +120,16 @@
       border: none;
       cursor: pointer;
       outline: none;
-      z-index: 10;
+      z-index: 30;
       opacity: 0;             /* 初始隱藏，由 GSAP 依時間軸淡入 */
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
+      pointer-events: auto;
     }
 
-    /* 滑鼠靠近放大效果套用在內層 SVG，完全避開外層 <button> 的 GSAP translateY 衝突 */
+    /* 滑鼠靠近放大效果套用在內層 SVG */
     .scroll-arrow-btn:hover .arrow-icon {
       transform: scale(1.25);
     }
@@ -222,7 +223,6 @@
 
     .text-line { color: #E6E6E8; line-height: 1; }
 
-    /* 所有文字進場元素共用的初始狀態，由 GSAP 統一控制 */
     .ui-animate-text {
       opacity: 0;
       will-change: transform, opacity;
@@ -348,7 +348,6 @@
       gap: 18px;
       width: 90%;
       max-width: 800px;
-      /* 遵循交接說明第十二點：允許文字可滑鼠選取 */
       pointer-events: auto;
       user-select: text;
     }
@@ -532,7 +531,7 @@
         <div class="ui-line-mask subtitle-wrapper-2"><div class="text-line title-part2 ui-animate-text" id="line3">開始</div></div>
       </div>
 
-      <!-- LP 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
+      <!-- LP 箭頭 -->
       <button class="scroll-arrow-btn" id="lpArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -559,7 +558,7 @@
         </div>
       </div>
 
-      <!-- P1 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
+      <!-- P1 箭頭 -->
       <button class="scroll-arrow-btn" id="p1ArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -570,7 +569,6 @@
       <canvas id="CanvasAnime"></canvas>
 
       <div id="text-container">
-        <!-- 故事 1 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
             <span class="sub-part ui-animate-text s1-p1">也許，是那位一直遞上肩膀，</span>
@@ -578,7 +576,6 @@
           </div>
         </div>
 
-        <!-- 故事 2 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
             <span class="sub-part ui-animate-text s2-p1">或是，無論你飛多高，</span>
@@ -586,7 +583,6 @@
           </div>
         </div>
 
-        <!-- 故事 3 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
             <span class="sub-part ui-animate-text s3-p1">也可能是，怕你吃不飽、</span>
@@ -594,7 +590,6 @@
           </div>
         </div>
 
-        <!-- 故事 4 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
             <span class="sub-part ui-animate-text s4-p1">還有那，無論多晚，總在門口等待、</span>
@@ -602,7 +597,6 @@
           </div>
         </div>
         
-        <!-- 結尾金句 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text" id="goldenLine">
             <span class="ui-animate-text" id="fPart1">回憶，雖然會慢慢消逝</span>
@@ -614,7 +608,7 @@
         </div>
       </div>
 
-      <!-- P2 箭頭：全站統一 CSS 類別 .scroll-arrow-btn，為未來第四頁做準備 -->
+      <!-- P2 箭頭 -->
       <button class="scroll-arrow-btn" id="p2ArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -642,7 +636,7 @@
         </div>
       </div>
 
-      <!-- P3 箭頭：採用全站統一的 scroll-arrow-btn 架構 -->
+      <!-- P3 箭頭 -->
       <button class="scroll-arrow-btn" id="p3ArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -650,8 +644,7 @@
 
     <!-- Page 4. 展覽主體/體驗頁 (P4) -->
     <div class="section-page" id="page4Section">
-      <!-- 這裡放置您未來 P4 的內容 -->
-      <div style="display:flex; justify-center; align-items:center; height:100vh; color:#fff;">
+      <div style="display:flex; justify-content:center; align-items:center; height:100vh; color:#fff;">
         <h2>Page 4 展覽內容區塊</h2>
       </div>
     </div>
@@ -661,7 +654,6 @@
     const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
     gsap.config({ force3D: true });
 
-    // 各 Canvas 的 requestAnimationFrame 控制代號
     let loadingRafId = null;
     let backgroundRafId = null;
     let sandRafId = null;
@@ -698,25 +690,25 @@
           loadingRafId = null;
           return;
         }
-      lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
-      const W = lCanvas.width, H = lCanvas.height;
+        lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
+        const W = lCanvas.width, H = lCanvas.height;
 
-      waveParams.forEach((p, i) => {
-        lCtx.beginPath();
-        lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / 20) * 0.25})`;
-        lCtx.lineWidth = 1.2 * DPR;
-        const baseY = H * 0.2 + (i * 8 * DPR);
+        waveParams.forEach((p, i) => {
+          lCtx.beginPath();
+          lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / 20) * 0.25})`;
+          lCtx.lineWidth = 1.2 * DPR;
+          const baseY = H * 0.2 + (i * 8 * DPR);
 
-        for (let x = 0; x <= W; x += 16 * DPR) {
-          const wave1 = Math.sin((x * p.frequency1) + (step * p.speed) + p.phaseOffset);
-          const wave2 = Math.cos((x * p.frequency2) - (step * p.speed * 0.8) + p.phaseOffset);
-          const y = baseY + (wave1 * p.amplitude * DPR) + (wave2 * (p.amplitude * 0.5 * DPR));
-          
-          if (x === 0) lCtx.moveTo(x, y);
-          else lCtx.lineTo(x, y);
-        }
-        lCtx.stroke();
-      });
+          for (let x = 0; x <= W; x += 16 * DPR) {
+            const wave1 = Math.sin((x * p.frequency1) + (step * p.speed) + p.phaseOffset);
+            const wave2 = Math.cos((x * p.frequency2) - (step * p.speed * 0.8) + p.phaseOffset);
+            const y = baseY + (wave1 * p.amplitude * DPR) + (wave2 * (p.amplitude * 0.5 * DPR));
+            
+            if (x === 0) lCtx.moveTo(x, y);
+            else lCtx.lineTo(x, y);
+          }
+          lCtx.stroke();
+        });
         step += 1;
         loadingRafId = requestAnimationFrame(renderLoadingFrame);
       };
@@ -836,10 +828,10 @@
           backgroundRafId = null;
           return;
         }
-      globalTime += 1;
-      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-      bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
-      bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+        globalTime += 1;
+        bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
+        bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 
         drawLightBeams();
         drawGoldParticles();
@@ -961,36 +953,6 @@
         sandCtx.arc(this.x | 0, this.y | 0, this.size, 0, Math.PI * 2);
         sandCtx.fill();
       }
-    }
-
-    // =============================================================
-    // ✨ 共用文字動畫工具
-    // =============================================================
-    function createSequentialTextAnimation({
-      timeline = gsap.timeline(),
-      elements,
-      fromY = "115%",
-      enterDuration = 1.0,
-      enterEase = "power2.out",
-      gap = 0,
-      firstPosition,
-      onComplete
-    }) {
-      const items = gsap.utils.toArray(elements);
-      gsap.set(items, { y: fromY, opacity: 0 });
-
-      items.forEach((item, index) => {
-        const position = index === 0 ? firstPosition : `+=${gap}`;
-        timeline.to(item, {
-          y: "0%",
-          opacity: 1,
-          duration: enterDuration,
-          ease: enterEase
-        }, position);
-      });
-
-      if (onComplete) timeline.call(onComplete);
-      return timeline;
     }
 
     function createGroupedStoryAnimation({
@@ -1131,7 +1093,6 @@
         duration: totalAnimationDuration + 60,
         ease: "none"
       });
-
     }
 
     function animateSand() {
@@ -1160,15 +1121,15 @@
     }
 
     // =============================================================
-    // 🎯 通用 GSAP 箭頭動畫控制函式（依頁面自動尋找箭頭）
+    // 🎯 通用 GSAP 箭頭動畫控制函式
     // =============================================================
     function animateArrow(pageOrArrow) {
       const element = pageOrArrow?.matches?.('.scroll-arrow-btn')
         ? pageOrArrow
         : pageOrArrow?.querySelector?.('.scroll-arrow-btn');
-      if (!element || element.dataset.animated === 'true') return;
+      if (!element) return;
 
-      element.dataset.animated = 'true';
+      element.style.pointerEvents = 'auto';
       gsap.killTweensOf(element);
       gsap.set(element, { y: 0 });
 
@@ -1187,27 +1148,18 @@
       });
     }
 
-    document.querySelectorAll('.scroll-arrow-btn').forEach((button) => {
-      button.addEventListener('click', nextPage);
-    });
-
     // =============================================================
-    // 🌀 Page 3 時間軸與動畫邏輯 (遵循交接說明與 P3 規格)
+    // 🌀 Page 3 時間軸與動畫邏輯
     // =============================================================
     function initP3Section() {
       if (isP3Initialized) return;
       isP3Initialized = true;
 
-      // 顯示 P3 專用 Skip 按鈕
       document.getElementById('p3SkipBtn').classList.add('show');
 
       page3TL = gsap.timeline();
 
-      // 遵循 Specs 時間軸配合交接說明共用機制
-      // 0.0s - 1.5s: 散落粒子向中心收束（對應 Specs step 1）
       page3TL.to({}, { duration: 1.5 })
-      
-      // 1.5s - 3.0s: 第一段文字滑入
       .to("#p3Text1", {
         y: "0%",
         opacity: 1,
@@ -1215,8 +1167,6 @@
         ease: "power2.out"
       })
       .to({}, { duration: 0.5 })
-
-      // 3.0s - 4.5s: 第二段文字淡入登場
       .to("#p3Text2", {
         y: "0%",
         opacity: 1,
@@ -1224,16 +1174,12 @@
         ease: "power2.out"
       })
       .to({}, { duration: 0.5 })
-
-      // 4.5s - 6.0s: 第三段文字登場
       .to("#p3Text3", {
         y: "0%",
         opacity: 1,
         duration: 1.0,
         ease: "power2.out"
       })
-
-      // 6.0s - 6.5s: 箭頭登場，淡出 Skip 按鈕
       .call(() => {
         animateArrow(document.getElementById('brandTransitionSection'));
         gsap.to("#p3SkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
@@ -1377,9 +1323,7 @@
           stopSandCanvas();
           initP3Section();
         },
-        leave() {
-          // 離開 P3 時的處理
-        }
+        leave() {}
       }],
       ['page4Section', {
         enter() {
@@ -1432,6 +1376,15 @@
     window.addEventListener('resize', handleResize, { passive: true });
     resizeAllCanvases();
     runPageLifecycle(pageElements[currentPageIndex], 'enter');
+
+    // 🎯 統一綁定箭頭按鈕點擊事件 (確保每個箭頭都能點擊跳頁)
+    document.addEventListener('click', (e) => {
+      const arrowBtn = e.target.closest('.scroll-arrow-btn');
+      if (arrowBtn) {
+        e.preventDefault();
+        nextPage();
+      }
+    });
 
     window.addEventListener('wheel', (e) => {
       if (isScrollLocked) return;
