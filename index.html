@@ -185,7 +185,7 @@
     .title-part1 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; }
     .title-part2 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; opacity: 0.9; }
 
-    .scroll-arrow-btn { margin-top: 24px; background: none; border: none; cursor: pointer; outline: none; opacity: 0; }
+    /* .scroll-arrow-btn { margin-top: 24px; background: none; border: none; cursor: pointer; outline: none; opacity: 0; } */
     .arrow-icon { width: 36px; height: 36px; stroke: #E6E6E8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5)); }
 
     @keyframes goldGlowPulse {
@@ -229,17 +229,34 @@
     .banner-question-part { font-size: 1.2rem; font-weight: 300; letter-spacing: 0.2rem; }
     .bq-part:last-child { margin-left: 0.8rem; }
 
-    .scroll-hint-v {
+    /* 統一所有頁面的 v 箭頭容器 */
+    .scroll-hint-v, 
+    .scroll-arrow-btn {
       position: absolute;
-      bottom: 8%;
-      opacity: 0;
-      cursor: pointer;
-      z-index: 5;
+      bottom: 6%;
+      left: 50%;
+      transform: translateX(-50%);
       background: none;
       border: none;
+      cursor: pointer;
       outline: none;
-      transition: transform 0.3s;
+      z-index: 10;
+      opacity: 0;
+      margin-top: 0; /* 移除原本的 margin */
     }
+
+    /* 統一箭頭圖示大小與發光效果 */
+    .arrow-icon {
+      width: 32px;
+      height: 32px;
+      stroke: #E6E6E8;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5));
+    }
+    
     .scroll-hint-v:hover { transform: scale(1.15); }
 
     /* =============================================================
@@ -490,7 +507,8 @@
         </div>
       </div>
 
-      <button class="scroll-hint-v" onclick="nextPage()">
+      <!-- P1 的箭頭按鈕 -->
+      <button class="scroll-hint-v" id="p1ArrowBtn" onclick="nextPage()">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
@@ -1020,6 +1038,23 @@
       gsap.to("#bannerSkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
     }
 
+    // 🎯 統一控制所有頁面箭頭的淡入與上下浮動動畫
+    function animateArrow(selector) {
+      gsap.to(selector, {
+        opacity: 1,
+        duration: 0.8,
+        onComplete: () => {
+          gsap.to(selector, {
+            y: 8,
+            duration: 1.0,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+          });
+        }
+      });
+    }
+    
     // =============================================================
     // 🎯 5. 全頁 Snap 滾動控制
     // =============================================================
