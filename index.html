@@ -111,7 +111,7 @@
        ============================================================= */
     .scroll-arrow-btn {
       position: absolute;
-      bottom: 15%;             /* 固定距螢幕底部 6%，確保全站跨頁 100% 對齊 */
+      bottom: 15%;             /* 固定距螢幕底部 15%，確保全站跨頁一致對齊 */
       left: 50%;
       margin-left: -24px;     /* 寬度 48px 的一半，精準水平置中且不依賴 transform */
       width: 48px;
@@ -220,7 +220,13 @@
     .subtitle-wrapper-1 { height: 36px; margin-top: 10px; }
     .subtitle-wrapper-2 { height: 36px; margin-top: 10px; }
 
-    .text-line { color: #E6E6E8; transform: translateY(200%); opacity: 0; line-height: 1; }
+    .text-line { color: #E6E6E8; line-height: 1; }
+
+    /* 所有文字進場元素共用的初始狀態，由 GSAP 統一控制 */
+    .ui-animate-text {
+      opacity: 0;
+      will-change: transform, opacity;
+    }
     .title-part1 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; }
     .title-part2 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; opacity: 0.9; }
 
@@ -485,13 +491,13 @@
       </div>
 
       <div class="interactive-area">
-        <div class="ui-line-mask title-wrapper"><div class="text-line title-part1" id="line1">回憶</div></div>
-        <div class="ui-line-mask subtitle-wrapper-1"><div class="text-line title-part2" id="line2">從這裡</div></div>
-        <div class="ui-line-mask subtitle-wrapper-2"><div class="text-line title-part2" id="line3">開始</div></div>
+        <div class="ui-line-mask title-wrapper"><div class="text-line title-part1 ui-animate-text" id="line1">回憶</div></div>
+        <div class="ui-line-mask subtitle-wrapper-1"><div class="text-line title-part2 ui-animate-text" id="line2">從這裡</div></div>
+        <div class="ui-line-mask subtitle-wrapper-2"><div class="text-line title-part2 ui-animate-text" id="line3">開始</div></div>
       </div>
 
       <!-- LP 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
-      <button class="scroll-arrow-btn" id="lpArrowBtn" onclick="nextPage()">
+      <button class="scroll-arrow-btn" id="lpArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
@@ -504,21 +510,21 @@
 
       <div class="banner-questions-wrapper">
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">你的生命中，有沒有一個人 ――</div>
-          <div class="ui-line-content banner-question-part bq-part">讓你，成就了今天的自己？</div>
+          <div class="ui-line-content banner-question-part bq-part ui-animate-text">你的生命中，有沒有一個人 ――</div>
+          <div class="ui-line-content banner-question-part bq-part ui-animate-text">讓你，成就了今天的自己？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">某一段回憶，每當想起 ――</div>
-          <div class="ui-line-content banner-question-part bq-part">都會，默默地露出微笑？</div>
+          <div class="ui-line-content banner-question-part bq-part ui-animate-text">某一段回憶，每當想起 ――</div>
+          <div class="ui-line-content banner-question-part bq-part ui-animate-text">都會，默默地露出微笑？</div>
         </div>
         <div class="ui-line-mask">
-          <div class="ui-line-content banner-question-part bq-part">有沒有一份陪伴，即使過了很久 ――</div>
-          <div class="ui-line-content banner-question-part bq-part">依然，溫暖著你？</div>
+          <div class="ui-line-content banner-question-part bq-part ui-animate-text">有沒有一份陪伴，即使過了很久 ――</div>
+          <div class="ui-line-content banner-question-part bq-part ui-animate-text">依然，溫暖著你？</div>
         </div>
       </div>
 
       <!-- P1 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
-      <button class="scroll-arrow-btn" id="p1ArrowBtn" onclick="nextPage()">
+      <button class="scroll-arrow-btn" id="p1ArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
@@ -530,50 +536,50 @@
       <div id="text-container">
         <!-- 故事 1 -->
         <div class="ui-line-mask">
-          <div class="ui-line-content story-line">
-            <span class="sub-part s1-p1">也許，是那位一直遞上肩膀，</span>
-            <span class="sub-part s1-p2">比你還相信你自己的――摯友！</span>
+          <div class="ui-line-content story-line ui-animate-text">
+            <span class="sub-part ui-animate-text s1-p1">也許，是那位一直遞上肩膀，</span>
+            <span class="sub-part ui-animate-text s1-p2">比你還相信你自己的――摯友！</span>
           </div>
         </div>
 
         <!-- 故事 2 -->
         <div class="ui-line-mask">
-          <div class="ui-line-content story-line">
-            <span class="sub-part s2-p1">或是，無論你飛多高，</span>
-            <span class="sub-part s2-p2">只在乎你累不累的――家人！</span>
+          <div class="ui-line-content story-line ui-animate-text">
+            <span class="sub-part ui-animate-text s2-p1">或是，無論你飛多高，</span>
+            <span class="sub-part ui-animate-text s2-p2">只在乎你累不累的――家人！</span>
           </div>
         </div>
 
         <!-- 故事 3 -->
         <div class="ui-line-mask">
-          <div class="ui-line-content story-line">
-            <span class="sub-part s3-p1">也可能是，怕你吃不飽、</span>
-            <span class="sub-part s3-p2">過不好的――長輩嘮叨！</span>
+          <div class="ui-line-content story-line ui-animate-text">
+            <span class="sub-part ui-animate-text s3-p1">也可能是，怕你吃不飽、</span>
+            <span class="sub-part ui-animate-text s3-p2">過不好的――長輩嘮叨！</span>
           </div>
         </div>
 
         <!-- 故事 4 -->
         <div class="ui-line-mask">
-          <div class="ui-line-content story-line">
-            <span class="sub-part s4-p1">還有那，無論多晚，總在門口等待、</span>
-            <span class="sub-part s4-p2">把你當作全世界的毛孩！</span>
+          <div class="ui-line-content story-line ui-animate-text">
+            <span class="sub-part ui-animate-text s4-p1">還有那，無論多晚，總在門口等待、</span>
+            <span class="sub-part ui-animate-text s4-p2">把你當作全世界的毛孩！</span>
           </div>
         </div>
         
         <!-- 結尾金句 -->
         <div class="ui-line-mask">
-          <div class="ui-line-content story-line" id="goldenLine">
-            <span id="fPart1">回憶，雖然會慢慢消逝</span>
-            <span class="dot-char" id="dot1">..</span>
-            <span class="dot-char" id="dot2">..</span>
-            <span class="dot-char" id="dot3">..</span>
-            <span id="fPart2">卻也會沉澱在心靈中某個深處</span>
+          <div class="ui-line-content story-line ui-animate-text" id="goldenLine">
+            <span class="ui-animate-text" id="fPart1">回憶，雖然會慢慢消逝</span>
+            <span class="dot-char ui-animate-text" id="dot1">..</span>
+            <span class="dot-char ui-animate-text" id="dot2">..</span>
+            <span class="dot-char ui-animate-text" id="dot3">..</span>
+            <span class="ui-animate-text" id="fPart2">卻也會沉澱在心靈中某個深處</span>
           </div>
         </div>
       </div>
 
       <!-- P2 箭頭：全站統一 CSS 類別 .scroll-arrow-btn，為未來第四頁做準備 -->
-      <button class="scroll-arrow-btn" id="p2ArrowBtn" onclick="nextPage()">
+      <button class="scroll-arrow-btn" id="p2ArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
@@ -583,6 +589,12 @@
   <script>
     const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
     gsap.config({ force3D: true });
+
+    // 各 Canvas 的 requestAnimationFrame 控制代號
+    let loadingRafId = null;
+    let backgroundRafId = null;
+    let sandRafId = null;
+    let resizeRafId = null;
 
     // =============================================================
     // 🌊 1. 開場水波紋 Canvas (LP)
@@ -594,8 +606,6 @@
       lCanvas.width = window.innerWidth * DPR;
       lCanvas.height = (window.innerHeight * 0.4) * DPR;
     }
-    resizeLoadingCanvas();
-    window.addEventListener('resize', resizeLoadingCanvas);
 
     let step = 0;
     let isWaveActive = true;
@@ -608,7 +618,13 @@
     }));
 
     function drawWaveLandscape() {
-      if (!isWaveActive) return;
+      if (!isWaveActive || loadingRafId !== null) return;
+
+      const renderLoadingFrame = () => {
+        if (!isWaveActive) {
+          loadingRafId = null;
+          return;
+        }
       lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
       const W = lCanvas.width, H = lCanvas.height;
 
@@ -628,10 +644,25 @@
         }
         lCtx.stroke();
       });
-      step += 1;
-      requestAnimationFrame(drawWaveLandscape);
+        step += 1;
+        loadingRafId = requestAnimationFrame(renderLoadingFrame);
+      };
+
+      renderLoadingFrame();
     }
-    drawWaveLandscape();
+
+    function startLoadingCanvas() {
+      isWaveActive = true;
+      drawWaveLandscape();
+    }
+
+    function stopLoadingCanvas() {
+      isWaveActive = false;
+      if (loadingRafId !== null) {
+        cancelAnimationFrame(loadingRafId);
+        loadingRafId = null;
+      }
+    }
 
     // =============================================================
     // 🌌 2. 全頁背景 Canvas ( Banner 光束 )
@@ -644,8 +675,6 @@
       bgCanvas.width = window.innerWidth * DPR;
       bgCanvas.height = window.innerHeight * DPR;
     }
-    resizeBgCanvas();
-    window.addEventListener('resize', resizeBgCanvas);
 
     let animationParams = { beamDownProgress: 0, horizonSpreadProgress: 0, particleGlowProgress: 0 };
     const goldParticles = Array.from({ length: 50 }, () => ({
@@ -727,17 +756,38 @@
     }
 
     function renderBg() {
-      if (!isBgCanvasRendering) return;
+      if (!isBgCanvasRendering || backgroundRafId !== null) return;
+
+      const renderBackgroundFrame = () => {
+        if (!isBgCanvasRendering) {
+          backgroundRafId = null;
+          return;
+        }
       globalTime += 1;
       bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
       bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
       bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 
-      drawLightBeams();
-      drawGoldParticles();
-      requestAnimationFrame(renderBg);
+        drawLightBeams();
+        drawGoldParticles();
+        backgroundRafId = requestAnimationFrame(renderBackgroundFrame);
+      };
+
+      renderBackgroundFrame();
     }
-    renderBg();
+
+    function startBackgroundCanvas() {
+      isBgCanvasRendering = true;
+      renderBg();
+    }
+
+    function stopBackgroundCanvas() {
+      isBgCanvasRendering = false;
+      if (backgroundRafId !== null) {
+        cancelAnimationFrame(backgroundRafId);
+        backgroundRafId = null;
+      }
+    }
 
     // =============================================================
     // ⏳ 3. 沙畫動畫與語序時間軸
@@ -749,8 +799,6 @@
       sandCanvas.width = window.innerWidth * DPR;
       sandCanvas.height = window.innerHeight * DPR;
     }
-    resizeSandCanvas();
-    window.addEventListener('resize', resizeSandCanvas);
 
     const ALL_IMAGE_SOURCES = [
       '/img/dog-l.png', '/img/grandpa-l.png', '/img/grandmom-l.png',
@@ -842,49 +890,94 @@
       }
     }
 
-    function playTextAnimationSequence() {
-      const storyLines = document.querySelectorAll('.story-line');
-      const textTl = gsap.timeline();
+    // =============================================================
+    // ✨ 共用文字動畫工具
+    // =============================================================
+    function createSequentialTextAnimation({
+      timeline = gsap.timeline(),
+      elements,
+      fromY = "115%",
+      enterDuration = 1.0,
+      enterEase = "power2.out",
+      gap = 0,
+      firstPosition,
+      onComplete
+    }) {
+      const items = gsap.utils.toArray(elements);
+      gsap.set(items, { y: fromY, opacity: 0 });
 
-      const textStartTime = 1.5;
+      items.forEach((item, index) => {
+        const position = index === 0 ? firstPosition : `+=${gap}`;
+        timeline.to(item, {
+          y: "0%",
+          opacity: 1,
+          duration: enterDuration,
+          ease: enterEase
+        }, position);
+      });
 
-      const storyConfigs = [
-        { p1: ".s1-p1", p2: ".s1-p2", lineIdx: 0 },
-        { p1: ".s2-p1", p2: ".s2-p2", lineIdx: 1 },
-        { p1: ".s3-p1", p2: ".s3-p2", lineIdx: 2 },
-        { p1: ".s4-p1", p2: ".s4-p2", lineIdx: 3 }
-      ];
+      if (onComplete) timeline.call(onComplete);
+      return timeline;
+    }
 
-      textTl.to({}, { duration: textStartTime });
+    function createGroupedStoryAnimation({
+      timeline = gsap.timeline(),
+      groups,
+      startDelay = 0,
+      onComplete
+    }) {
+      if (startDelay > 0) timeline.to({}, { duration: startDelay });
 
-      storyConfigs.forEach((cfg) => {
-        const line = storyLines[cfg.lineIdx];
+      groups.forEach(({ line, parts, keepVisible = false }) => {
+        gsap.set(line, { y: "115%", opacity: 0 });
+        gsap.set(parts, { opacity: 0 });
 
-        textTl.to(line, {
+        timeline.to(line, {
           y: "0%",
           opacity: 1,
           duration: 1.0,
           ease: "power2.out"
-        })
-        .to(cfg.p1, {
-          opacity: 1,
-          duration: 0.8,
-          ease: "power1.out"
-        }, "<")
-        .to(cfg.p2, {
-          opacity: 1,
-          duration: 0.8,
-          ease: "power1.out"
-        }, "+=1.5")
-        .to(line, {
-          opacity: 0,
-          duration: 0.8,
-          ease: "power2.inOut"
-        }, "+=1.0")
-        .to({}, { duration: 0.5 });
+        });
+
+        parts.forEach((part, index) => {
+          timeline.to(part, {
+            opacity: 1,
+            duration: 0.8,
+            ease: "power1.out"
+          }, index === 0 ? "<" : "+=1.5");
+        });
+
+        if (!keepVisible) {
+          timeline.to(line, {
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.inOut"
+          }, "+=1.0").to({}, { duration: 0.5 });
+        }
+      });
+
+      if (onComplete) timeline.call(onComplete);
+      return timeline;
+    }
+
+    function playTextAnimationSequence() {
+      const textTl = gsap.timeline();
+      const storyLines = gsap.utils.toArray('#text-container .story-line:not(#goldenLine)');
+
+      const storyGroups = storyLines.map((line) => ({
+        line,
+        parts: gsap.utils.toArray(line.querySelectorAll('.sub-part'))
+      }));
+
+      createGroupedStoryAnimation({
+        timeline: textTl,
+        groups: storyGroups,
+        startDelay: 1.5
       });
 
       const goldenLine = document.getElementById('goldenLine');
+      gsap.set(goldenLine, { y: "115%", opacity: 0 });
+      gsap.set(goldenLine.querySelectorAll('.ui-animate-text'), { opacity: 0 });
 
       textTl.to(goldenLine, {
         y: "0%",
@@ -897,9 +990,7 @@
       .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.3")
       .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.3")
       .to("#fPart2", { opacity: 1, duration: 1.5, ease: "power1.out" }, "+=0.5")
-      
-      // 🎯 P2：最後金句與點點點完整登場後，觸發 P2 箭頭
-      .call(() => { animateArrow("p2ArrowBtn"); });
+      .call(() => animateArrow(document.getElementById('audiovisualSection')));
     }
 
     async function initSandArtSection() {
@@ -968,23 +1059,45 @@
         ease: "none"
       });
 
-      animateSand();
     }
 
     function animateSand() {
-      sandCtx.clearRect(0, 0, sandCanvas.width, sandCanvas.height);
-      floatingDustParticles.forEach(d => { d.update(); d.draw(); });
+      if (sandRafId !== null) return;
 
-      sandImageParticles.forEach(p => { p.update(sandGlobalProgress.t); p.draw(); });
-      requestAnimationFrame(animateSand);
+      const renderSandFrame = () => {
+        if (currentPageIndex !== pageElements.indexOf(document.getElementById('audiovisualSection'))) {
+          sandRafId = null;
+          return;
+        }
+
+        sandCtx.clearRect(0, 0, sandCanvas.width, sandCanvas.height);
+        floatingDustParticles.forEach(d => { d.update(); d.draw(); });
+        sandImageParticles.forEach(p => { p.update(sandGlobalProgress.t); p.draw(); });
+        sandRafId = requestAnimationFrame(renderSandFrame);
+      };
+
+      renderSandFrame();
+    }
+
+    function stopSandCanvas() {
+      if (sandRafId !== null) {
+        cancelAnimationFrame(sandRafId);
+        sandRafId = null;
+      }
     }
 
     // =============================================================
-    // 🎯 通用 GSAP 箭頭動畫控制函式（方法 A：依 ID 精準觸發）
+    // 🎯 通用 GSAP 箭頭動畫控制函式（依頁面自動尋找箭頭）
     // =============================================================
-    function animateArrow(targetId) {
-      const element = document.getElementById(targetId);
-      if (!element) return;
+    function animateArrow(pageOrArrow) {
+      const element = pageOrArrow?.matches?.('.scroll-arrow-btn')
+        ? pageOrArrow
+        : pageOrArrow?.querySelector?.('.scroll-arrow-btn');
+      if (!element || element.dataset.animated === 'true') return;
+
+      element.dataset.animated = 'true';
+      gsap.killTweensOf(element);
+      gsap.set(element, { y: 0 });
 
       gsap.to(element, {
         opacity: 1,
@@ -1001,24 +1114,38 @@
       });
     }
 
+    document.querySelectorAll('.scroll-arrow-btn').forEach((button) => {
+      button.addEventListener('click', nextPage);
+    });
+
     // =============================================================
     // 🎬 4. GSAP 開場與 Banner 時間軸控制
     // =============================================================
     const mainTl = gsap.timeline();
-    gsap.set("#line1, #line2, #line3", { y: "200%", opacity: 0 });
+    const openingTextItems = [
+      { element: '#line1', duration: 1.5 },
+      { element: '#line2', duration: 1.2 },
+      { element: '#line3', duration: 1.0 }
+    ];
+    gsap.set(openingTextItems.map(item => item.element), { y: "200%", opacity: 0 });
 
     mainTl.to(".loading-text-box .char", { opacity: 1, y: 0, duration: 0.6, stagger: 0.7, ease: "power2.out" })
     .call(() => { document.getElementById('loadingSkipBtn').classList.add('show'); })
     .to({}, { duration: 0.8 })
     .to("#loadingText", { opacity: 0, duration: 1.0, ease: "power2.inOut" })
     .to("#logoBox", { clipPath: "circle(70% at 50% 50%)", scale: 1, filter: "blur(0px)", opacity: 1, duration: 3.5, ease: "power1.inOut" }, "-=0.5")
-    .to({}, { duration: 1.5 })
-    .to("#line1", { y: "0%", opacity: 1, duration: 1.5, ease: "power2.out" })
-    .to("#line2", { y: "0%", opacity: 1, duration: 1.2, ease: "power2.out" }, "+=0.2")
-    .to("#line3", { y: "0%", opacity: 1, duration: 1.0, ease: "power2.out" }, "+=0.2")
-    
-    // 🎯 LP：標題文案出現完畢後，觸發 LP 箭頭
-    .call(() => { animateArrow("lpArrowBtn"); });
+    .to({}, { duration: 1.5 });
+
+    openingTextItems.forEach((item, index) => {
+      mainTl.to(item.element, {
+        y: "0%",
+        opacity: 1,
+        duration: item.duration,
+        ease: "power2.out"
+      }, index === 0 ? undefined : "+=0.2");
+    });
+
+    mainTl.call(() => animateArrow(document.getElementById('openingHero')));
 
     let bannerTimeline = null;
     let isBeamAnimated = false;
@@ -1033,17 +1160,19 @@
       .to(".brand-logo-img", { opacity: 1, duration: 1.4, ease: "power1.out" }, "-=1.0")
       .to(animationParams, { particleGlowProgress: 1, duration: 1.2, ease: "power1.out" }, "-=0.4");
       
-      const bqParts = document.querySelectorAll('.bq-part');
-      
-      bannerTimeline.to(bqParts[0], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "-=0.4")
-      .to(bqParts[1], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
-      .to(bqParts[2], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
-      .to(bqParts[3], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
-      .to(bqParts[4], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
-      .to(bqParts[5], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
-      
-      // 🎯 P1：問句全部滑出完畢後，觸發 P1 箭頭
-      .call(() => { animateArrow("p1ArrowBtn"); });
+      const bqParts = gsap.utils.toArray('.bq-part');
+      gsap.set(bqParts, { y: "115%", opacity: 0 });
+
+      bqParts.forEach((part, index) => {
+        bannerTimeline.to(part, {
+          y: "0%",
+          opacity: 1,
+          duration: 1.4,
+          ease: "power2.out"
+        }, index === 0 ? "-=0.4" : "+=1.5");
+      });
+
+      bannerTimeline.call(() => animateArrow(document.getElementById('heroSection')));
     }
 
     function skipLoadingToBanner() {
@@ -1060,44 +1189,97 @@
         animationParams.particleGlowProgress = 1;
         gsap.set(".brand-logo-img", { opacity: 1 });
         gsap.set(".bq-part", { y: "0%", opacity: 1 });
-        animateArrow("p1ArrowBtn");
+        animateArrow(document.getElementById('heroSection'));
       }
       gsap.to("#bannerSkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
     }
 
     // =============================================================
-    // 🎯 5. 全頁 Snap 滾動控制
+    // 🎯 5. 全頁生命週期與 Snap 滾動控制
     // =============================================================
+    const sectionsWrapper = document.getElementById('sectionsWrapper');
+    const pageElements = gsap.utils.toArray('.section-page');
+    const totalPages = pageElements.length;
     let currentPageIndex = 0;
-    const totalPages = 3;
     let isScrollLocked = false;
 
+    const pageLifecycle = new Map([
+      ['openingHero', {
+        enter() {
+          lCanvas.style.opacity = '1';
+          startLoadingCanvas();
+          startBackgroundCanvas();
+          stopSandCanvas();
+        },
+        leave() {
+          stopLoadingCanvas();
+        }
+      }],
+      ['heroSection', {
+        enter() {
+          lCanvas.style.opacity = '0';
+          stopLoadingCanvas();
+          startBackgroundCanvas();
+          stopSandCanvas();
+          playBannerBeamAnimation();
+        },
+        leave() {}
+      }],
+      ['audiovisualSection', {
+        enter() {
+          lCanvas.style.opacity = '0';
+          stopLoadingCanvas();
+          stopBackgroundCanvas();
+          playBannerBeamAnimation();
+          initSandArtSection().then(() => animateSand());
+        },
+        leave() {
+          stopSandCanvas();
+        }
+      }]
+    ]);
+
+    function runPageLifecycle(page, phase) {
+      const lifecycle = pageLifecycle.get(page.id);
+      lifecycle?.[phase]?.(page);
+    }
+
     function goToPage(index) {
-      if (index < 0 || index >= totalPages || isScrollLocked) return;
-      
+      if (index < 0 || index >= totalPages || isScrollLocked || index === currentPageIndex) return;
+
       isScrollLocked = true;
+      const previousPage = pageElements[currentPageIndex];
+      const nextPageElement = pageElements[index];
+
+      runPageLifecycle(previousPage, 'leave');
       currentPageIndex = index;
-
-      document.getElementById('sectionsWrapper').style.transform = `translateY(-${currentPageIndex * 100}vh)`;
-
-      if (currentPageIndex === 0) {
-        lCanvas.style.opacity = '1';
-        if (!isBgCanvasRendering) { isBgCanvasRendering = true; renderBg(); }
-      } else if (currentPageIndex === 1) {
-        lCanvas.style.opacity = '0';
-        playBannerBeamAnimation();
-        if (!isBgCanvasRendering) { isBgCanvasRendering = true; renderBg(); }
-      } else if (currentPageIndex === 2) {
-        lCanvas.style.opacity = '0';
-        playBannerBeamAnimation();
-        isBgCanvasRendering = false;
-        initSandArtSection();
-      }
+      sectionsWrapper.style.transform = `translateY(-${currentPageIndex * 100}vh)`;
+      runPageLifecycle(nextPageElement, 'enter');
 
       setTimeout(() => { isScrollLocked = false; }, 850);
     }
 
-    function nextPage() { goToPage(currentPageIndex + 1); }
+    function nextPage() {
+      goToPage(currentPageIndex + 1);
+    }
+
+    function resizeAllCanvases() {
+      resizeLoadingCanvas();
+      resizeBgCanvas();
+      resizeSandCanvas();
+    }
+
+    function handleResize() {
+      if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+      resizeRafId = requestAnimationFrame(() => {
+        resizeAllCanvases();
+        resizeRafId = null;
+      });
+    }
+
+    window.addEventListener('resize', handleResize, { passive: true });
+    resizeAllCanvases();
+    runPageLifecycle(pageElements[currentPageIndex], 'enter');
 
     window.addEventListener('wheel', (e) => {
       if (isScrollLocked) return;
