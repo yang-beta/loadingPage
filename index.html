@@ -107,7 +107,7 @@
     .skip-anim-btn:hover { background-color: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.5); }
 
     /* =============================================================
-       1. Loading Page (載入頁)
+       1. Loading Page (LP 頁)
        ============================================================= */
     #openingHero {
       display: flex;
@@ -185,8 +185,18 @@
     .title-part1 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; }
     .title-part2 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; opacity: 0.9; }
 
-    /* .scroll-arrow-btn { margin-top: 24px; background: none; border: none; cursor: pointer; outline: none; opacity: 0; } */
-    .arrow-icon { width: 36px; height: 36px; stroke: #E6E6E8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5)); }
+    /* 🎯 LP 專屬箭頭：緊跟在「開始」正下方 */
+    .scroll-arrow-btn {
+      position: relative;
+      margin-top: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      opacity: 0;
+      transition: transform 0.3s ease;
+    }
+    .scroll-arrow-btn:hover { transform: scale(1.15); }
 
     @keyframes goldGlowPulse {
       0% { filter: drop-shadow(0 0 8px rgba(242, 152, 80, 0.4)); }
@@ -195,7 +205,7 @@
     }
 
     /* =============================================================
-       2. Banner 頁
+       2. Banner 頁 (P1 頁)
        ============================================================= */
     .hero-container {
       z-index: 2;
@@ -229,9 +239,8 @@
     .banner-question-part { font-size: 1.2rem; font-weight: 300; letter-spacing: 0.2rem; }
     .bq-part:last-child { margin-left: 0.8rem; }
 
-    /* 統一所有頁面的 v 箭頭容器 */
-    .scroll-hint-v, 
-    .scroll-arrow-btn {
+    /* 🎯 P1 (及未來跨頁) 螢幕底部絕對定位箭頭 */
+    .scroll-hint-v {
       position: absolute;
       bottom: 6%;
       left: 50%;
@@ -242,10 +251,15 @@
       outline: none;
       z-index: 10;
       opacity: 0;
-      margin-top: 0; /* 移除原本的 margin */
+      transition: transform 0.3s ease;
+    }
+    
+    /* 🎯 保留 translateX(-50%)，解決 hover 往右偏移問題 */
+    .scroll-hint-v:hover { 
+      transform: translateX(-50%) scale(1.15); 
     }
 
-    /* 統一箭頭圖示大小與發光效果 */
+    /* 統一箭頭 Icon 圖示與發光效果 */
     .arrow-icon {
       width: 32px;
       height: 32px;
@@ -256,11 +270,9 @@
       stroke-linejoin: round;
       filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5));
     }
-    
-    .scroll-hint-v:hover { transform: scale(1.15); }
 
     /* =============================================================
-       3. Page 2 (第一頁 視聽演示 - 沙畫頁)
+       3. Page 2 (沙畫頁 P2)
        ============================================================= */
     .audiovisual-section {
       z-index: 10;
@@ -300,7 +312,6 @@
       pointer-events: none;
     }
 
-    /* 🎯 故事拆解子句與金句點點點的初始狀態控制 */
     .sub-part, #fPart1, #fPart2, .dot-char {
       opacity: 0;
       display: inline-block;
@@ -368,7 +379,7 @@
 
   <div class="sections-wrapper" id="sectionsWrapper">
 
-    <!-- Page 0. Loading Page -->
+    <!-- Page 0. Loading Page (LP) -->
     <div class="section-page" id="openingHero">
       <button class="skip-anim-btn" id="loadingSkipBtn" onclick="skipLoadingToBanner()">Skip 略過動畫 ✕</button>
 
@@ -480,13 +491,14 @@
         <div class="ui-line-mask subtitle-wrapper-1"><div class="text-line title-part2" id="line2">從這裡</div></div>
         <div class="ui-line-mask subtitle-wrapper-2"><div class="text-line title-part2" id="line3">開始</div></div>
 
+        <!-- LP 的箭頭按鈕：緊接在「開始」正下方 -->
         <button class="scroll-arrow-btn" id="startExhibitionBtn" onclick="nextPage()">
           <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
       </div>
     </div>
 
-    <!-- Page 1. Banner 頁 (🎯 已採用您微調後的最新文案) -->
+    <!-- Page 1. Banner 頁 (P1) -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn show" id="bannerSkipBtn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
@@ -507,18 +519,18 @@
         </div>
       </div>
 
-      <!-- P1 的箭頭按鈕 -->
+      <!-- P1 的箭頭按鈕：固定在螢幕底部 6% 位置 -->
       <button class="scroll-hint-v" id="p1ArrowBtn" onclick="nextPage()">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
 
-    <!-- Page 2. 沙畫頁 (🎯 已採用最新文案並拆解為前後半句) -->
+    <!-- Page 2. 沙畫頁 (P2) -->
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
       <div id="text-container">
-        <!-- 🎯 故事 1：遞上肩膀 ➔ 摯友 -->
+        <!-- 故事 1 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line">
             <span class="sub-part s1-p1">也許是那位一直遞上肩膀、</span>
@@ -526,7 +538,7 @@
           </div>
         </div>
 
-        <!-- 🎯 故事 2：飛多高 ➔ 家人 -->
+        <!-- 故事 2 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line">
             <span class="sub-part s2-p1">或是無論你飛多高、</span>
@@ -534,7 +546,7 @@
           </div>
         </div>
 
-        <!-- 🎯 故事 3：吃不飽 ➔ 長輩嘮叨 -->
+        <!-- 故事 3 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line">
             <span class="sub-part s3-p1">也可能是怕你吃不飽、</span>
@@ -542,7 +554,7 @@
           </div>
         </div>
 
-        <!-- 🎯 故事 4：搖尾巴 ➔ 毛孩 -->
+        <!-- 故事 4 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line">
             <span class="sub-part s4-p1">還有那無論多晚，總在門口搖著尾巴、</span>
@@ -550,7 +562,7 @@
           </div>
         </div>
         
-        <!-- 🎯 結尾金句：三階段登場 -->
+        <!-- 結尾金句 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line" id="goldenLine">
             <span id="fPart1">回憶 雖然會慢慢消逝</span>
@@ -570,7 +582,7 @@
     gsap.config({ force3D: true });
 
     // =============================================================
-    // 🌊 1. 開場水波紋 Canvas (Loading Page)
+    // 🌊 1. 開場水波紋 Canvas (LP)
     // =============================================================
     const lCanvas = document.getElementById('loadingCanvas');
     const lCtx = lCanvas.getContext('2d');
@@ -619,7 +631,7 @@
     drawWaveLandscape();
 
     // =============================================================
-    // 🌌 2. 全頁背景 Canvas ( Banner 頁波浪光束 )
+    // 🌌 2. 全頁背景 Canvas ( Banner 光束 )
     // =============================================================
     const bgCanvas = document.getElementById('mandalaCanvas');
     const bgCtx = bgCanvas.getContext('2d');
@@ -725,7 +737,7 @@
     renderBg();
 
     // =============================================================
-    // ⏳ 3. 沙畫動畫與拆解語序的精準時間軸
+    // ⏳ 3. 沙畫動畫與語序時間軸
     // =============================================================
     const sandCanvas = document.getElementById('CanvasAnime');
     const sandCtx = sandCanvas.getContext('2d');
@@ -827,27 +839,24 @@
       }
     }
 
-    // 🎯 精準掌控拆解語序與 2 秒間隔的時間軸控制
     function playTextAnimationSequence() {
       const storyLines = document.querySelectorAll('.story-line');
       const textTl = gsap.timeline();
 
       const textStartTime = 1.5;
 
-      // 定義 4 句拆解文案的選擇器名稱
       const storyConfigs = [
         { p1: ".s1-p1", p2: ".s1-p2", lineIdx: 0 },
         { p1: ".s2-p1", p2: ".s2-p2", lineIdx: 1 },
         { p1: ".s3-p1", p2: ".s3-p2", lineIdx: 2 },
         { p1: ".s4-p1", p2: ".s4-p2", lineIdx: 3 }
       ];
-      // 1. 在時間軸起頭留白等待 1.5 秒
+
       textTl.to({}, { duration: textStartTime });
-      
+
       storyConfigs.forEach((cfg) => {
         const line = storyLines[cfg.lineIdx];
 
-        // 1. 整行容器滑出，同時登場前半句
         textTl.to(line, {
           y: "0%",
           opacity: 1,
@@ -859,26 +868,19 @@
           duration: 0.8,
           ease: "power1.out"
         }, "<")
-
-        // 2. 前半句停留 1.0 秒後，登場後半句
         .to(cfg.p2, {
           opacity: 1,
           duration: 0.8,
           ease: "power1.out"
         }, "+=1.5")
-
-        // 3. 完整句子停留 2.5 秒閱讀，接著整體淡出
         .to(line, {
           opacity: 0,
           duration: 0.8,
           ease: "power2.inOut"
         }, "+=1.0")
-
-        // 4. 句與句之間間隔 1.0 秒
         .to({}, { duration: 0.5 });
       });
 
-      // 5. 第 5 行（金句）：三階段流暢登場
       const goldenLine = document.getElementById('goldenLine');
 
       textTl.to(goldenLine, {
@@ -907,11 +909,7 @@
       
       const imageConfigs = shuffledImgs.map((src, i) => {
         if (i > 0) currentDelay += 6.0;
-        return { 
-          src, 
-          delay: currentDelay,
-          pos: shuffledPositions[i]
-        };
+        return { src, delay: currentDelay, pos: shuffledPositions[i] };
       });
 
       totalAnimationDuration = imageConfigs[imageConfigs.length - 1].delay + 7.5 + 0.5;
@@ -927,7 +925,6 @@
             const imgW = img.width * scale, imgH = img.height * scale;
 
             const W = sandCanvas.width, H = sandCanvas.height;
-            
             const finalX = config.pos.xRatio * W;
             const finalY = config.pos.yRatio * H;
 
@@ -976,6 +973,23 @@
       requestAnimationFrame(animateSand);
     }
 
+    // 🎯 通用：啟動箭頭淡入與上下無限浮動動畫
+    function animateArrow(selector) {
+      gsap.to(selector, {
+        opacity: 1,
+        duration: 0.8,
+        onComplete: () => {
+          gsap.to(selector, {
+            y: 8,
+            duration: 1.0,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+          });
+        }
+      });
+    }
+
     // =============================================================
     // 🎬 4. GSAP 開場與 Banner 時間軸控制
     // =============================================================
@@ -991,10 +1005,7 @@
     .to("#line1", { y: "0%", opacity: 1, duration: 1.5, ease: "power2.out" })
     .to("#line2", { y: "0%", opacity: 1, duration: 1.2, ease: "power2.out" }, "+=0.2")
     .to("#line3", { y: "0%", opacity: 1, duration: 1.0, ease: "power2.out" }, "+=0.2")
-    .to("#startExhibitionBtn", {
-      opacity: 1, duration: 0.8,
-      onComplete: () => { gsap.to("#startExhibitionBtn", { y: 8, duration: 1.0, repeat: -1, yoyo: true, ease: "power1.inOut" }); }
-    });
+    .call(() => { animateArrow("#startExhibitionBtn"); });
 
     let bannerTimeline = null;
     let isBeamAnimated = false;
@@ -1017,7 +1028,7 @@
       .to(bqParts[3], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
       .to(bqParts[4], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
       .to(bqParts[5], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
-      .to(".scroll-hint-v", { opacity: 1, duration: 1 });
+      .call(() => { animateArrow("#p1ArrowBtn"); });
     }
 
     function skipLoadingToBanner() {
@@ -1032,29 +1043,13 @@
         animationParams.beamDownProgress = 1;
         animationParams.horizonSpreadProgress = 1;
         animationParams.particleGlowProgress = 1;
-        gsap.set(".brand-logo-img, .scroll-hint-v", { opacity: 1 });
+        gsap.set(".brand-logo-img", { opacity: 1 });
         gsap.set(".bq-part", { y: "0%", opacity: 1 });
+        animateArrow("#p1ArrowBtn");
       }
       gsap.to("#bannerSkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
     }
 
-    // 🎯 統一控制所有頁面箭頭的淡入與上下浮動動畫
-    function animateArrow(selector) {
-      gsap.to(selector, {
-        opacity: 1,
-        duration: 0.8,
-        onComplete: () => {
-          gsap.to(selector, {
-            y: 8,
-            duration: 1.0,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-          });
-        }
-      });
-    }
-    
     // =============================================================
     // 🎯 5. 全頁 Snap 滾動控制
     // =============================================================
