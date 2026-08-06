@@ -229,28 +229,46 @@
     /* =============================================================
        🎯 全站統一的 v 箭頭元件樣式（解決跳動與位置不一問題）
        ============================================================= */
-    .scroll-hint-v, 
     .scroll-arrow-btn {
       position: relative;
+      margin-top: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      opacity: 0;
+      padding: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    /* 🎯 P1 (Banner Page) 箭頭：改用絕對定位，精準切齊 LP 位置 */
+    .scroll-hint-v {
+      position: absolute;
+      bottom: 8%; /* 👈 調整這個 % 數值（例如 7%~10%），直到視覺上與 LP 箭頭完全重疊 */
+      left: 50%;
+      margin-left: -24px; /* 按鈕寬度一半，確保完全水平居中，且不依賴 transform */
+      width: 48px;
+      height: 48px;
       background: none;
       border: none;
       cursor: pointer;
       outline: none;
       z-index: 10;
       opacity: 0;
-      margin-top: 36px;
-      padding: 8px;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
     }
-
-    /* 放大效果套用在內層 SVG，避免覆蓋外層按鈕的 GSAP translateY */
+    
+    /* 🎯 關鍵修復：Hover 放大效果套用在內層 SVG，GSAP 移動外層 <button>，兩者完全不干擾、零跳動！ */
     .scroll-hint-v:hover .arrow-icon,
     .scroll-arrow-btn:hover .arrow-icon {
       transform: scale(1.25);
     }
-
+    
     .arrow-icon {
       width: 32px;
       height: 32px;
