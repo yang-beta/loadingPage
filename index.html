@@ -442,9 +442,17 @@
       padding: 7vh 20px 16vh;
     }
 
-    .p4-header-text,
-    .p4-footer-text {
+    .p4-header-group {
       width: min(92%, 900px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .p4-header-line,
+    .p4-footer-text {
+      width: 100%;
       font-family: 'Noto Serif TC', serif;
       text-align: center;
       color: #E6E6E8;
@@ -455,7 +463,7 @@
       user-select: text;
     }
 
-    .p4-header-text { font-size: 1.06rem; }
+    .p4-header-line { font-size: 1.06rem; }
     .p4-footer-text { font-size: .98rem; color: rgba(230,230,232,.86); }
 
     .p4-cards {
@@ -463,11 +471,14 @@
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 20px;
+      align-items: stretch;
     }
 
     .p4-card-item {
       position: relative;
       min-height: 300px;
+      height: 100%;
+      align-self: stretch;
       overflow: hidden;
       border: 1px solid rgba(230,230,232,.16);
       border-radius: 18px;
@@ -479,6 +490,7 @@
       transform: translateY(35px) scale(.95);
       transition: opacity .35s ease, border-color .35s ease, box-shadow .35s ease;
       will-change: transform, opacity;
+      transform-origin: 50% 50%;
       outline: none;
     }
 
@@ -492,7 +504,7 @@
       transition: opacity .35s ease;
     }
 
-    .p4-cards.has-focus .p4-card-item:not(.is-active) { opacity: .55 !important; }
+    .p4-cards.has-focus .p4-card-item:not(.is-active) { opacity: .55; }
     .p4-card-item.is-active {
       border-color: rgba(242,152,80,.48);
       box-shadow: 0 0 20px rgba(242,152,80,.3);
@@ -633,7 +645,7 @@
         padding: 7vh 12px 12vh;
       }
 
-      .p4-header-text { font-size: .92rem; line-height: 1.7; letter-spacing: .06em; }
+      .p4-header-line { font-size: .92rem; line-height: 1.7; letter-spacing: .06em; }
       .p4-footer-text { font-size: .86rem; line-height: 1.7; letter-spacing: .05em; }
 
       .p4-cards {
@@ -904,10 +916,12 @@
       <button class="skip-anim-btn" id="aiReconstructionSkipBtn">Skip 略過動畫 ✕</button>
 
       <div class="p4-content">
-        <div class="ui-line-mask">
-          <div class="ui-line-content p4-header-text">
-            如果思念有形狀，你希望再次看見、聽見什麼？<br>
-            透過科技的微光，我們試著捕捉時光的餘溫 ――
+        <div class="p4-header-group" id="p4HeaderGroup">
+          <div class="ui-line-mask">
+            <div class="ui-line-content p4-header-line">如果思念有形狀，你希望再次看見、聽見什麼？</div>
+          </div>
+          <div class="ui-line-mask">
+            <div class="ui-line-content p4-header-line">透過科技的微光，我們試著捕捉時光的餘溫 ――</div>
           </div>
         </div>
 
@@ -1950,8 +1964,8 @@
       isP4Interactive = false;
       gsap.killTweensOf('#aiReconstructionSection *');
       gsap.set('#p4MandalaBackdrop', { opacity: .2, scale: .85, xPercent: -50, yPercent: -50 });
-      gsap.set('#aiReconstructionSection .p4-header-text', { opacity: 0, y: 20 });
-      gsap.set('#aiReconstructionSection .p4-card-item', { opacity: 0, y: 35, scale: .95 });
+      gsap.set('#aiReconstructionSection .p4-header-line', { autoAlpha: 0, y: 20 });
+      gsap.set(p4Cards, { autoAlpha: 0, y: 35, scale: .95 });
       gsap.set('#aiReconstructionSection .p4-footer-text', { opacity: 0, y: 20 });
       const arrow = document.getElementById('p4ArrowBtn');
       gsap.killTweensOf(arrow);
@@ -1969,23 +1983,31 @@
     function playP4Animation() {
       resetP4State();
       setPageAnimationLock(true);
+      const p4HeaderLines = gsap.utils.toArray('#aiReconstructionSection .p4-header-line');
+
       page4TL = gsap.timeline();
       page4TL
         .to('#p4MandalaBackdrop', { opacity: .2, scale: .85, duration: 1.2, ease: 'power2.inOut' }, 0)
-        .to('#aiReconstructionSection .p4-header-text', { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 0.2)
-        .to('.p4-card-visual', { opacity: 1, y: 0, scale: 1, duration: .8, ease: 'power2.out' }, 1.2)
-        .to('.p4-card-audio', { opacity: 1, y: 0, scale: 1, duration: .8, ease: 'power2.out' }, 2.2)
-        .to('.p4-card-memory', { opacity: 1, y: 0, scale: 1, duration: .8, ease: 'power2.out' }, 3.2)
-        .to('#aiReconstructionSection .p4-footer-text', { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 4.2)
-        .call(enableP4Interaction, null, 5.0)
-        .call(() => animateArrow(aiReconstructionSection), null, 5.0);
+        .to(p4HeaderLines[0], { autoAlpha: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 0.2)
+        .to(p4HeaderLines[1], { autoAlpha: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 1.7)
+        .to(p4Cards, {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          duration: .8,
+          stagger: .22,
+          ease: 'power2.out'
+        }, 3.0)
+        .to('#aiReconstructionSection .p4-footer-text', { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 4.35)
+        .call(enableP4Interaction, null, 5.2)
+        .call(() => animateArrow(aiReconstructionSection), null, 5.5);
     }
 
     function skipP4Animation() {
       page4TL?.pause();
       gsap.set('#p4MandalaBackdrop', { opacity: .2, scale: .85, xPercent: -50, yPercent: -50 });
-      gsap.set('#aiReconstructionSection .p4-header-text, #aiReconstructionSection .p4-footer-text', { opacity: 1, y: 0 });
-      gsap.set('#aiReconstructionSection .p4-card-item', { opacity: 1, y: 0, scale: 1 });
+      gsap.set('#aiReconstructionSection .p4-header-line, #aiReconstructionSection .p4-footer-text', { autoAlpha: 1, y: 0 });
+      gsap.set(p4Cards, { autoAlpha: 1, y: 0, scale: 1 });
       enableP4Interaction();
       animateArrow(aiReconstructionSection);
     }
