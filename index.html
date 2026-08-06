@@ -107,6 +107,45 @@
     .skip-anim-btn:hover { background-color: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.5); }
 
     /* =============================================================
+       🎯 全站跨頁統一 v 箭頭 CSS 規範 (LP, P1, P2, 及未來所有頁面)
+       ============================================================= */
+    .scroll-arrow-btn {
+      position: absolute;
+      bottom: 18%;             /* 固定距螢幕底部 6%，確保全站跨頁 100% 對齊 */
+      left: 50%;
+      margin-left: -24px;     /* 寬度 48px 的一半，精準水平置中且不依賴 transform */
+      width: 48px;
+      height: 48px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      z-index: 10;
+      opacity: 0;             /* 初始隱藏，由 GSAP 依時間軸淡入 */
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 滑鼠靠近放大效果套用在內層 SVG，完全避開外層 <button> 的 GSAP translateY 衝突 */
+    .scroll-arrow-btn:hover .arrow-icon {
+      transform: scale(1.25);
+    }
+
+    .arrow-icon {
+      width: 32px;
+      height: 32px;
+      stroke: #E6E6E8;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5));
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* =============================================================
        1. Loading Page (LP 頁)
        ============================================================= */
     #openingHero {
@@ -227,61 +266,6 @@
     .bq-part:last-child { margin-left: 0.8rem; }
 
     /* =============================================================
-       🎯 全站統一的 v 箭頭元件樣式（解決跳動與位置不一問題）
-       ============================================================= */
-    .scroll-arrow-btn {
-      position: relative;
-      margin-top: 24px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      outline: none;
-      opacity: 0;
-      padding: 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    /* 🎯 P1 (Banner Page) 箭頭：改用絕對定位，精準切齊 LP 位置 */
-    .scroll-hint-v {
-      position: absolute;
-      bottom: 18%; /* 👈 調整這個 % 數值（例如 7%~10%），直到視覺上與 LP 箭頭完全重疊 */
-      left: 50%;
-      margin-left: -24px; /* 按鈕寬度一半，確保完全水平居中，且不依賴 transform */
-      width: 48px;
-      height: 48px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      outline: none;
-      z-index: 10;
-      opacity: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    /* 🎯 關鍵修復：Hover 放大效果套用在內層 SVG，GSAP 移動外層 <button>，兩者完全不干擾、零跳動！ */
-    .scroll-hint-v:hover .arrow-icon,
-    .scroll-arrow-btn:hover .arrow-icon {
-      transform: scale(1.25);
-    }
-    
-    .arrow-icon {
-      width: 32px;
-      height: 32px;
-      stroke: #E6E6E8;
-      stroke-width: 2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5));
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-
-    /* =============================================================
        3. Page 2 (沙畫頁 P2)
        ============================================================= */
     .audiovisual-section {
@@ -380,8 +364,8 @@
         font-size: 11px !important;
       }
 
-      .scroll-hint-v, .scroll-arrow-btn {
-        margin-top: 24px !important;
+      .scroll-arrow-btn {
+        bottom: 5% !important;
       }
     }
   </style>
@@ -504,12 +488,12 @@
         <div class="ui-line-mask title-wrapper"><div class="text-line title-part1" id="line1">回憶</div></div>
         <div class="ui-line-mask subtitle-wrapper-1"><div class="text-line title-part2" id="line2">從這裡</div></div>
         <div class="ui-line-mask subtitle-wrapper-2"><div class="text-line title-part2" id="line3">開始</div></div>
-
-        <!-- LP 的箭頭按鈕：緊接在「開始」正下方 -->
-        <button class="scroll-arrow-btn" id="startExhibitionBtn" onclick="nextPage()">
-          <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </button>
       </div>
+
+      <!-- LP 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
+      <button class="scroll-arrow-btn" id="lpArrowBtn" onclick="nextPage()">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
     </div>
 
     <!-- Page 1. Banner 頁 (P1) -->
@@ -533,8 +517,8 @@
         </div>
       </div>
 
-      <!-- P1 的箭頭按鈕：緊跟在三組問句正下方，位置與 LP 完全對齊 -->
-      <button class="scroll-hint-v" id="p1ArrowBtn" onclick="nextPage()">
+      <!-- P1 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
+      <button class="scroll-arrow-btn" id="p1ArrowBtn" onclick="nextPage()">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
@@ -587,6 +571,11 @@
           </div>
         </div>
       </div>
+
+      <!-- P2 箭頭：全站統一 CSS 類別 .scroll-arrow-btn，為未來第四頁做準備 -->
+      <button class="scroll-arrow-btn" id="p2ArrowBtn" onclick="nextPage()">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
     </div>
 
   </div>
@@ -907,7 +896,10 @@
       .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.4")
       .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.3")
       .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.3")
-      .to("#fPart2", { opacity: 1, duration: 1.5, ease: "power1.out" }, "+=0.5");
+      .to("#fPart2", { opacity: 1, duration: 1.5, ease: "power1.out" }, "+=0.5")
+      
+      // 🎯 P2：最後金句與點點點完整登場後，觸發 P2 箭頭
+      .call(() => { animateArrow("p2ArrowBtn"); });
     }
 
     async function initSandArtSection() {
@@ -987,13 +979,18 @@
       requestAnimationFrame(animateSand);
     }
 
-    // 🎯 通用：啟動箭頭淡入與上下無限浮動動畫（純 Y 軸移動，零 X 軸偏轉）
-    function animateArrow(selector) {
-      gsap.to(selector, {
+    // =============================================================
+    // 🎯 通用 GSAP 箭頭動畫控制函式（方法 A：依 ID 精準觸發）
+    // =============================================================
+    function animateArrow(targetId) {
+      const element = document.getElementById(targetId);
+      if (!element) return;
+
+      gsap.to(element, {
         opacity: 1,
         duration: 0.8,
         onComplete: () => {
-          gsap.to(selector, {
+          gsap.to(element, {
             y: 8,
             duration: 1.0,
             repeat: -1,
@@ -1019,7 +1016,9 @@
     .to("#line1", { y: "0%", opacity: 1, duration: 1.5, ease: "power2.out" })
     .to("#line2", { y: "0%", opacity: 1, duration: 1.2, ease: "power2.out" }, "+=0.2")
     .to("#line3", { y: "0%", opacity: 1, duration: 1.0, ease: "power2.out" }, "+=0.2")
-    .call(() => { animateArrow("#startExhibitionBtn"); });
+    
+    // 🎯 LP：標題文案出現完畢後，觸發 LP 箭頭
+    .call(() => { animateArrow("lpArrowBtn"); });
 
     let bannerTimeline = null;
     let isBeamAnimated = false;
@@ -1042,7 +1041,9 @@
       .to(bqParts[3], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
       .to(bqParts[4], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
       .to(bqParts[5], { y: "0%", opacity: 1, duration: 1.4, ease: "power2.out" }, "+=1.5")
-      .call(() => { animateArrow("#p1ArrowBtn"); });
+      
+      // 🎯 P1：問句全部滑出完畢後，觸發 P1 箭頭
+      .call(() => { animateArrow("p1ArrowBtn"); });
     }
 
     function skipLoadingToBanner() {
@@ -1059,7 +1060,7 @@
         animationParams.particleGlowProgress = 1;
         gsap.set(".brand-logo-img", { opacity: 1 });
         gsap.set(".bq-part", { y: "0%", opacity: 1 });
-        animateArrow("#p1ArrowBtn");
+        animateArrow("p1ArrowBtn");
       }
       gsap.to("#bannerSkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
     }
