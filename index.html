@@ -185,19 +185,6 @@
     .title-part1 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; }
     .title-part2 { font-size: 1.2rem; letter-spacing: 0.4em; font-weight: 300; opacity: 0.9; }
 
-    /* 🎯 LP 專屬箭頭：緊跟在「開始」正下方 */
-    .scroll-arrow-btn {
-      position: relative;
-      margin-top: 24px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      outline: none;
-      opacity: 0;
-      transition: transform 0.3s ease;
-    }
-    .scroll-arrow-btn:hover { transform: scale(1.15); }
-
     @keyframes goldGlowPulse {
       0% { filter: drop-shadow(0 0 8px rgba(242, 152, 80, 0.4)); }
       50% { filter: drop-shadow(0 0 24px rgba(247, 208, 112, 0.85)); }
@@ -239,27 +226,31 @@
     .banner-question-part { font-size: 1.2rem; font-weight: 300; letter-spacing: 0.2rem; }
     .bq-part:last-child { margin-left: 0.8rem; }
 
-    /* 🎯 P1 (及未來跨頁) 螢幕底部絕對定位箭頭 */
-    .scroll-hint-v {
-      position: absolute;
-      bottom: 6%;
-      left: 50%;
-      transform: translateX(-50%);
+    /* =============================================================
+       🎯 全站統一的 v 箭頭元件樣式（解決跳動與位置不一問題）
+       ============================================================= */
+    .scroll-hint-v, 
+    .scroll-arrow-btn {
+      position: relative;
       background: none;
       border: none;
       cursor: pointer;
       outline: none;
       z-index: 10;
       opacity: 0;
-      transition: transform 0.3s ease;
-    }
-    
-    /* 🎯 保留 translateX(-50%)，解決 hover 往右偏移問題 */
-    .scroll-hint-v:hover { 
-      transform: translateX(-50%) scale(1.15); 
+      margin-top: 36px;
+      padding: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* 統一箭頭 Icon 圖示與發光效果 */
+    /* 放大效果套用在內層 SVG，避免覆蓋外層按鈕的 GSAP translateY */
+    .scroll-hint-v:hover .arrow-icon,
+    .scroll-arrow-btn:hover .arrow-icon {
+      transform: scale(1.25);
+    }
+
     .arrow-icon {
       width: 32px;
       height: 32px;
@@ -269,6 +260,7 @@
       stroke-linecap: round;
       stroke-linejoin: round;
       filter: drop-shadow(0px 0px 6px rgba(230, 230, 232, 0.5));
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* =============================================================
@@ -368,6 +360,10 @@
         right: 20px !important;
         padding: 6px 12px !important;
         font-size: 11px !important;
+      }
+
+      .scroll-hint-v, .scroll-arrow-btn {
+        margin-top: 24px !important;
       }
     }
   </style>
@@ -519,7 +515,7 @@
         </div>
       </div>
 
-      <!-- P1 的箭頭按鈕：固定在螢幕底部 6% 位置 -->
+      <!-- P1 的箭頭按鈕：緊跟在三組問句正下方，位置與 LP 完全對齊 -->
       <button class="scroll-hint-v" id="p1ArrowBtn" onclick="nextPage()">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -973,7 +969,7 @@
       requestAnimationFrame(animateSand);
     }
 
-    // 🎯 通用：啟動箭頭淡入與上下無限浮動動畫
+    // 🎯 通用：啟動箭頭淡入與上下無限浮動動畫（純 Y 軸移動，零 X 軸偏轉）
     function animateArrow(selector) {
       gsap.to(selector, {
         opacity: 1,
