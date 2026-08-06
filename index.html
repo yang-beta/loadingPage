@@ -625,6 +625,8 @@
     <div class="section-page audiovisual-section" id="audiovisualSection">
       <canvas id="CanvasAnime"></canvas>
 
+      <button class="skip-anim-btn" id="p2SkipBtn">Skip 略過動畫 ✕</button>
+
       <div id="text-container">
         <!-- 故事 1 -->
         <div class="ui-line-mask">
@@ -919,10 +921,16 @@
       sandCanvas.height = window.innerHeight * DPR;
     }
 
-    const ALL_IMAGE_SOURCES = [
-      '/img/dog-l.png', '/img/grandpa-l.png', '/img/grandmom-l.png',
-      '/img/lovers-l.png', '/img/kid-l.png', '/img/cat-l.png'
+    // P2 沙畫圖片順序固定；四張圖片仍使用隨機位置配置。
+    const P2_IMAGE_SEQUENCE = [
+      '/img/lovers-l.png',
+      '/img/fistBump.png',
+      '/img/grandmom-l.png',
+      '/img/dog-l.png'
     ];
+
+    // 四張圖分別與四組故事文字同步開始。
+    const P2_IMAGE_START_TIMES = [1.5, 7.1, 12.7, 18.3];
 
     const PLUM_POSITIONS = [
       { xRatio: 0.25, yRatio: 0.30 },
@@ -933,10 +941,15 @@
     ];
 
     let floatingDustParticles = [];
-    let sandImageParticles = [];
+    let sandImageParticleGroups = [];
     let sandGlobalProgress = { t: 0 };
-    let totalAnimationDuration = 20;
-    let isSandInitialized = false;
+    let totalAnimationDuration = 26.3;
+    let isSandAssetsReady = false;
+    let sandAssetsPromise = null;
+    let p2TextTimeline = null;
+    let p2SandTimeline = null;
+    let isP2Completed = false;
+    let p2PlayToken = 0;
 
     class FloatingDust {
       constructor() {
@@ -1079,119 +1092,175 @@
       return timeline;
     }
 
-    function playTextAnimationSequence() {
-      const textTl = gsap.timeline();
-      const storyLines = gsap.utils.toArray('#text-container .story-line:not(#goldenLine)');
+    function resetP2VisualState() {
+      const section = document.getElementById('audiovisualSection');
+      const arrow = section.querySelector('.scroll-arrow-btn');
+      const skipBtn = document.getElementById('p2SkipBtn');
+      const storyLines = section.querySelectorAll('.story-line');
+      const animatedParts = section.querySelectorAll('.sub-part, #fPart1, #fPart2, .dot-char');
 
+      p2TextTimeline?.kill();
+      p2SandTimeline?.kill();
+      p2TextTimeline = null;
+      p2SandTimeline = null;
+      gsap.killTweensOf([storyLines, animatedParts, arrow, skipBtn]);
+
+      gsap.set(storyLines, { y: '115%', opacity: 0 });
+      gsap.set(animatedParts, { opacity: 0 });
+      gsap.set(arrow, { opacity: 0, y: 0 });
+      arrow.dataset.animated = 'false';
+      gsap.set(skipBtn, { opacity: 1, pointerEvents: 'auto' });
+      skipBtn.classList.add('show');
+
+      sandGlobalProgress.t = 0;
+      isP2Completed = false;
+      sandCtx.clearRect(0, 0, sandCanvas.width, sandCanvas.height);
+    }
+
+    function playTextAnimationSequence() {
+      const storyLines = gsap.utils.toArray('#text-container .story-line:not(#goldenLine)');
       const storyGroups = storyLines.map((line) => ({
         line,
         parts: gsap.utils.toArray(line.querySelectorAll('.sub-part'))
       }));
 
+      p2TextTimeline = gsap.timeline();
       createGroupedStoryAnimation({
-        timeline: textTl,
+        timeline: p2TextTimeline,
         groups: storyGroups,
         startDelay: 1.5
       });
 
       const goldenLine = document.getElementById('goldenLine');
-      gsap.set(goldenLine, { y: "115%", opacity: 0 });
+      gsap.set(goldenLine, { y: '115%', opacity: 0 });
       gsap.set(goldenLine.querySelectorAll('.ui-animate-text'), { opacity: 0 });
 
-      textTl.to(goldenLine, {
-        y: "0%",
-        opacity: 1,
-        duration: 1.5,
-        ease: "power2.out"
-      })
-      .to("#fPart1", { opacity: 1, duration: 1.2, ease: "power1.out" }, "-=1.2")
-      .to("#dot1", { opacity: 1, duration: 0.3 }, "+=0.4")
-      .to("#dot2", { opacity: 1, duration: 0.3 }, "+=0.3")
-      .to("#dot3", { opacity: 1, duration: 0.3 }, "+=0.3")
-      .to("#fPart2", { opacity: 1, duration: 1.5, ease: "power1.out" }, "+=0.5")
-      .call(() => animateArrow(document.getElementById('audiovisualSection')));
+      p2TextTimeline
+        .to(goldenLine, { y: '0%', opacity: 1, duration: 1.5, ease: 'power2.out' })
+        .to('#fPart1', { opacity: 1, duration: 1.2, ease: 'power1.out' }, '-=1.2')
+        .to('#dot1', { opacity: 1, duration: 0.3 }, '+=0.4')
+        .to('#dot2', { opacity: 1, duration: 0.3 }, '+=0.3')
+        .to('#dot3', { opacity: 1, duration: 0.3 }, '+=0.3')
+        .to('#fPart2', { opacity: 1, duration: 1.5, ease: 'power1.out' }, '+=0.5')
+        .call(completeP2Animation);
     }
 
-    async function initSandArtSection() {
-      if (isSandInitialized) return;
-      isSandInitialized = true;
+    function shuffleP2Positions() {
+      return [...PLUM_POSITIONS]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, P2_IMAGE_SEQUENCE.length);
+    }
 
-      floatingDustParticles = Array.from({ length: 45 }, () => new FloatingDust());
+    async function prepareSandArtAssets() {
+      if (sandAssetsPromise) return sandAssetsPromise;
 
-      const shuffledImgs = [...ALL_IMAGE_SOURCES].sort(() => 0.5 - Math.random()).slice(0, 4);
-      const shuffledPositions = [...PLUM_POSITIONS].sort(() => 0.5 - Math.random());
+      sandAssetsPromise = (async () => {
+        floatingDustParticles = Array.from({ length: 45 }, () => new FloatingDust());
+        const positions = shuffleP2Positions();
 
-      let currentDelay = 0;
-      
-      const imageConfigs = shuffledImgs.map((src, i) => {
-        if (i > 0) currentDelay += 6.0;
-        return { src, delay: currentDelay, pos: shuffledPositions[i] };
-      });
-
-      totalAnimationDuration = imageConfigs[imageConfigs.length - 1].delay + 7.5 + 0.5;
-
-      const loadPromises = imageConfigs.map((config) => {
-        return new Promise((resolve) => {
+        const loadPromises = P2_IMAGE_SEQUENCE.map((src, index) => new Promise((resolve) => {
           const img = new Image();
-          img.src = config.src;
+          img.src = src;
           img.onload = () => {
             const isMobile = window.innerWidth <= 768;
-            const TARGET_WIDTH = (isMobile ? 260 : 420) * DPR;
-            const scale = TARGET_WIDTH / img.width;
-            const imgW = img.width * scale, imgH = img.height * scale;
-
-            const W = sandCanvas.width, H = sandCanvas.height;
-            const finalX = config.pos.xRatio * W;
-            const finalY = config.pos.yRatio * H;
+            const targetWidth = (isMobile ? 260 : 420) * DPR;
+            const scale = targetWidth / img.width;
+            const imgW = img.width * scale;
+            const imgH = img.height * scale;
+            const finalX = positions[index].xRatio * sandCanvas.width;
+            const finalY = positions[index].yRatio * sandCanvas.height;
 
             const offscreen = document.createElement('canvas');
-            offscreen.width = sandCanvas.width; offscreen.height = sandCanvas.height;
+            offscreen.width = sandCanvas.width;
+            offscreen.height = sandCanvas.height;
             const offCtx = offscreen.getContext('2d');
             offCtx.drawImage(img, finalX - imgW / 2, finalY - imgH / 2, imgW, imgH);
 
             const data = offCtx.getImageData(0, 0, sandCanvas.width, sandCanvas.height).data;
-            const groupParticles = [];
+            const particles = [];
             const gap = Math.round(3 * DPR);
 
             for (let y = 0; y < sandCanvas.height; y += gap) {
               for (let x = 0; x < sandCanvas.width; x += gap) {
-                const idx = (y * sandCanvas.width + x) * 4;
-                if (data[idx + 3] > 50 && (data[idx] + data[idx + 1] + data[idx + 2]) / 3 < 230) {
-                  groupParticles.push(new SandParticle(x, y, config.delay));
+                const pixelIndex = (y * sandCanvas.width + x) * 4;
+                const alpha = data[pixelIndex + 3];
+                const brightness = (data[pixelIndex] + data[pixelIndex + 1] + data[pixelIndex + 2]) / 3;
+                if (alpha > 50 && brightness < 230) {
+                  particles.push(new SandParticle(x, y, P2_IMAGE_START_TIMES[index]));
                 }
               }
             }
-            resolve(groupParticles);
+            resolve(particles);
           };
-          img.onerror = () => resolve([]);
-        });
-      });
+          img.onerror = () => {
+            console.error(`P2 沙畫圖片載入失敗：${src}`);
+            resolve([]);
+          };
+        }));
 
-      const results = await Promise.all(loadPromises);
-      sandImageParticles = results.flat();
+        sandImageParticleGroups = await Promise.all(loadPromises);
+        isSandAssetsReady = true;
+      })();
+
+      return sandAssetsPromise;
+    }
+
+    async function playP2Animation() {
+      const playToken = ++p2PlayToken;
+      resetP2VisualState();
+      await prepareSandArtAssets();
+
+      // 使用者在圖片載入完成前已離開 P2 時，不啟動背景動畫。
+      if (playToken !== p2PlayToken || isP2Completed ||
+          currentPageIndex !== pageElements.indexOf(document.getElementById('audiovisualSection'))) return;
 
       playTextAnimationSequence();
-
-      gsap.to(sandGlobalProgress, {
-        t: totalAnimationDuration + 60, 
-        duration: totalAnimationDuration + 60,
-        ease: "none"
+      p2SandTimeline = gsap.to(sandGlobalProgress, {
+        t: totalAnimationDuration,
+        duration: totalAnimationDuration,
+        ease: 'none'
       });
+      animateSand();
+    }
 
+    function completeP2Animation() {
+      if (isP2Completed) return;
+      isP2Completed = true;
+      animateArrow(document.getElementById('audiovisualSection'));
+      gsap.to('#p2SkipBtn', { opacity: 0, pointerEvents: 'none', duration: 0.4 });
+    }
+
+    function skipP2Animation() {
+      p2PlayToken += 1;
+      p2TextTimeline?.kill();
+      p2SandTimeline?.kill();
+      sandGlobalProgress.t = totalAnimationDuration;
+
+      const storyLines = gsap.utils.toArray('#text-container .story-line:not(#goldenLine)');
+      gsap.set(storyLines, { opacity: 0, y: '115%' });
+      gsap.set(storyLines.flatMap(line => gsap.utils.toArray(line.querySelectorAll('.sub-part'))), { opacity: 0 });
+      gsap.set('#goldenLine', { opacity: 1, y: '0%' });
+      gsap.set('#fPart1, #dot1, #dot2, #dot3, #fPart2', { opacity: 1 });
+
+      completeP2Animation();
+      animateSand();
     }
 
     function animateSand() {
-      if (sandRafId !== null) return;
+      if (sandRafId !== null || !isSandAssetsReady) return;
 
+      const p2Index = pageElements.indexOf(document.getElementById('audiovisualSection'));
       const renderSandFrame = () => {
-        if (currentPageIndex !== pageElements.indexOf(document.getElementById('audiovisualSection'))) {
+        if (currentPageIndex !== p2Index) {
           sandRafId = null;
           return;
         }
 
         sandCtx.clearRect(0, 0, sandCanvas.width, sandCanvas.height);
-        floatingDustParticles.forEach(d => { d.update(); d.draw(); });
-        sandImageParticles.forEach(p => { p.update(sandGlobalProgress.t); p.draw(); });
+        floatingDustParticles.forEach((dust) => { dust.update(); dust.draw(); });
+        sandImageParticleGroups.forEach((group) => {
+          group.forEach((particle) => { particle.update(sandGlobalProgress.t); particle.draw(); });
+        });
         sandRafId = requestAnimationFrame(renderSandFrame);
       };
 
@@ -1199,6 +1268,9 @@
     }
 
     function stopSandCanvas() {
+      p2PlayToken += 1;
+      p2TextTimeline?.pause();
+      p2SandTimeline?.pause();
       if (sandRafId !== null) {
         cancelAnimationFrame(sandRafId);
         sandRafId = null;
@@ -1485,6 +1557,7 @@
 
     document.getElementById('loadingSkipBtn').addEventListener('click', skipLoadingToBanner);
     document.getElementById('bannerSkipBtn').addEventListener('click', scrollToContent);
+    document.getElementById('p2SkipBtn').addEventListener('click', skipP2Animation);
     document.getElementById('brandTransitionSkipBtn').addEventListener('click', skipBrandTransitionAnimation);
 
     // =============================================================
@@ -1610,7 +1683,7 @@
           stopBackgroundCanvas();
           stopBrandTransitionCanvas();
           playBannerBeamAnimation();
-          initSandArtSection().then(() => animateSand());
+          playP2Animation();
         },
         leave() {
           stopSandCanvas();
