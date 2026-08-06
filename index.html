@@ -107,7 +107,7 @@
     .skip-anim-btn:hover { background-color: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.5); }
 
     /* =============================================================
-       🎯 全站跨頁統一 v 箭頭 CSS 規範
+       🎯 全站跨頁統一 v 箭頭 CSS 規範 (LP, P1, P2, 及未來所有頁面)
        ============================================================= */
     .scroll-arrow-btn {
       position: absolute;
@@ -120,16 +120,15 @@
       border: none;
       cursor: pointer;
       outline: none;
-      z-index: 30;
+      z-index: 10;
       opacity: 0;             /* 初始隱藏，由 GSAP 依時間軸淡入 */
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      pointer-events: auto;
     }
 
-    /* 滑鼠靠近放大效果套用在內層 SVG */
+    /* 滑鼠靠近放大效果套用在內層 SVG，完全避開外層 <button> 的 GSAP translateY 衝突 */
     .scroll-arrow-btn:hover .arrow-icon {
       transform: scale(1.25);
     }
@@ -223,6 +222,7 @@
 
     .text-line { color: #E6E6E8; line-height: 1; }
 
+    /* 所有文字進場元素共用的初始狀態，由 GSAP 統一控制 */
     .ui-animate-text {
       opacity: 0;
       will-change: transform, opacity;
@@ -309,7 +309,13 @@
       gap: 20px;
       width: 90%;
       max-width: 850px;
-      pointer-events: none;
+      pointer-events: auto;
+      user-select: text;
+    }
+
+    #text-container,
+    #text-container * {
+      user-select: text;
     }
 
     .sub-part, #fPart1, #fPart2, .dot-char {
@@ -320,42 +326,80 @@
     .dot-char {
       margin: 0 2px;
     }
-    
+
+
+
     /* =============================================================
-       4. Page 3 (品牌過渡頁 P3)
+       4. Page 3 品牌過渡頁（曼陀羅 ―― 情感的地圖）
        ============================================================= */
     .brand-transition-section {
       z-index: 10;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      text-align: center;
-      background-color: #1a1a1a !important;
+      background-color: #1a1a1a;
       position: relative;
     }
 
-    #p3TextContainer {
+    #brandTransitionCanvas {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    .p3-content {
+      position: relative;
+      z-index: 3;
+      width: min(90%, 920px);
+      height: 100%;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      gap: 18px;
-      width: 90%;
-      max-width: 800px;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .p3-copy {
+      position: absolute;
+      left: 50%;
+      bottom: 22%;
+      transform: translateX(-50%);
+      width: min(90vw, 900px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
       pointer-events: auto;
       user-select: text;
     }
 
-    #p3TextContainer, #p3TextContainer * {
+    .p3-text-line {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      letter-spacing: 0.12em;
+      text-wrap: balance;
+      opacity: 0;
+      transform: translateY(20px);
+      text-shadow: 0 0 16px rgba(0, 0, 0, 0.85);
       user-select: text;
     }
-    
+
+    .p3-text-1 { color: rgba(230, 230, 232, 0.88); }
+    .p3-text-2 { color: rgba(230, 230, 232, 0.94); }
+    .p3-text-3 { color: #E6E6E8; }
+
+    #brandTransitionSection .skip-anim-btn {
+      z-index: 20;
+    }
+
+    #brandTransitionSection .scroll-arrow-btn {
+      z-index: 20;
+    }
+
     /* =============================================================
        📱 手機版 (Mobile RWD) 統一渲染規範
        ============================================================= */
@@ -408,6 +452,19 @@
       .scroll-arrow-btn {
         bottom: 5% !important;
       }
+
+      .p3-copy {
+        bottom: 12%;
+        width: 92%;
+        gap: 8px;
+      }
+
+      .p3-text-line {
+        font-size: 0.94rem !important;
+        line-height: 1.75 !important;
+        letter-spacing: 0.06em !important;
+      }
+
     }
   </style>
 </head>
@@ -420,7 +477,7 @@
 
     <!-- Page 0. Loading Page (LP) -->
     <div class="section-page" id="openingHero">
-      <button class="skip-anim-btn" id="loadingSkipBtn" onclick="skipLoadingToBanner()">Skip 略過動畫 ✕</button>
+      <button class="skip-anim-btn" id="loadingSkipBtn">Skip 略過動畫 ✕</button>
 
       <canvas id="loadingCanvas"></canvas>
 
@@ -531,7 +588,7 @@
         <div class="ui-line-mask subtitle-wrapper-2"><div class="text-line title-part2 ui-animate-text" id="line3">開始</div></div>
       </div>
 
-      <!-- LP 箭頭 -->
+      <!-- LP 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
       <button class="scroll-arrow-btn" id="lpArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -539,7 +596,7 @@
 
     <!-- Page 1. Banner 頁 (P1) -->
     <div class="section-page hero-container" id="heroSection">
-      <button class="skip-anim-btn show" id="bannerSkipBtn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
+      <button class="skip-anim-btn show" id="bannerSkipBtn">Skip 略過動畫 ✕</button>
 
       <img src="/img/logo02.png" class="brand-logo-img" alt="洸限">
 
@@ -558,7 +615,7 @@
         </div>
       </div>
 
-      <!-- P1 箭頭 -->
+      <!-- P1 箭頭：全站統一 CSS 類別 .scroll-arrow-btn -->
       <button class="scroll-arrow-btn" id="p1ArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -569,34 +626,39 @@
       <canvas id="CanvasAnime"></canvas>
 
       <div id="text-container">
+        <!-- 故事 1 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
-            <span class="sub-part ui-animate-text s1-p1">也許，是那位一直遞上肩膀，</span>
-            <span class="sub-part ui-animate-text s1-p2">比你還相信你自己的――摯友！</span>
+            <span class="sub-part ui-animate-text">也許，是那位一直遞上肩膀，</span>
+            <span class="sub-part ui-animate-text">比你還相信你自己的――摯友！</span>
           </div>
         </div>
 
+        <!-- 故事 2 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
-            <span class="sub-part ui-animate-text s2-p1">或是，無論你飛多高，</span>
-            <span class="sub-part ui-animate-text s2-p2">只在乎你累不累的――家人！</span>
+            <span class="sub-part ui-animate-text">或是，無論你飛多高，</span>
+            <span class="sub-part ui-animate-text">只在乎你累不累的――家人！</span>
           </div>
         </div>
 
+        <!-- 故事 3 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
-            <span class="sub-part ui-animate-text s3-p1">也可能是，怕你吃不飽、</span>
-            <span class="sub-part ui-animate-text s3-p2">過不好的――長輩嘮叨！</span>
+            <span class="sub-part ui-animate-text">也可能是，怕你吃不飽、</span>
+            <span class="sub-part ui-animate-text">過不好的――長輩嘮叨！</span>
           </div>
         </div>
 
+        <!-- 故事 4 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text">
-            <span class="sub-part ui-animate-text s4-p1">還有那，無論多晚，總在門口等待、</span>
-            <span class="sub-part ui-animate-text s4-p2">把你當作全世界的毛孩！</span>
+            <span class="sub-part ui-animate-text">還有那，無論多晚，總在門口等待、</span>
+            <span class="sub-part ui-animate-text">把你當作全世界的毛孩！</span>
           </div>
         </div>
         
+        <!-- 結尾金句 -->
         <div class="ui-line-mask">
           <div class="ui-line-content story-line ui-animate-text" id="goldenLine">
             <span class="ui-animate-text" id="fPart1">回憶，雖然會慢慢消逝</span>
@@ -608,58 +670,50 @@
         </div>
       </div>
 
-      <!-- P2 箭頭 -->
+      <!-- P2 箭頭：全站統一 CSS 類別 .scroll-arrow-btn，為未來第四頁做準備 -->
       <button class="scroll-arrow-btn" id="p2ArrowBtn">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
 
-    <!-- Page 3. 品牌過渡頁 (P3) -->
-    <div class="section-page brand-transition-section" id="brandTransitionSection">
-      <button class="skip-anim-btn" id="p3SkipBtn" onclick="skipP3Animation()">Skip 略過動畫 ✕</button>
 
-      <div id="p3TextContainer">
-        <div class="ui-line-mask">
-          <div class="ui-line-content p3-text-line ui-animate-text" id="p3Text1">
-            那些沉澱在心底的回憶，從未散去 ――
+    <!-- Page 3. 品牌過渡頁（曼陀羅 ―― 情感的地圖） -->
+    <div class="section-page brand-transition-section" id="brandTransitionSection">
+      <canvas id="brandTransitionCanvas" aria-label="互動式曼陀羅情感地圖"></canvas>
+
+      <button class="skip-anim-btn" id="brandTransitionSkipBtn">Skip 略過動畫 ✕</button>
+
+      <div class="p3-content">
+        <div class="p3-copy" id="brandTransitionText">
+          <div class="ui-line-mask">
+            <div class="ui-line-content p3-text-line p3-text-1">那些沉澱在心底的回憶，從未散去 ――</div>
           </div>
-        </div>
-        <div class="ui-line-mask">
-          <div class="ui-line-content p3-text-line ui-animate-text" id="p3Text2">
-            中心，是你自己；每一道向外延伸的紋理，都是重要關係劃過的痕跡。
+          <div class="ui-line-mask">
+            <div class="ui-line-content p3-text-line p3-text-2">中心，是你自己；每一道向外延伸的紋理，都是重要關係劃過的痕跡。</div>
           </div>
-        </div>
-        <div class="ui-line-mask">
-          <div class="ui-line-content p3-text-line ui-animate-text" id="p3Text3">
-            曼陀羅，是你的情感地圖。每一次延展，都承載著陪伴；最終回到中心，重逢最完整的自己。
+          <div class="ui-line-mask">
+            <div class="ui-line-content p3-text-line p3-text-3">曼陀羅，是你的情感地圖。每一次延展，都承載著陪伴；最終回到中心，重逢最完整的自己。</div>
           </div>
         </div>
       </div>
 
-      <!-- P3 箭頭 -->
-      <button class="scroll-arrow-btn" id="p3ArrowBtn">
+      <button class="scroll-arrow-btn" id="p3ArrowBtn" aria-label="前往下一頁">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
 
-    <!-- Page 4. 展覽主體/體驗頁 (P4) -->
-    <div class="section-page" id="page4Section">
-      <div style="display:flex; justify-content:center; align-items:center; height:100vh; color:#fff;">
-        <h2>Page 4 展覽內容區塊</h2>
-      </div>
-    </div>
   </div>
 
   <script>
     const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
     gsap.config({ force3D: true });
 
+    // 各 Canvas 的 requestAnimationFrame 控制代號
     let loadingRafId = null;
     let backgroundRafId = null;
     let sandRafId = null;
+    let brandTransitionRafId = null;
     let resizeRafId = null;
-    let page3TL = null;
-    let isP3Initialized = false;
 
     // =============================================================
     // 🌊 1. 開場水波紋 Canvas (LP)
@@ -690,25 +744,25 @@
           loadingRafId = null;
           return;
         }
-        lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
-        const W = lCanvas.width, H = lCanvas.height;
+      lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
+      const W = lCanvas.width, H = lCanvas.height;
 
-        waveParams.forEach((p, i) => {
-          lCtx.beginPath();
-          lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / 20) * 0.25})`;
-          lCtx.lineWidth = 1.2 * DPR;
-          const baseY = H * 0.2 + (i * 8 * DPR);
+      waveParams.forEach((p, i) => {
+        lCtx.beginPath();
+        lCtx.strokeStyle = `rgba(180, 150, 120, ${0.05 + (i / 20) * 0.25})`;
+        lCtx.lineWidth = 1.2 * DPR;
+        const baseY = H * 0.2 + (i * 8 * DPR);
 
-          for (let x = 0; x <= W; x += 16 * DPR) {
-            const wave1 = Math.sin((x * p.frequency1) + (step * p.speed) + p.phaseOffset);
-            const wave2 = Math.cos((x * p.frequency2) - (step * p.speed * 0.8) + p.phaseOffset);
-            const y = baseY + (wave1 * p.amplitude * DPR) + (wave2 * (p.amplitude * 0.5 * DPR));
-            
-            if (x === 0) lCtx.moveTo(x, y);
-            else lCtx.lineTo(x, y);
-          }
-          lCtx.stroke();
-        });
+        for (let x = 0; x <= W; x += 16 * DPR) {
+          const wave1 = Math.sin((x * p.frequency1) + (step * p.speed) + p.phaseOffset);
+          const wave2 = Math.cos((x * p.frequency2) - (step * p.speed * 0.8) + p.phaseOffset);
+          const y = baseY + (wave1 * p.amplitude * DPR) + (wave2 * (p.amplitude * 0.5 * DPR));
+          
+          if (x === 0) lCtx.moveTo(x, y);
+          else lCtx.lineTo(x, y);
+        }
+        lCtx.stroke();
+      });
         step += 1;
         loadingRafId = requestAnimationFrame(renderLoadingFrame);
       };
@@ -828,10 +882,10 @@
           backgroundRafId = null;
           return;
         }
-        globalTime += 1;
-        bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-        bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
-        bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+      globalTime += 1;
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+      bgCtx.fillStyle = 'rgba(26, 26, 26, 1)';
+      bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 
         drawLightBeams();
         drawGoldParticles();
@@ -953,6 +1007,36 @@
         sandCtx.arc(this.x | 0, this.y | 0, this.size, 0, Math.PI * 2);
         sandCtx.fill();
       }
+    }
+
+    // =============================================================
+    // ✨ 共用文字動畫工具
+    // =============================================================
+    function createSequentialTextAnimation({
+      timeline = gsap.timeline(),
+      elements,
+      fromY = "115%",
+      enterDuration = 1.0,
+      enterEase = "power2.out",
+      gap = 0,
+      firstPosition,
+      onComplete
+    }) {
+      const items = gsap.utils.toArray(elements);
+      gsap.set(items, { y: fromY, opacity: 0 });
+
+      items.forEach((item, index) => {
+        const position = index === 0 ? firstPosition : `+=${gap}`;
+        timeline.to(item, {
+          y: "0%",
+          opacity: 1,
+          duration: enterDuration,
+          ease: enterEase
+        }, position);
+      });
+
+      if (onComplete) timeline.call(onComplete);
+      return timeline;
     }
 
     function createGroupedStoryAnimation({
@@ -1093,6 +1177,7 @@
         duration: totalAnimationDuration + 60,
         ease: "none"
       });
+
     }
 
     function animateSand() {
@@ -1120,16 +1205,262 @@
       }
     }
 
+
+
     // =============================================================
-    // 🎯 通用 GSAP 箭頭動畫控制函式
+    // 🌸 4. Page 3 品牌過渡 Canvas（曼陀羅 ―― 情感的地圖）
+    // =============================================================
+    const brandTransitionCanvas = document.getElementById('brandTransitionCanvas');
+    const brandTransitionCtx = brandTransitionCanvas.getContext('2d');
+    const brandTransitionState = {
+      implode: 0,
+      drawProgress: 0,
+      rotation: 0,
+      pulse: 0,
+      opacity: 1,
+      scale: 1
+    };
+
+    let brandTransitionTL = null;
+    let brandTransitionPulseTween = null;
+    let brandTransitionParticles = [];
+    let brandTransitionHoverRing = -1;
+    let isBrandTransitionInteractive = false;
+    let brandTransitionCenter = { x: 0, y: 0 };
+    let brandTransitionMaxRadius = 0;
+
+    function resizeBrandTransitionCanvas() {
+      brandTransitionCanvas.width = window.innerWidth * DPR;
+      brandTransitionCanvas.height = window.innerHeight * DPR;
+      brandTransitionCenter.x = brandTransitionCanvas.width * 0.5;
+      brandTransitionCenter.y = brandTransitionCanvas.height * 0.4;
+      brandTransitionMaxRadius = Math.min(brandTransitionCanvas.width, brandTransitionCanvas.height) * 0.25;
+      buildBrandTransitionParticles();
+    }
+
+    function buildBrandTransitionParticles() {
+      const points = [];
+      const ringCount = 5;
+      const petalsPerRing = [18, 28, 38, 48, 60];
+
+      for (let ring = 0; ring < ringCount; ring += 1) {
+        const radius = brandTransitionMaxRadius * ((ring + 1) / ringCount);
+        const count = petalsPerRing[ring];
+
+        for (let i = 0; i < count; i += 1) {
+          const angle = (i / count) * Math.PI * 2;
+          const wave = Math.sin(angle * (ring + 3)) * radius * 0.09;
+          const targetRadius = radius + wave;
+          points.push({
+            ring,
+            angle,
+            targetX: brandTransitionCenter.x + Math.cos(angle) * targetRadius,
+            targetY: brandTransitionCenter.y + Math.sin(angle) * targetRadius,
+            startX: Math.random() * brandTransitionCanvas.width,
+            startY: Math.random() * brandTransitionCanvas.height,
+            size: (0.9 + Math.random() * 1.3) * DPR,
+            alpha: 0.35 + Math.random() * 0.55
+          });
+        }
+      }
+
+      brandTransitionParticles = points;
+    }
+
+    function drawBrandTransitionFrame() {
+      const ctx = brandTransitionCtx;
+      const canvas = brandTransitionCanvas;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const pulseScale = 1 + Math.sin(brandTransitionState.pulse) * 0.018;
+      const finalScale = brandTransitionState.scale * pulseScale;
+
+      ctx.save();
+      ctx.globalAlpha = brandTransitionState.opacity;
+      ctx.translate(brandTransitionCenter.x, brandTransitionCenter.y);
+      ctx.scale(finalScale, finalScale);
+      ctx.rotate(brandTransitionState.rotation);
+      ctx.translate(-brandTransitionCenter.x, -brandTransitionCenter.y);
+
+      brandTransitionParticles.forEach((particle) => {
+        const ringRevealStart = particle.ring / 5;
+        const ringReveal = gsap.utils.clamp(0, 1, (brandTransitionState.drawProgress - ringRevealStart) * 5);
+        const collapseX = particle.startX + (brandTransitionCenter.x - particle.startX) * brandTransitionState.implode;
+        const collapseY = particle.startY + (brandTransitionCenter.y - particle.startY) * brandTransitionState.implode;
+        const x = collapseX + (particle.targetX - collapseX) * ringReveal;
+        const y = collapseY + (particle.targetY - collapseY) * ringReveal;
+        const highlighted = isBrandTransitionInteractive && brandTransitionHoverRing === particle.ring;
+
+        ctx.beginPath();
+        ctx.fillStyle = highlighted
+          ? `rgba(255, 214, 128, ${Math.min(1, particle.alpha + 0.35)})`
+          : `rgba(196, 159, 85, ${particle.alpha * Math.max(0.15, ringReveal)})`;
+        ctx.shadowColor = highlighted ? 'rgba(255, 214, 128, 0.95)' : 'rgba(196, 159, 85, 0.45)';
+        ctx.shadowBlur = (highlighted ? 12 : 5) * DPR;
+        ctx.arc(x, y, particle.size * (highlighted ? 1.5 : 1), 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      const coreGlow = ctx.createRadialGradient(
+        brandTransitionCenter.x, brandTransitionCenter.y, 0,
+        brandTransitionCenter.x, brandTransitionCenter.y, 26 * DPR
+      );
+      coreGlow.addColorStop(0, 'rgba(255, 225, 160, 0.95)');
+      coreGlow.addColorStop(0.35, 'rgba(196, 159, 85, 0.65)');
+      coreGlow.addColorStop(1, 'rgba(196, 159, 85, 0)');
+      ctx.fillStyle = coreGlow;
+      ctx.beginPath();
+      ctx.arc(brandTransitionCenter.x, brandTransitionCenter.y, 26 * DPR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function animateBrandTransitionCanvas() {
+      if (brandTransitionRafId !== null) return;
+
+      const renderBrandTransitionFrame = () => {
+        if (currentPageIndex !== pageElements.indexOf(document.getElementById('brandTransitionSection'))) {
+          brandTransitionRafId = null;
+          return;
+        }
+        drawBrandTransitionFrame();
+        brandTransitionRafId = requestAnimationFrame(renderBrandTransitionFrame);
+      };
+
+      renderBrandTransitionFrame();
+    }
+
+    function stopBrandTransitionCanvas() {
+      if (brandTransitionRafId !== null) {
+        cancelAnimationFrame(brandTransitionRafId);
+        brandTransitionRafId = null;
+      }
+    }
+
+    function updateBrandTransitionHover(clientX, clientY) {
+      if (!isBrandTransitionInteractive) return;
+      const rect = brandTransitionCanvas.getBoundingClientRect();
+      const x = (clientX - rect.left) * DPR;
+      const y = (clientY - rect.top) * DPR;
+      const distance = Math.hypot(x - brandTransitionCenter.x, y - brandTransitionCenter.y);
+      const ringWidth = brandTransitionMaxRadius / 5;
+      brandTransitionHoverRing = distance <= brandTransitionMaxRadius
+        ? Math.min(4, Math.floor(distance / ringWidth))
+        : -1;
+    }
+
+    brandTransitionCanvas.addEventListener('pointermove', (event) => {
+      updateBrandTransitionHover(event.clientX, event.clientY);
+    }, { passive: true });
+
+    brandTransitionCanvas.addEventListener('pointerleave', () => {
+      brandTransitionHoverRing = -1;
+    }, { passive: true });
+
+    function resetBrandTransitionPage() {
+      brandTransitionTL?.kill();
+      brandTransitionPulseTween?.kill();
+      brandTransitionPulseTween = null;
+      gsap.killTweensOf(brandTransitionState);
+      gsap.killTweensOf('#brandTransitionSection .p3-text-line');
+      gsap.killTweensOf('#brandTransitionSkipBtn');
+
+      Object.assign(brandTransitionState, {
+        implode: 0,
+        drawProgress: 0,
+        rotation: 0,
+        pulse: 0,
+        opacity: 1,
+        scale: 1
+      });
+
+      isBrandTransitionInteractive = false;
+      brandTransitionHoverRing = -1;
+      gsap.set('#brandTransitionSection .p3-text-line', { opacity: 0, y: 20 });
+      gsap.set('#brandTransitionSkipBtn', { opacity: 1, pointerEvents: 'auto' });
+      document.getElementById('brandTransitionSkipBtn').classList.add('show');
+
+      const arrow = document.getElementById('p3ArrowBtn');
+      gsap.killTweensOf(arrow);
+      arrow.dataset.animated = 'false';
+      gsap.set(arrow, { opacity: 0, y: 0 });
+    }
+
+    function playBrandTransitionAnimation() {
+      resetBrandTransitionPage();
+      setPageAnimationLock(true);
+      animateBrandTransitionCanvas();
+
+      brandTransitionTL = gsap.timeline();
+
+      brandTransitionTL
+        .to(brandTransitionState, { implode: 1, duration: 1.5, ease: 'power3.in' }, 0)
+        .to(brandTransitionState, { rotation: Math.PI * 0.35, drawProgress: 0.4, duration: 1.5, ease: 'power2.out' }, 1.5)
+        .to('.p3-text-1', { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 1.5)
+        .to(brandTransitionState, { rotation: Math.PI * 0.7, drawProgress: 0.8, duration: 1.5, ease: 'power2.out' }, 3.0)
+        .to('.p3-text-2', { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 3.0)
+        .to(brandTransitionState, { rotation: Math.PI, drawProgress: 1, duration: 1.5, ease: 'power2.out' }, 4.5)
+        .to('.p3-text-3', { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 4.5)
+        .call(() => {
+          isBrandTransitionInteractive = true;
+          setPageAnimationLock(false);
+          brandTransitionPulseTween = gsap.to(brandTransitionState, {
+            pulse: Math.PI * 2,
+            duration: 2.8,
+            repeat: -1,
+            ease: 'none'
+          });
+          animateArrow(document.getElementById('brandTransitionSection'));
+          gsap.to('#brandTransitionSkipBtn', { opacity: 0, pointerEvents: 'none', duration: 0.4 });
+        }, null, 6.0);
+    }
+
+    function skipBrandTransitionAnimation() {
+      if (!brandTransitionTL) return;
+      brandTransitionTL.pause();
+      gsap.set(brandTransitionState, { implode: 1, drawProgress: 1, rotation: Math.PI, opacity: 1, scale: 1 });
+      gsap.set('#brandTransitionSection .p3-text-line', { opacity: 1, y: 0 });
+      isBrandTransitionInteractive = true;
+      setPageAnimationLock(false);
+      brandTransitionPulseTween?.kill();
+      brandTransitionPulseTween = gsap.to(brandTransitionState, {
+        pulse: Math.PI * 2,
+        duration: 2.8,
+        repeat: -1,
+        ease: 'none'
+      });
+      animateArrow(document.getElementById('brandTransitionSection'));
+      gsap.to('#brandTransitionSkipBtn', { opacity: 0, pointerEvents: 'none', duration: 0.4 });
+    }
+
+    function leaveBrandTransitionPage() {
+      setPageAnimationLock(false);
+      isBrandTransitionInteractive = false;
+      brandTransitionTL?.kill();
+      brandTransitionPulseTween?.kill();
+      brandTransitionPulseTween = null;
+      gsap.to(brandTransitionState, {
+        scale: 1.08,
+        opacity: 0.25,
+        duration: 0.8,
+        ease: 'power2.inOut',
+        onComplete: stopBrandTransitionCanvas
+      });
+    }
+
+
+    // =============================================================
+    // 🎯 通用 GSAP 箭頭動畫控制函式（依頁面自動尋找箭頭）
     // =============================================================
     function animateArrow(pageOrArrow) {
       const element = pageOrArrow?.matches?.('.scroll-arrow-btn')
         ? pageOrArrow
         : pageOrArrow?.querySelector?.('.scroll-arrow-btn');
-      if (!element) return;
+      if (!element || element.dataset.animated === 'true') return;
 
-      element.style.pointerEvents = 'auto';
+      element.dataset.animated = 'true';
       gsap.killTweensOf(element);
       gsap.set(element, { y: 0 });
 
@@ -1148,54 +1479,14 @@
       });
     }
 
-    // =============================================================
-    // 🌀 Page 3 時間軸與動畫邏輯
-    // =============================================================
-    function initP3Section() {
-      if (isP3Initialized) return;
-      isP3Initialized = true;
+    document.querySelectorAll('.scroll-arrow-btn').forEach((button) => {
+      button.addEventListener('click', nextPage);
+    });
 
-      document.getElementById('p3SkipBtn').classList.add('show');
+    document.getElementById('loadingSkipBtn').addEventListener('click', skipLoadingToBanner);
+    document.getElementById('bannerSkipBtn').addEventListener('click', scrollToContent);
+    document.getElementById('brandTransitionSkipBtn').addEventListener('click', skipBrandTransitionAnimation);
 
-      page3TL = gsap.timeline();
-
-      page3TL.to({}, { duration: 1.5 })
-      .to("#p3Text1", {
-        y: "0%",
-        opacity: 1,
-        duration: 1.0,
-        ease: "power2.out"
-      })
-      .to({}, { duration: 0.5 })
-      .to("#p3Text2", {
-        y: "0%",
-        opacity: 1,
-        duration: 1.0,
-        ease: "power2.out"
-      })
-      .to({}, { duration: 0.5 })
-      .to("#p3Text3", {
-        y: "0%",
-        opacity: 1,
-        duration: 1.0,
-        ease: "power2.out"
-      })
-      .call(() => {
-        animateArrow(document.getElementById('brandTransitionSection'));
-        gsap.to("#p3SkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
-      });
-    }
-
-    function skipP3Animation() {
-      if (page3TL) {
-        page3TL.progress(1);
-      } else {
-        gsap.set(".p3-text-line", { y: "0%", opacity: 1 });
-        animateArrow(document.getElementById('brandTransitionSection'));
-      }
-      gsap.to("#p3SkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
-    }
-    
     // =============================================================
     // 🎬 4. GSAP 開場與 Banner 時間軸控制
     // =============================================================
@@ -1279,7 +1570,16 @@
     const pageElements = gsap.utils.toArray('.section-page');
     const totalPages = pageElements.length;
     let currentPageIndex = 0;
-    let isScrollLocked = false;
+    let isTransitionLocked = false;
+    let isPageAnimationLocked = false;
+
+    function setPageAnimationLock(isLocked) {
+      isPageAnimationLocked = isLocked;
+    }
+
+    function isNavigationLocked() {
+      return isTransitionLocked || isPageAnimationLocked;
+    }
 
     const pageLifecycle = new Map([
       ['openingHero', {
@@ -1308,30 +1608,25 @@
           lCanvas.style.opacity = '0';
           stopLoadingCanvas();
           stopBackgroundCanvas();
+          stopBrandTransitionCanvas();
           playBannerBeamAnimation();
           initSandArtSection().then(() => animateSand());
         },
         leave() {
           stopSandCanvas();
         }
-      }], 
+      }],
       ['brandTransitionSection', {
         enter() {
           lCanvas.style.opacity = '0';
           stopLoadingCanvas();
-          startBackgroundCanvas();
+          stopBackgroundCanvas();
           stopSandCanvas();
-          initP3Section();
+          playBrandTransitionAnimation();
         },
-        leave() {}
-      }],
-      ['page4Section', {
-        enter() {
-          lCanvas.style.opacity = '0';
-          stopLoadingCanvas();
-          stopSandCanvas();
-        },
-        leave() {}
+        leave() {
+          leaveBrandTransitionPage();
+        }
       }]
     ]);
 
@@ -1341,9 +1636,9 @@
     }
 
     function goToPage(index) {
-      if (index < 0 || index >= totalPages || isScrollLocked || index === currentPageIndex) return;
+      if (index < 0 || index >= totalPages || isNavigationLocked() || index === currentPageIndex) return;
 
-      isScrollLocked = true;
+      isTransitionLocked = true;
       const previousPage = pageElements[currentPageIndex];
       const nextPageElement = pageElements[index];
 
@@ -1352,7 +1647,7 @@
       sectionsWrapper.style.transform = `translateY(-${currentPageIndex * 100}vh)`;
       runPageLifecycle(nextPageElement, 'enter');
 
-      setTimeout(() => { isScrollLocked = false; }, 850);
+      setTimeout(() => { isTransitionLocked = false; }, 850);
     }
 
     function nextPage() {
@@ -1363,6 +1658,7 @@
       resizeLoadingCanvas();
       resizeBgCanvas();
       resizeSandCanvas();
+      resizeBrandTransitionCanvas();
     }
 
     function handleResize() {
@@ -1377,17 +1673,8 @@
     resizeAllCanvases();
     runPageLifecycle(pageElements[currentPageIndex], 'enter');
 
-    // 🎯 統一綁定箭頭按鈕點擊事件 (確保每個箭頭都能點擊跳頁)
-    document.addEventListener('click', (e) => {
-      const arrowBtn = e.target.closest('.scroll-arrow-btn');
-      if (arrowBtn) {
-        e.preventDefault();
-        nextPage();
-      }
-    });
-
     window.addEventListener('wheel', (e) => {
-      if (isScrollLocked) return;
+      if (isNavigationLocked()) return;
       if (e.deltaY > 20) nextPage();
       else if (e.deltaY < -20) goToPage(currentPageIndex - 1);
     }, { passive: true });
@@ -1395,7 +1682,7 @@
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
     window.addEventListener('touchend', (e) => {
-      if (isScrollLocked) return;
+      if (isNavigationLocked()) return;
       const deltaY = touchStartY - e.changedTouches[0].clientY;
       if (deltaY > 50) nextPage();
       else if (deltaY < -50) goToPage(currentPageIndex - 1);
