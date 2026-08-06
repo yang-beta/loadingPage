@@ -320,7 +320,43 @@
     .dot-char {
       margin: 0 2px;
     }
+    
+    /* =============================================================
+       4. Page 3 (品牌過渡頁 P3)
+       ============================================================= */
+    .brand-transition-section {
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background-color: #1a1a1a !important;
+      position: relative;
+    }
 
+    #p3TextContainer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      width: 90%;
+      max-width: 800px;
+      /* 遵循交接說明第十二點：允許文字可滑鼠選取 */
+      pointer-events: auto;
+      user-select: text;
+    }
+
+    #p3TextContainer, #p3TextContainer * {
+      user-select: text;
+    }
+    
     /* =============================================================
        📱 手機版 (Mobile RWD) 統一渲染規範
        ============================================================= */
@@ -584,6 +620,34 @@
       </button>
     </div>
 
+    <!-- Page 3. 品牌過渡頁 (P3) -->
+    <div class="section-page brand-transition-section" id="brandTransitionSection">
+      <button class="skip-anim-btn" id="p3SkipBtn" onclick="skipP3Animation()">Skip 略過動畫 ✕</button>
+
+      <div id="p3TextContainer">
+        <div class="ui-line-mask">
+          <div class="ui-line-content p3-text-line ui-animate-text" id="p3Text1">
+            那些沉澱在心底的回憶，從未散去 ――
+          </div>
+        </div>
+        <div class="ui-line-mask">
+          <div class="ui-line-content p3-text-line ui-animate-text" id="p3Text2">
+            中心，是你自己；每一道向外延伸的紋理，都是重要關係劃過的痕跡。
+          </div>
+        </div>
+        <div class="ui-line-mask">
+          <div class="ui-line-content p3-text-line ui-animate-text" id="p3Text3">
+            曼陀羅，是你的情感地圖。每一次延展，都承載著陪伴；最終回到中心，重逢最完整的自己。
+          </div>
+        </div>
+      </div>
+
+      <!-- P3 箭頭：採用全站統一的 scroll-arrow-btn 架構 -->
+      <button class="scroll-arrow-btn" id="p3ArrowBtn">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+    </div>
+    
   </div>
 
   <script>
@@ -595,6 +659,8 @@
     let backgroundRafId = null;
     let sandRafId = null;
     let resizeRafId = null;
+    let page3TL = null;
+    let isP3Initialized = false;
 
     // =============================================================
     // 🌊 1. 開場水波紋 Canvas (LP)
@@ -1119,6 +1185,65 @@
     });
 
     // =============================================================
+    // 🌀 Page 3 時間軸與動畫邏輯 (遵循交接說明與 P3 規格)
+    // =============================================================
+    function initP3Section() {
+      if (isP3Initialized) return;
+      isP3Initialized = true;
+
+      // 顯示 P3 專用 Skip 按鈕
+      document.getElementById('p3SkipBtn').classList.add('show');
+
+      page3TL = gsap.timeline();
+
+      // 遵循 Specs 時間軸配合交接說明共用機制
+      // 0.0s - 1.5s: 散落粒子向中心收束（對應 Specs step 1）
+      page3TL.to({}, { duration: 1.5 })
+      
+      // 1.5s - 3.0s: 第一段文字滑入
+      .to("#p3Text1", {
+        y: "0%",
+        opacity: 1,
+        duration: 1.0,
+        ease: "power2.out"
+      })
+      .to({}, { duration: 0.5 })
+
+      // 3.0s - 4.5s: 第二段文字淡入登場
+      .to("#p3Text2", {
+        y: "0%",
+        opacity: 1,
+        duration: 1.0,
+        ease: "power2.out"
+      })
+      .to({}, { duration: 0.5 })
+
+      // 4.5s - 6.0s: 第三段文字登場
+      .to("#p3Text3", {
+        y: "0%",
+        opacity: 1,
+        duration: 1.0,
+        ease: "power2.out"
+      })
+
+      // 6.0s - 6.5s: 箭頭登場，淡出 Skip 按鈕
+      .call(() => {
+        animateArrow(document.getElementById('brandTransitionSection'));
+        gsap.to("#p3SkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
+      });
+    }
+
+    function skipP3Animation() {
+      if (page3TL) {
+        page3TL.progress(1);
+      } else {
+        gsap.set(".p3-text-line", { y: "0%", opacity: 1 });
+        animateArrow(document.getElementById('brandTransitionSection'));
+      }
+      gsap.to("#p3SkipBtn", { opacity: 0, pointerEvents: "none", duration: 0.4 });
+    }
+    
+    // =============================================================
     // 🎬 4. GSAP 開場與 Banner 時間軸控制
     // =============================================================
     const mainTl = gsap.timeline();
@@ -1235,6 +1360,17 @@
         },
         leave() {
           stopSandCanvas();
+        },
+      ['brandTransitionSection', {
+        enter() {
+          lCanvas.style.opacity = '0';
+          stopLoadingCanvas();
+          startBackgroundCanvas();
+          stopSandCanvas();
+          initP3Section();
+        },
+        leave() {
+          // 離開 P3 時的處理
         }
       }]
     ]);
