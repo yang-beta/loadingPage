@@ -434,7 +434,7 @@
     .p4-content {
       position: relative;
       z-index: 3;
-      width: min(92vw, 1120px);
+      width: min(96vw, 1440px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -469,14 +469,14 @@
     .p4-cards {
       width: 100%;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
       align-items: stretch;
     }
 
     .p4-card-item {
       position: relative;
-      min-height: 270px;
+      min-height: 360px;
       height: 100%;
       align-self: stretch;
       overflow: hidden;
@@ -484,7 +484,7 @@
       border-radius: 18px;
       background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
       backdrop-filter: blur(4px);
-      padding: 24px;
+      padding: 20px;
       cursor: pointer;
       opacity: 0;
       transform: translateY(35px) scale(.95);
@@ -558,7 +558,7 @@
 
     .p4-card-visual-stage {
       position: relative;
-      height: 150px;
+      height: 180px;
       margin-bottom: 20px;
       border-radius: 12px;
       overflow: hidden;
@@ -618,6 +618,30 @@
 
     #aiReconstructionSection .skip-anim-btn,
     #aiReconstructionSection .scroll-arrow-btn { z-index: 20; }
+
+    /* =============================================================
+       💻 平板／窄桌機：空間不足時改為 2 × 2，桌機仍維持四卡橫排
+       ============================================================= */
+    @media (max-width: 1080px) and (min-width: 769px) {
+      .p4-content {
+        width: 94vw;
+        gap: 16px;
+        padding: 5vh 16px 12vh;
+      }
+
+      .p4-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .p4-card-item {
+        min-height: 260px;
+      }
+
+      .p4-card-visual-stage {
+        height: 120px;
+      }
+    }
 
     /* =============================================================
        📱 手機版 (Mobile RWD) 統一渲染規範
@@ -1006,7 +1030,7 @@
           <article class="p4-card-item p4-card-touch" tabindex="0" data-p4-card="touch">
             <div class="p4-card-visual-stage">
               <div class="p4-touch-glow" aria-hidden="true"></div>
-              <canvas class="p4-card-canvas" id="p4TouchCanvas" aria-label="掌心與擁抱金沙弧線"></canvas>
+              <canvas class="p4-card-canvas" id="p4TouchCanvas" aria-label="兩個相交的金沙粒子圓形"></canvas>
             </div>
             <h3 class="p4-card-title">✦ 歲月溫熱（觸覺）</h3>
             <p class="p4-card-description">描述掌心裡殘留的溫度，重現那雙曾緊握過你的手、與溫暖的擁抱。</p>
@@ -1922,34 +1946,45 @@
 
       ctx.clearRect(0, 0, w, h);
       ctx.save();
-      ctx.translate(w / 2, h / 2 + 4 * DPR);
+      ctx.translate(w / 2, h / 2);
 
-      const particleCount = window.innerWidth <= 768 ? 70 : 105;
-      const arcs = [
-        { cx: -w * .075, start: Math.PI * .18, end: Math.PI * 1.30, flip: 1 },
-        { cx:  w * .075, start: Math.PI * -.30, end: Math.PI * .82, flip: -1 }
-      ];
+      const isMobile = window.innerWidth <= 768;
+      const particleCount = isMobile ? 92 : 140;
+      const radius = Math.min(w * .235, h * .34);
+      const centerOffset = radius * .58;
 
-      arcs.forEach((arc, arcIndex) => {
+      [-centerOffset, centerOffset].forEach((centerX, circleIndex) => {
         for (let i = 0; i < particleCount; i += 1) {
-          const t = i / (particleCount - 1);
-          const angle = arc.start + (arc.end - arc.start) * t;
-          const rx = w * .18;
-          const ry = h * .31;
-          const jitter = Math.sin(i * 2.17 + arcIndex) * 1.2 * DPR;
-          const x = arc.cx + Math.cos(angle) * rx + jitter;
-          const y = Math.sin(angle) * ry + Math.cos(i * 1.37) * 1.1 * DPR;
-          const alpha = .28 + .48 * Math.sin(Math.PI * t);
-          const radius = (.75 + (i % 4) * .18) * DPR;
+          const angle = (i / particleCount) * Math.PI * 2;
+          const shimmer = Math.sin(i * 1.83 + circleIndex * 2.4) * 1.15 * DPR;
+          const x = centerX + Math.cos(angle) * (radius + shimmer);
+          const y = Math.sin(angle) * (radius + shimmer * .55);
+          const nearIntersection = Math.abs(x) < radius * .22;
+          const alpha = nearIntersection
+            ? .72 + .18 * Math.sin(i * .65)
+            : .34 + .28 * (Math.sin(i * .47 + circleIndex) + 1) / 2;
+          const dotRadius = (nearIntersection ? 1.2 : .82) * DPR + (i % 5) * .08 * DPR;
 
           ctx.beginPath();
-          ctx.fillStyle = `rgba(242, 152, 80, ${alpha})`;
-          ctx.shadowColor = 'rgba(247, 208, 112, .42)';
-          ctx.shadowBlur = 3 * DPR;
-          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(242, 152, 80, ${Math.max(.22, alpha)})`;
+          ctx.shadowColor = nearIntersection
+            ? 'rgba(247, 208, 112, .78)'
+            : 'rgba(242, 152, 80, .42)';
+          ctx.shadowBlur = (nearIntersection ? 6 : 3) * DPR;
+          ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
           ctx.fill();
         }
       });
+
+      /* 交集中心微光，對應兩個掌心／擁抱交會的溫度 */
+      const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * .42);
+      glow.addColorStop(0, 'rgba(247, 208, 112, .28)');
+      glow.addColorStop(.45, 'rgba(242, 152, 80, .10)');
+      glow.addColorStop(1, 'rgba(242, 152, 80, 0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * .42, 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.restore();
     }
