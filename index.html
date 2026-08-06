@@ -400,6 +400,168 @@
       z-index: 20;
     }
 
+
+
+    /* =============================================================
+       5. Page 4 AI 重現與感官體驗
+       ============================================================= */
+    .ai-reconstruction-section {
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #1a1a1a;
+      position: relative;
+    }
+
+    .p4-mandala-backdrop {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      width: min(62vw, 680px);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%) scale(0.85);
+      opacity: 0.2;
+      pointer-events: none;
+      border-radius: 50%;
+      background:
+        repeating-radial-gradient(circle, transparent 0 24px, rgba(242,152,80,.22) 25px 26px, transparent 27px 47px),
+        repeating-conic-gradient(from 0deg, rgba(242,152,80,.14) 0deg 1deg, transparent 1deg 15deg);
+      filter: drop-shadow(0 0 26px rgba(242,152,80,.18));
+      will-change: opacity, transform;
+    }
+
+    .p4-content {
+      position: relative;
+      z-index: 3;
+      width: min(92vw, 1120px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 7vh 20px 16vh;
+    }
+
+    .p4-header-text,
+    .p4-footer-text {
+      width: min(92%, 900px);
+      font-family: 'Noto Serif TC', serif;
+      text-align: center;
+      color: #E6E6E8;
+      letter-spacing: .12em;
+      line-height: 1.9;
+      opacity: 0;
+      transform: translateY(20px);
+      user-select: text;
+    }
+
+    .p4-header-text { font-size: 1.06rem; }
+    .p4-footer-text { font-size: .98rem; color: rgba(230,230,232,.86); }
+
+    .p4-cards {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .p4-card-item {
+      position: relative;
+      min-height: 300px;
+      overflow: hidden;
+      border: 1px solid rgba(230,230,232,.16);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+      backdrop-filter: blur(4px);
+      padding: 24px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(35px) scale(.95);
+      transition: opacity .35s ease, border-color .35s ease, box-shadow .35s ease;
+      will-change: transform, opacity;
+      outline: none;
+    }
+
+    .p4-card-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 35%, rgba(242,152,80,.11), transparent 58%);
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+
+    .p4-cards.has-focus .p4-card-item:not(.is-active) { opacity: .55 !important; }
+    .p4-card-item.is-active {
+      border-color: rgba(242,152,80,.48);
+      box-shadow: 0 0 20px rgba(242,152,80,.3);
+    }
+    .p4-card-item.is-active::after { opacity: 1; }
+
+    .p4-card-visual-stage {
+      position: relative;
+      height: 150px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(10,10,10,.28);
+    }
+
+    .p4-card-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+    }
+
+    .p4-soundwave {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .p4-soundwave span {
+      width: 3px;
+      height: 24px;
+      border-radius: 10px;
+      background: rgba(242,152,80,.72);
+      transform: scaleY(.35);
+      transform-origin: center;
+    }
+
+    .p4-card-audio.is-active .p4-soundwave span {
+      animation: soundwave-pulse .9s ease-in-out infinite alternate;
+    }
+    .p4-card-audio.is-active .p4-soundwave span:nth-child(2n) { animation-delay: -.25s; }
+    .p4-card-audio.is-active .p4-soundwave span:nth-child(3n) { animation-delay: -.5s; }
+
+    @keyframes soundwave-pulse {
+      from { transform: scaleY(.3); opacity: .45; }
+      to { transform: scaleY(2.4); opacity: 1; }
+    }
+
+    .p4-card-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.1rem;
+      letter-spacing: .12em;
+      color: #f29850;
+      margin-bottom: 12px;
+    }
+
+    .p4-card-description {
+      font-size: .94rem;
+      line-height: 1.9;
+      letter-spacing: .08em;
+      color: rgba(230,230,232,.86);
+    }
+
+    #aiReconstructionSection .skip-anim-btn,
+    #aiReconstructionSection .scroll-arrow-btn { z-index: 20; }
+
     /* =============================================================
        📱 手機版 (Mobile RWD) 統一渲染規範
        ============================================================= */
@@ -464,6 +626,36 @@
         line-height: 1.75 !important;
         letter-spacing: 0.06em !important;
       }
+
+      .p4-content {
+        width: 94vw;
+        gap: 14px;
+        padding: 7vh 12px 12vh;
+      }
+
+      .p4-header-text { font-size: .92rem; line-height: 1.7; letter-spacing: .06em; }
+      .p4-footer-text { font-size: .86rem; line-height: 1.7; letter-spacing: .05em; }
+
+      .p4-cards {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        max-height: 59vh;
+        overflow-y: auto;
+        padding: 2px 4px;
+      }
+
+      .p4-card-item {
+        min-height: 178px;
+        padding: 15px;
+      }
+
+      .p4-card-visual-stage {
+        height: 76px;
+        margin-bottom: 12px;
+      }
+
+      .p4-card-title { font-size: .98rem; margin-bottom: 7px; }
+      .p4-card-description { font-size: .84rem; line-height: 1.65; }
 
     }
   </style>
@@ -691,15 +883,69 @@
             <div class="ui-line-content p3-text-line p3-text-1">那些沉澱在心底的回憶，從未散去 ――</div>
           </div>
           <div class="ui-line-mask">
-            <div class="ui-line-content p3-text-line p3-text-2">中心，是你自己；向外則是父母、伴侶、摯友與毛孩延伸的紋理。</div>
+            <div class="ui-line-content p3-text-line p3-text-2">中心，是你自己；每一道向外延伸的紋理，都是重要關係劃過的痕跡。</div>
           </div>
           <div class="ui-line-mask">
-            <div class="ui-line-content p3-text-line p3-text-3">這延伸的痕跡，是你的情感地圖。他們圍繞著你，就像一朵綻放的曼陀羅。</div>
+            <div class="ui-line-content p3-text-line p3-text-3">曼陀羅，是你的情感地圖。每一次延展，都承載著陪伴；最終回到中心，重逢最完整的自己。</div>
           </div>
         </div>
       </div>
 
       <button class="scroll-arrow-btn" id="p3ArrowBtn" aria-label="前往下一頁">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+    </div>
+
+
+    <!-- Page 4. AI 重現與感官體驗（讓時光重現 ―― 感官的召喚） -->
+    <div class="section-page ai-reconstruction-section" id="aiReconstructionSection">
+      <div class="p4-mandala-backdrop" id="p4MandalaBackdrop" aria-hidden="true"></div>
+
+      <button class="skip-anim-btn" id="aiReconstructionSkipBtn">Skip 略過動畫 ✕</button>
+
+      <div class="p4-content">
+        <div class="ui-line-mask">
+          <div class="ui-line-content p4-header-text">
+            如果思念有形狀，你希望再次看見、聽見什麼？<br>
+            透過科技的微光，我們試著捕捉時光的餘溫 ――
+          </div>
+        </div>
+
+        <div class="p4-cards" id="p4Cards">
+          <article class="p4-card-item p4-card-visual" tabindex="0" data-p4-card="visual">
+            <div class="p4-card-visual-stage">
+              <canvas class="p4-card-canvas" id="p4VisualCanvas" aria-label="沙線重繪輪廓動畫"></canvas>
+            </div>
+            <h3 class="p4-card-title">✦ 歲月輪廓（視覺）</h3>
+            <p class="p4-card-description">將一張泛黃的照片，化為沙畫與曼陀羅的光束流轉。</p>
+          </article>
+
+          <article class="p4-card-item p4-card-audio" tabindex="0" data-p4-card="audio">
+            <div class="p4-card-visual-stage">
+              <div class="p4-soundwave" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <h3 class="p4-card-title">✦ 記憶餘音（聲音）</h3>
+            <p class="p4-card-description">擷取熟悉的語氣與聲線，輕聲說出那句未竟的問候。</p>
+          </article>
+
+          <article class="p4-card-item p4-card-memory" tabindex="0" data-p4-card="memory">
+            <div class="p4-card-visual-stage">
+              <canvas class="p4-card-canvas" id="p4MemoryCanvas" aria-label="記憶金沙粒子互動"></canvas>
+            </div>
+            <h3 class="p4-card-title">✦ 時光留香（記憶）</h3>
+            <p class="p4-card-description">描述記憶裡的味道與畫面（如阿嬤的粽香），勾勒出溫暖的歲月景象。</p>
+          </article>
+        </div>
+
+        <div class="ui-line-mask">
+          <div class="ui-line-content p4-footer-text">讓記憶裡的影像與聲音，再次為你溫柔重現。</div>
+        </div>
+      </div>
+
+      <button class="scroll-arrow-btn" id="p4ArrowBtn" aria-label="前往下一頁">
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
@@ -715,6 +961,8 @@
     let backgroundRafId = null;
     let sandRafId = null;
     let brandTransitionRafId = null;
+    let p4VisualRafId = null;
+    let p4MemoryRafId = null;
     let resizeRafId = null;
 
     // =============================================================
@@ -1524,6 +1772,241 @@
 
 
     // =============================================================
+    // ✦ 5. Page 4 AI 重現與感官體驗
+    // =============================================================
+    const aiReconstructionSection = document.getElementById('aiReconstructionSection');
+    const p4CardsContainer = document.getElementById('p4Cards');
+    const p4Cards = gsap.utils.toArray('#aiReconstructionSection .p4-card-item');
+    const p4VisualCanvas = document.getElementById('p4VisualCanvas');
+    const p4VisualCtx = p4VisualCanvas.getContext('2d');
+    const p4MemoryCanvas = document.getElementById('p4MemoryCanvas');
+    const p4MemoryCtx = p4MemoryCanvas.getContext('2d');
+
+    let page4TL = null;
+    let isP4Interactive = false;
+    let activeP4Card = null;
+    let p4VisualTime = 0;
+    let p4MemoryPointer = { x: 0.5, y: 0.5 };
+    let p4MemoryParticles = [];
+
+    function resizeP4Canvases() {
+      [p4VisualCanvas, p4MemoryCanvas].forEach((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.max(1, Math.round(rect.width * DPR));
+        canvas.height = Math.max(1, Math.round(rect.height * DPR));
+      });
+      buildP4MemoryParticles();
+      drawP4VisualFrame();
+      drawP4MemoryFrame();
+    }
+
+    function buildP4MemoryParticles() {
+      const count = window.innerWidth <= 768 ? 45 : 78;
+      p4MemoryParticles = Array.from({ length: count }, () => ({
+        x: Math.random(), y: Math.random(),
+        baseX: Math.random(), baseY: Math.random(),
+        size: 0.7 + Math.random() * 1.8,
+        phase: Math.random() * Math.PI * 2
+      }));
+    }
+
+    function drawP4VisualFrame() {
+      const ctx = p4VisualCtx;
+      const w = p4VisualCanvas.width;
+      const h = p4VisualCanvas.height;
+      if (!w || !h) return;
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.strokeStyle = 'rgba(242, 152, 80, .72)';
+      ctx.lineWidth = Math.max(1, DPR);
+      ctx.shadowColor = 'rgba(242, 152, 80, .45)';
+      ctx.shadowBlur = 8 * DPR;
+      for (let ring = 0; ring < 5; ring += 1) {
+        ctx.beginPath();
+        const radius = Math.min(w, h) * (0.12 + ring * 0.07);
+        for (let i = 0; i <= 120; i += 1) {
+          const angle = (i / 120) * Math.PI * 2;
+          const wave = Math.sin(angle * (ring + 3) + p4VisualTime) * radius * .12;
+          const r = radius + wave;
+          const x = Math.cos(angle) * r;
+          const y = Math.sin(angle) * r;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function renderP4Visual() {
+      if (p4VisualRafId !== null) return;
+      const frame = () => {
+        if (currentPageIndex !== pageElements.indexOf(aiReconstructionSection) || activeP4Card !== 'visual') {
+          p4VisualRafId = null;
+          return;
+        }
+        p4VisualTime += .025;
+        drawP4VisualFrame();
+        p4VisualRafId = requestAnimationFrame(frame);
+      };
+      p4VisualRafId = requestAnimationFrame(frame);
+    }
+
+    function stopP4Visual() {
+      if (p4VisualRafId !== null) cancelAnimationFrame(p4VisualRafId);
+      p4VisualRafId = null;
+    }
+
+    function drawP4MemoryFrame() {
+      const ctx = p4MemoryCtx;
+      const w = p4MemoryCanvas.width;
+      const h = p4MemoryCanvas.height;
+      if (!w || !h) return;
+      ctx.clearRect(0, 0, w, h);
+      p4MemoryParticles.forEach((particle) => {
+        const px = particle.x * w;
+        const py = particle.y * h;
+        const dx = px - p4MemoryPointer.x * w;
+        const dy = py - p4MemoryPointer.y * h;
+        const distance = Math.max(20 * DPR, Math.hypot(dx, dy));
+        const force = Math.min(28 * DPR, 900 * DPR / distance);
+        const targetX = particle.baseX * w + (dx / distance) * force;
+        const targetY = particle.baseY * h + (dy / distance) * force;
+        particle.x += (targetX / w - particle.x) * .045;
+        particle.y += (targetY / h - particle.y) * .045;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(242, 152, 80, ${0.28 + (Math.sin(particle.phase) + 1) * .22})`;
+        ctx.arc(particle.x * w, particle.y * h, particle.size * DPR, 0, Math.PI * 2);
+        ctx.fill();
+        particle.phase += .035;
+      });
+    }
+
+    function renderP4Memory() {
+      if (p4MemoryRafId !== null) return;
+      const frame = () => {
+        if (currentPageIndex !== pageElements.indexOf(aiReconstructionSection) || activeP4Card !== 'memory') {
+          p4MemoryRafId = null;
+          return;
+        }
+        drawP4MemoryFrame();
+        p4MemoryRafId = requestAnimationFrame(frame);
+      };
+      p4MemoryRafId = requestAnimationFrame(frame);
+    }
+
+    function stopP4Memory() {
+      if (p4MemoryRafId !== null) cancelAnimationFrame(p4MemoryRafId);
+      p4MemoryRafId = null;
+    }
+
+    function stopP4Canvases() {
+      stopP4Visual();
+      stopP4Memory();
+    }
+
+    function focusP4Card(card) {
+      if (!isP4Interactive || !card) return;
+      activeP4Card = card.dataset.p4Card;
+      p4CardsContainer.classList.add('has-focus');
+      p4Cards.forEach((item) => item.classList.toggle('is-active', item === card));
+      gsap.to(card, { scale: 1.03, duration: .35, ease: 'power2.out', overwrite: true });
+      p4Cards.filter((item) => item !== card).forEach((item) => gsap.to(item, { scale: 1, duration: .3, overwrite: true }));
+      stopP4Canvases();
+      if (activeP4Card === 'visual') renderP4Visual();
+      if (activeP4Card === 'memory') renderP4Memory();
+    }
+
+    function clearP4CardFocus() {
+      activeP4Card = null;
+      p4CardsContainer.classList.remove('has-focus');
+      p4Cards.forEach((item) => {
+        item.classList.remove('is-active');
+        gsap.to(item, { scale: 1, duration: .3, overwrite: true });
+      });
+      stopP4Canvases();
+    }
+
+    p4Cards.forEach((card) => {
+      card.addEventListener('mouseenter', () => focusP4Card(card));
+      card.addEventListener('focus', () => focusP4Card(card));
+      card.addEventListener('click', () => focusP4Card(card));
+      card.addEventListener('mouseleave', () => {
+        if (!card.matches(':focus')) clearP4CardFocus();
+      });
+      card.addEventListener('blur', clearP4CardFocus);
+    });
+
+    p4MemoryCanvas.closest('.p4-card-item').addEventListener('pointermove', (event) => {
+      const rect = p4MemoryCanvas.getBoundingClientRect();
+      p4MemoryPointer.x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      p4MemoryPointer.y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+    });
+
+    function resetP4State() {
+      page4TL?.kill();
+      stopP4Canvases();
+      clearP4CardFocus();
+      isP4Interactive = false;
+      gsap.killTweensOf('#aiReconstructionSection *');
+      gsap.set('#p4MandalaBackdrop', { opacity: .2, scale: .85, xPercent: -50, yPercent: -50 });
+      gsap.set('#aiReconstructionSection .p4-header-text', { opacity: 0, y: 20 });
+      gsap.set('#aiReconstructionSection .p4-card-item', { opacity: 0, y: 35, scale: .95 });
+      gsap.set('#aiReconstructionSection .p4-footer-text', { opacity: 0, y: 20 });
+      const arrow = document.getElementById('p4ArrowBtn');
+      gsap.killTweensOf(arrow);
+      arrow.dataset.animated = 'false';
+      gsap.set(arrow, { opacity: 0, y: 0 });
+      gsap.set('#aiReconstructionSkipBtn', { opacity: 1, pointerEvents: 'auto' });
+    }
+
+    function enableP4Interaction() {
+      isP4Interactive = true;
+      setPageAnimationLock(false);
+      gsap.to('#aiReconstructionSkipBtn', { opacity: 0, pointerEvents: 'none', duration: .4 });
+    }
+
+    function playP4Animation() {
+      resetP4State();
+      setPageAnimationLock(true);
+      page4TL = gsap.timeline();
+      page4TL
+        .to('#p4MandalaBackdrop', { opacity: .2, scale: .85, duration: 1.2, ease: 'power2.inOut' }, 0)
+        .to('#aiReconstructionSection .p4-header-text', { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' }, 0.2)
+        .to('.p4-card-visual', { opacity: 1, y: 0, scale: 1, duration: .8, ease: 'power2.out' }, 1.2)
+        .to('.p4-card-audio', { opacity: 1, y: 0, scale: 1, duration: .8, ease: 'power2.out' }, 2.2)
+        .to('.p4-card-memory', { opacity: 1, y: 0, scale: 1, duration: .8, ease: 'power2.out' }, 3.2)
+        .to('#aiReconstructionSection .p4-footer-text', { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 4.2)
+        .call(enableP4Interaction, null, 5.0)
+        .call(() => animateArrow(aiReconstructionSection), null, 5.0);
+    }
+
+    function skipP4Animation() {
+      page4TL?.pause();
+      gsap.set('#p4MandalaBackdrop', { opacity: .2, scale: .85, xPercent: -50, yPercent: -50 });
+      gsap.set('#aiReconstructionSection .p4-header-text, #aiReconstructionSection .p4-footer-text', { opacity: 1, y: 0 });
+      gsap.set('#aiReconstructionSection .p4-card-item', { opacity: 1, y: 0, scale: 1 });
+      enableP4Interaction();
+      animateArrow(aiReconstructionSection);
+    }
+
+    function leaveP4Page() {
+      setPageAnimationLock(false);
+      page4TL?.kill();
+      isP4Interactive = false;
+      clearP4CardFocus();
+      stopP4Canvases();
+      gsap.to('#aiReconstructionSection .p4-card-item', {
+        opacity: 0,
+        y: 20,
+        duration: .6,
+        stagger: .08,
+        ease: 'power2.inOut'
+      });
+    }
+
+
+    // =============================================================
     // 🎯 通用 GSAP 箭頭動畫控制函式（依頁面自動尋找箭頭）
     // =============================================================
     function animateArrow(pageOrArrow) {
@@ -1559,6 +2042,7 @@
     document.getElementById('bannerSkipBtn').addEventListener('click', scrollToContent);
     document.getElementById('p2SkipBtn').addEventListener('click', skipP2Animation);
     document.getElementById('brandTransitionSkipBtn').addEventListener('click', skipBrandTransitionAnimation);
+    document.getElementById('aiReconstructionSkipBtn').addEventListener('click', skipP4Animation);
 
     // =============================================================
     // 🎬 4. GSAP 開場與 Banner 時間軸控制
@@ -1695,10 +2179,24 @@
           stopLoadingCanvas();
           stopBackgroundCanvas();
           stopSandCanvas();
+          stopP4Canvases();
           playBrandTransitionAnimation();
         },
         leave() {
           leaveBrandTransitionPage();
+        }
+      }],
+      ['aiReconstructionSection', {
+        enter() {
+          lCanvas.style.opacity = '0';
+          stopLoadingCanvas();
+          stopBackgroundCanvas();
+          stopSandCanvas();
+          stopBrandTransitionCanvas();
+          playP4Animation();
+        },
+        leave() {
+          leaveP4Page();
         }
       }]
     ]);
@@ -1732,6 +2230,7 @@
       resizeBgCanvas();
       resizeSandCanvas();
       resizeBrandTransitionCanvas();
+      resizeP4Canvases();
     }
 
     function handleResize() {
