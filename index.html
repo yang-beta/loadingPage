@@ -647,7 +647,14 @@
         <svg class="arrow-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
     </div>
-    
+
+    <!-- Page 4. 展覽主體/體驗頁 (P4) -->
+    <div class="section-page" id="page4Section">
+      <!-- 這裡放置您未來 P4 的內容 -->
+      <div style="display:flex; justify-center; align-items:center; height:100vh; color:#fff;">
+        <h2>Page 4 展覽內容區塊</h2>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1360,7 +1367,8 @@
         },
         leave() {
           stopSandCanvas();
-        },
+        }
+      }], 
       ['brandTransitionSection', {
         enter() {
           lCanvas.style.opacity = '0';
@@ -1372,6 +1380,14 @@
         leave() {
           // 離開 P3 時的處理
         }
+      }],
+      ['page4Section', {
+        enter() {
+          lCanvas.style.opacity = '0';
+          stopLoadingCanvas();
+          stopSandCanvas();
+        },
+        leave() {}
       }]
     ]);
 
