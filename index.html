@@ -249,14 +249,22 @@
       padding: 20px;
     }
 
-    .brand-logo-img {
-      width: 320px;
-      max-width: 75vw;
-      height: auto;
-      opacity: 0; 
+    /* 原為單圖 .brand-logo-img 樣式 */
+    .brand-logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;                     /* 三張圖片之間的間距，可依視覺微調 */
       margin-bottom: 2.5rem;
-      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15));
+      opacity: 0;                     /* 初始隱藏，由 GSAP 統一控制淡入 */
       will-change: opacity, transform;
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15));
+    }
+
+    .brand-logo-wrapper .logo-part {
+      height: 90px;                  /* 固定高度，維持原本寬高度比例 */
+      width: auto;
+      display: block;
     }
 
     .banner-questions-wrapper {
@@ -875,8 +883,12 @@
     <!-- Page 1. Banner 頁 (P1) -->
     <div class="section-page hero-container" id="heroSection">
       <button class="skip-anim-btn show" id="bannerSkipBtn">Skip 略過動畫 ✕</button>
-
-      <img src="/img/logo02.png" class="brand-logo-img" alt="洸限">
+      <!-- logo圖檔 -->
+      <div class="brand-logo-wrapper" id="brandLogoWrapper">
+        <img src="/img/guang.png" class="logo-part" alt="洸">
+        <img src="/img/logo.png" class="logo-part" alt="標誌">
+        <img src="/img/xian.png" class="logo-part" alt="限">
+      </div>
 
       <div class="banner-questions-wrapper">
         <div class="ui-line-mask">
@@ -2242,7 +2254,7 @@
       bannerTimeline = gsap.timeline();
       bannerTimeline.to(animationParams, { beamDownProgress: 1, duration: 1.6, ease: "power2.inOut" })
       .to(animationParams, { horizonSpreadProgress: 1, duration: 1.4, ease: "power2.out" }, "-=0.2")
-      .to(".brand-logo-img", { opacity: 1, duration: 1.4, ease: "power1.out" }, "-=1.0")
+      .to("#brandLogoWrapper", { opacity: 1, duration: 1.4, ease: "power1.out" }, "-=1.0")
       .to(animationParams, { particleGlowProgress: 1, duration: 1.2, ease: "power1.out" }, "-=0.4");
       
       const bqParts = gsap.utils.toArray('.bq-part');
